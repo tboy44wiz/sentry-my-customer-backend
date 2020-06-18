@@ -3,6 +3,11 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+
+require('dotenv').config()
+
+var url = example.env.MONGOLAB_URI;
+
 const app = express();
 
 const ejs = require("ejs");
@@ -22,7 +27,6 @@ app.set("view engine", "ejs");
 
 app.use(phone_verification)
 app.use(example)
-require('dotenv').config()
 
 app.listen(5000, () => {
     console.log(`app running on port: http://localhost:5000`);
