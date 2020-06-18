@@ -15,10 +15,9 @@ const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 require('./routes/transactions.js')(app);
 
-app.use(cors());
-
-const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');
+
+app.use(cors());
 
 mongoose.Promise = global.Promise;
 
