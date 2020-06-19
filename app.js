@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 
 require('dotenv').config()
 
-var url = example.env.MONGOLAB_URI;
+var url = process.env.MONGOLAB_URI;
 
 const app = express();
 
@@ -24,7 +24,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(url, {
 	useNewUrlParser: true
 }).then(() => {
-    console.log("Successfully connected to the database");    
+    console.log("Successfully connected to the database");
 }).catch(err => {
     console.log('Could not connect to the database. Exiting now...', err);
     process.exit();
@@ -42,9 +42,9 @@ app.use(example)
 
 /**
  * phone call api route below
- * 
+ *
  * A post request should  be made to localhost:5000/api/v1/call
- *  
+ *
  */
 app.use('/api', phone_call_api);
 
