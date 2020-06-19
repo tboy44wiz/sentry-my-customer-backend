@@ -4,10 +4,8 @@
     <list default="true" id="226f30c2-19fd-4c3c-8328-92b07606ae6e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.cache/terser-webpack-plugin/content-v2/sha512/8c/73/28bc3f34d0097fa7349bed198d3657ed08e0e5bfc97383abf32dc5ef28cc1de47fda41d610be16dce96ee195a61c89c4a706803978d719d30a1595228ef4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.cache/terser-webpack-plugin/content-v2/sha512/c4/19/6ce7209ee7a474d57cb222009a614fe9c7bfed79bf8f9d70c5ed286e73b911130acd950f1d3852c5643535537975a854438e0d921d1f9b96f507ffc9e1bd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.cache/terser-webpack-plugin/index-v5/1b/5c/9fa1e69b05d0558fda3ebf89dbd85b6aab4968975392929edf98beaef7aa" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.cache/terser-webpack-plugin/index-v5/8c/a9/bc371f714a4859afcd468e09cae091c2ee59e5c27d8d039f80b333d39d83" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/phone_call_api.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/phone_call_api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" afterPath="$PROJECT_DIR$/example.env" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -68,7 +66,8 @@
       <workItem from="1592489208290" duration="1161000" />
       <workItem from="1592490610324" duration="186000" />
       <workItem from="1592490895256" duration="304000" />
-      <workItem from="1592568830318" duration="1829000" />
+      <workItem from="1592568830318" duration="2288000" />
+      <workItem from="1592593055039" duration="676000" />
     </task>
     <servers />
   </component>
