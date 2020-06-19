@@ -5,10 +5,10 @@ const express = require('express');
 const router = express.Router();
 
 router.use(require("body-parser").urlencoded({extended: true}));
-messagebird = require('messagebird')('PRpFg1JwvolNubJ3XRnSRGtP0');
+const messagebird = require('messagebird')('PRpFg1JwvolNubJ3XRnSRGtP0');
 
 module.exports = {
-    initialverification(req, res) {
+    verifyPhone(req, res) {
         try {
             const id = req.body.id
             const token = req.body.token
@@ -30,21 +30,23 @@ module.exports = {
         }
     },
 
-    verifyPhone(req, res) {
+    initialverification(req, res) {
         var params = {
             originator: "MyCustomer"
         };
-
         messagebird.verify.create(req.body.phone, params, function (err, response) {
             if (err) {
                 res.status(401).json({
                     status: "Fail",
-                    message: err.errors[0].description
+                    message: err
                 })
             }
-            res.render("verify-phone.ejs", {
-                response
-            });
+            //Now we render a page to enter token
+            //There should be a hidden input which will contain the id of the process
+            res.status(200).json({
+                status: "success",
+                response: response
+            })
         });
     }
 };

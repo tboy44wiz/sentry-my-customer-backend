@@ -10,7 +10,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 const accountSid = process.env.TWILIO_SID;
 const auth = process.env.TWILIO_AUTH;
-const twilioClient  = require('twilio')(accountSid,auth);
+console.log(require('dotenv').config())
+const twilioClient  = require('twilio')(accountSid, auth);
 
     /**
      * You make a post request to the call api
