@@ -4,9 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 require("dotenv").config();
-
+require("./routes/transactions.js");
 var url = process.env.MONGOLAB_URI;
-
 const app = express();
 
 const ejs = require("ejs");
@@ -15,10 +14,10 @@ const documentation = require("./routes/documentation");
 const phone_verification = require("./routes/verify-phone-number");
 const example = require("./routes/example");
 const phone_call_api = require("./controllers/phone_call_api");
-require("./routes/transactions.js")(app);
-
+const messagingAPI = require("./routes/messaging");
 const complainRouter = require("./routes/complaint");
 
+require("./routes/transactions.js")(app);
 const mongoose = require("mongoose");
 app.use(cors());
 
@@ -27,7 +26,8 @@ mongoose.Promise = global.Promise;
 // Connecting to the database
 mongoose
   .connect(url, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   })
   .then(() => {
     console.log("Successfully connected to the database");
@@ -46,6 +46,7 @@ app.set("view engine", "ejs");
 
 app.use(documentation);
 app.use(phone_verification);
+app.use(messagingAPI);
 app.use(example);
 
 /**
@@ -57,6 +58,7 @@ app.use(example);
 app.use("/api", phone_call_api);
 app.use("/complaint", complainRouter);
 
-app.listen(5000, () => {
-  console.log(`app running on port: http://localhost:5000`);
+const port = 5000;
+app.listen(port, () => {
+  console.log(`app running on port: ` + port);
 });
