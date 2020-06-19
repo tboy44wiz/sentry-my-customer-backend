@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 require('dotenv').config()
-
+require('./routes/transaction.js')(app);
 var url = example.env.MONGOLAB_URI;
 
 const app = express();
