@@ -2,14 +2,21 @@ const mogoose = require("mongoose");
 
 const marketingSchema = new mongoose.Schema({
     store_ref_code: {
-            type: String,
-            required: true
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "store"
         },
         message: String,
         status: String,
         user_ref_id: {
             type: String,
             required: true
+        },
+        status: {
+            type: String
+        },
+        user_ref_id:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user"
         },
         publish_date: {
             type: Date,
