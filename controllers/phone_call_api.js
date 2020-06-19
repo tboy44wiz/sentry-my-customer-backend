@@ -10,7 +10,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 const accountSid = process.env.TWILIO_SID;
 const auth = process.env.TWILIO_AUTH;
-console.log(require('dotenv').config())
 const twilioClient  = require('twilio')(accountSid, auth);
 
     /**
