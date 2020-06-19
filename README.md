@@ -45,3 +45,5 @@ As soon as you get there, you are going to see a green ‘compare and create a p
 Click on it, and type your message, click on create pull request.
 
 If you have any more questions, please check out this resource -> https://www.youtube.com/watch?v=HbSjyU2vf6Y
+
+[![Run on Repl.it](https://repl.it/badge/github/nerdyphil/sentry-my-customer-backend)](https://repl.it/github/nerdyphil/sentry-my-customer-backend)
