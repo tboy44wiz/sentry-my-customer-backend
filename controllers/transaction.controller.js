@@ -3,7 +3,7 @@ const Transaction = require('../schemas/transaction.js');
 // Create and Save a new Transaction
 exports.create = (req, res) => {
     // Validate request
-    if(!req.body.content) {
+    if(!req.body) {
         return res.status(400).send({
             message: "Transaction content can not be empty"
         });
@@ -11,7 +11,11 @@ exports.create = (req, res) => {
 
     // Create a Transaction
     const transaction = new Transaction({
-        
+        date: Date.now(),
+        from: req.body.from,
+        to: req.body.to,
+        description: req.body.description,
+        payment_method: req.body.pay_method || "Cash"
     });
 
     // Save Transaction in the database
@@ -62,7 +66,7 @@ exports.findOne = (req, res) => {
 // Update a transaction identified by the transaction_id in the request
 exports.update = (req, res) => {
     // Validate Request
-    if(!req.body.content) {
+    if(!req.body) {
         return res.status(400).send({
             message: "Transaction content can not be empty"
         });
