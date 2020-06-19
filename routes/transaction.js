@@ -6,7 +6,7 @@ module.exports = (app) => {
     // Retrieve all Transactions
     app.get('/transaction/all', transactions.all);
     // Retrieve a single Transaction with transaction_id
-    app.get('/transaction/view/:transaction_id', transactions.getById);
+    app.get('/transaction/getById/:transaction_id', transactions.getById);
     // Update a Transaction with transaction_id
     app.put('/transaction/update/:transaction_id', transactions.update);
     // Delete a Transaction with transaction_id
