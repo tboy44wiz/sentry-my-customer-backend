@@ -10,7 +10,7 @@ const app = express();
 
 const ejs = require("ejs");
 var cors = require('cors');
-
+const documentation = require('./routes/documentation')
 const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 const phone_call_api = require('./controllers/phone_call_api');
@@ -40,6 +40,7 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.set("view engine", "ejs");
 
+app.use(documentation)
 app.use(phone_verification)
 app.use(messagingAPI)
 app.use(example)
