@@ -12,7 +12,7 @@ module.exports = {
         try {
             const id = req.body.id
             const token = req.body.token
-            messagebird.verify.verify(id, token, (err, response) => {
+            messagebird.message.verify(params, (err, response) => {
                 if (err) {
                     res.status(err.statusCode).json({
                         status: "Bad request",
@@ -21,7 +21,7 @@ module.exports = {
                 } else {
                     res.status(200).json({
                         status: "sucess",
-                        message: "Phone number verification successful"
+                        message: response
                     })
                 }
             })

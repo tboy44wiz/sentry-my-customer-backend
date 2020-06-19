@@ -9,8 +9,12 @@ require('./routes/transaction.js');
 var url = process.env.MONGOLAB_URI;
 =======
 
+<<<<<<< HEAD
 var url = example.env.MONGOLAB_URI;
 >>>>>>> 7abf33b5f90cef578c182b21e3cbad2a497cc849
+=======
+var url = process.env.MONGOLAB_URI;
+>>>>>>> 747135f652d1687b42265ba6f8db06e27c28a1a7
 
 const app = express();
 
@@ -29,7 +33,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(url, {
 	useNewUrlParser: true
 }).then(() => {
-    console.log("Successfully connected to the database");    
+    console.log("Successfully connected to the database");
 }).catch(err => {
     console.log('Could not connect to the database. Exiting now...', err);
     process.exit();
@@ -47,9 +51,9 @@ app.use(example)
 
 /**
  * phone call api route below
- * 
+ *
  * A post request should  be made to localhost:5000/api/v1/call
- *  
+ *
  */
 app.use('/api', phone_call_api);
 
