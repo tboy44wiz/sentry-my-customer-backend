@@ -14,6 +14,7 @@ const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 const phone_call_api = require('./controllers/phone_call_api');
 const mongoose = require('mongoose');
+const transactions = require('./routes/transactions');
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -38,6 +39,7 @@ app.set("view engine", "ejs");
 app.use(documentation)
 app.use(phone_verification)
 app.use(example)
+app.use(transactions)
 
 /**
  * phone call api route below
@@ -52,4 +54,3 @@ app.listen(5000, () => {
 });
 
 require('dotenv').config()
-require('./routes/transactions.js')(app);
