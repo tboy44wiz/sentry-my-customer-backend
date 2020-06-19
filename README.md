@@ -21,9 +21,11 @@ Step 6: Check out to the task branch | <code>git checkout -b <NAME_OF_THE_TASK><
 
 Step 1: npm install
 
-Step 2: npm run start
+Step 2: Copy env.example to .env
 
-Step 3: Go to http://localhost:5000
+Step 3: npm run start
+
+Step 4: Go to http://localhost:5000
 
 A welcome message will come up with status code 200
 
