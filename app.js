@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config()
-var url = process.env.MONGOLAB_URI;
+const { MONGOLAB_URI, API_PORT } = process.env;
 const app = express();
 
 const ejs = require("ejs");
@@ -29,7 +29,7 @@ app.use(cors());
 mongoose.Promise = global.Promise;
 
 // Connecting to the database
-mongoose.connect(url, {
+mongoose.connect(MONGOLAB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
@@ -65,7 +65,7 @@ app.use(login);
  */
 app.use('/api', phone_call_api);
 
-const port = 5000;
+const port = API_PORT || 5000;
 app.listen(port, () => {
     console.log(`app running on port: ` + port);
 });
