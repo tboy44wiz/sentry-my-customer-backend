@@ -2,7 +2,7 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-
+require('dotenv').config()
 var url = process.env.MONGOLAB_URI;
 const app = express();
 
@@ -17,6 +17,7 @@ const phone_call_api = require('./controllers/phone_call_api');
 const messagingAPI = require("./routes/messaging");
 const mongoose = require('mongoose');
 const transactions = require('./routes/transactions');
+// const store = require('./routes/stores.js');
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -44,7 +45,8 @@ app.use(customer)
 app.use(phone_verification)
 app.use(messagingAPI)
 app.use(example)
-app.use(transactions)
+app.use(transactions);
+// app.use(store);
 
 /**
  * phone call api route below
