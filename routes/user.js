@@ -18,4 +18,4 @@
     // Delete a User with user_id
     router.delete('/user/delete/:user_id', users.delete);
 
-    
+    module.exports = router;
