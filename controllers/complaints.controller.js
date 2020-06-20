@@ -3,14 +3,15 @@ const Complaint = require("../models/complaint_form");
 // Retieves all complaints
 exports.findAll = async (req, res) => {
   try {
-    await Complaint.find({})
+    await Complaint.find()
       .sort({ createdAt: -1 })
       .then(complaints => {
-        res.status(200).res.json({
+        res.status(200).json({
           data: complaints
         });
       });
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: "Error occured while retriving complaints"
     });
@@ -28,7 +29,7 @@ exports.update = async (req, res) => {
 
   try {
     // update complaint
-    let complaint = await Complaint.findByIdAndUpdate(req.params.complaint_id, {
+    let complaint = await Complaint.findByIdAndUpdate(req.params.id, {
       message: req.body.message,
       status: req.body.status
     });
