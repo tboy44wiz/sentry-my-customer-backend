@@ -3,7 +3,7 @@ info:
   description: ""
   version: "1.0.0"
   title: "MyCustomer API"
-host: "customerpay.me"
+host: "dev.customerpay.me"
 basePath: "/v1"
 tags:
 - name: "Notification"
@@ -18,38 +18,38 @@ tags:
   description: "Everything about User"
 - name: "Authentication"
   description: "Everything about Authentication"
+- name: "Complaint"
+  description: "Everything about Complaint"
 schemes:
 - "https"
 paths:
-  /reminder/{customerId}:
+  /call:
     post:
       tags:
       - "Notification"
-      summary: "Add a new reminder to the customer"
+      summary: ""
       description: ""
-      operationId: "addReminder"
+      operationId: "call"
       consumes:
       - "application/json"
       produces:
       - "application/json"
       parameters:
-      - name: "customerId"
-        in: "path"
-        description: "Customer id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
       - in: "body"
         name: "body"
-        description: "Reminder object that needs to be sent"
+        description: ""
         required: true
         schema:
-          $ref: "#/definitions/Reminder"
+          type: "object"
+          required:
+          - "number"
+          properties:
+            number:
+              type: "string"
+              example: "+23480000000"
       responses:
         "200":
           description: "Successful operation"
-          schema:
-            $ref: "#/definitions/Reminder"
         "405":
           description: "Invalid input"
   /reminder/sms/{customerId}:
@@ -624,6 +624,109 @@ paths:
           description: "Successful operation"
         "405":
           description: "Invalid input"
+  /complaint/new:
+    post:
+      tags:
+      - "Complaint"
+      summary: "Add a new complaint to the complaint"
+      description: ""
+      operationId: "addComplaint"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Complaint object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Complaint"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Complaint"
+        "405":
+          description: "Invalid input"
+  /complaint/update/{complaintId}:
+    put:
+      tags:
+      - "Complaint"
+      summary: "Update an existing complaint"
+      description: ""
+      operationId: "updateComplaint"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "complaintId"
+        in: "path"
+        description: "ID of complaint to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "Complaint object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/Complaint"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Complaint"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "User not found"
+        "405":
+          description: "Validation exception"
+  /complaint/delete/{complaintId}:
+    delete:
+      tags:
+      - "Complaint"
+      summary: "Deletes a Complaint"
+      description: ""
+      operationId: "deleteComplaint"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "complaintId"
+        in: "path"
+        description: "Complaint id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "Successful operation"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Customer not found"
+  /complaint/all:
+    get:
+      tags:
+      - "Complaint"
+      summary: "List of complaints"
+      description: ""
+      operationId: "getComplaint"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+           type: "array"
+           items:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Complaints not found"
 definitions:
   Reminder:
     type: "object"
@@ -750,6 +853,18 @@ definitions:
       email:
         type: "string"
         example: "mikah@domain.com"
+  Complaint:
+    type: "object"
+    required:
+    - "message"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      message:
+        type: "string"
+      status:
+        type: "string"
 externalDocs:
-  description: "Find out more about customerpay.me"
-  url: "https://customerpay.me"
+  description: "Find out more about dev.customerpay.me"
+  url: "https://dev.customerpay.me"
