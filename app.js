@@ -22,11 +22,7 @@ const transactions = require('./routes/transactions');
 const store = require('./routes/stores.js');
 const register = require('./routes/register_route');
 const login = require('./routes/login_route');
-<<<<<<< HEAD
-const user = require('./routes/user');
-=======
 const emailAPI = require("./routes/sendMail");
->>>>>>> upstream/develop
 // const complainRouter = require("./routes/complaint");
 app.use(cors());
 

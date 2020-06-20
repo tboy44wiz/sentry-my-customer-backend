@@ -41,7 +41,13 @@ exports.getAll = async (req,res)=>{
 }
 
 exports.getById = async (req,res)=>{
-    
+    if(!req.params._id) return Response.failure(res, { error: true, message: "The following parameter "}, HttpStatus.NOT_FOUND)
+    debt.findById(req.params._id)
+        .then(resp => {
+            if(!resp) return Response.failure(res, { error: true, message: resp}, HttpStatus.NOT_FOUND)
+            return Response.success(res, { error: false, message: resp})
+        })
+        .catch(err => { return Response.failure(res, { error: true, message: err}, HttpStatus.INTERNAL_SERVER_ERROR) })
 }
 
 exports.updateById = async (req,res)=>{
