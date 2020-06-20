@@ -23,7 +23,7 @@ const store = require('./routes/stores.js');
 const register = require('./routes/register_route');
 const login = require('./routes/login_route');
 const emailAPI = require("./routes/sendMail");
-// const complainRouter = require("./routes/complaint");
+const complainRouter = require("./routes/complaint");
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -56,7 +56,7 @@ app.use(transactions);
 app.use(store);
 app.use(register);
 app.use(login);
-// app.use(complainRouter);
+app.use(complainRouter);
 /**
  * phone call api route below
  *
