@@ -3,7 +3,7 @@ const Complaint = require("../models/complaint_form");
 // Retieves all complaints
 exports.findAll = async (req, res) => {
   try {
-    await Complaint.findAll()
+    await Complaint.find({})
       .sort({ createdAt: -1 })
       .then(complaints => {
         res.status(200).res.json({
