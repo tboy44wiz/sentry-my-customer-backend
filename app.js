@@ -20,6 +20,7 @@ const transactions = require('./routes/transactions');
 const store = require('./routes/stores.js');
 const register = require('./routes/register_route');
 const login = require('./routes/login_route');
+const user = require('./routes/user');
 // const complainRouter = require("./routes/complaint");
 app.use(cors());
 
@@ -52,6 +53,7 @@ app.use(transactions);
 app.use(store);
 app.use(register);
 app.use(login);
+app.use(user);
 // app.use(complainRouter);
 /**
  * phone call api route below
