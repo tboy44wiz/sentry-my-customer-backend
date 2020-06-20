@@ -1,4 +1,4 @@
-const Transaction = require('../schemas/transaction.js');
+const Transaction = require('../models/transaction.js');
 
 // Create and Save a new Transaction
 exports.create = (req, res) => {

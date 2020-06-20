@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://ekpono11@bitbucket.org/Michael_Owokade/mywork-email-service.git"
   },
-  "author": "Maximilian Schwarzmüller",
+  "author": "Team Sentry",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "1.18.3",
