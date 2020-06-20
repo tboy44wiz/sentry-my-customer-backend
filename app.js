@@ -13,6 +13,8 @@ const customer = require('./routes/customer')
 const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 const phone_call_api = require('./controllers/phone_call_api');
+const user= require('./routes/user');
+
 
 const messagingAPI = require("./routes/messaging");
 const mongoose = require('mongoose');
