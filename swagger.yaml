@@ -3,8 +3,8 @@ info:
   description: ""
   version: "1.0.0"
   title: "MyCustomer API"
-host: "customerpay.me"
-basePath: "/api/v1"
+host: "dev.customerpay.me"
+basePath: "/v1"
 tags:
 - name: "Notification"
   description: "Everything about Notification"
@@ -866,5 +866,5 @@ definitions:
       status:
         type: "string"
 externalDocs:
-  description: "Find out more about customerpay.me"
-  url: "https://customerpay.me"
+  description: "Find out more about dev.customerpay.me"
+  url: "https://dev.customerpay.me"
