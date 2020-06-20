@@ -3,8 +3,6 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-require('dotenv').config()
-require('./routes/transactions.js');
 var url = process.env.MONGOLAB_URI;
 const app = express();
 
@@ -15,10 +13,10 @@ const customer = require('./routes/customer')
 const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 const phone_call_api = require('./controllers/phone_call_api');
-const messagingAPI = require("./routes/messaging");
 
-require('./routes/transactions.js')(app);
+const messagingAPI = require("./routes/messaging");
 const mongoose = require('mongoose');
+const transactions = require('./routes/transactions');
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -46,6 +44,7 @@ app.use(customer)
 app.use(phone_verification)
 app.use(messagingAPI)
 app.use(example)
+app.use(transactions)
 
 /**
  * phone call api route below
@@ -60,3 +59,4 @@ app.listen(port, () => {
     console.log(`app running on port: ` + port);
 });
 
+require('dotenv').config()
