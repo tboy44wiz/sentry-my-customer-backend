@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="226f30c2-19fd-4c3c-8328-92b07606ae6e" name="Default Changelist" comment="">
+
       <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/controllers/login_controler.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/routes/login_route.js" afterDir="false" />
@@ -11,7 +12,13 @@
       <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/phone_call_api.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/phone_call_api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" afterPath="$PROJECT_DIR$/example.env" afterDir="false" />
+      <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     </list>
+    
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -61,6 +68,9 @@
       <workItem from="1592489208290" duration="1161000" />
       <workItem from="1592490610324" duration="186000" />
       <workItem from="1592595513475" duration="15638000" />
+      <workItem from="1592490895256" duration="304000" />
+      <workItem from="1592568830318" duration="2288000" />
+      <workItem from="1592593055039" duration="676000" />
     </task>
     <servers />
   </component>
