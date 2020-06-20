@@ -13,6 +13,37 @@ exports.all = (req, res) => {
 };
 //#endregion
 
+//Add new user
+
+exports.new = (req, res) =>{
+    const phone_number = req.body.phone,
+                first_name = req.body.firstname,
+                last_name = req.body.lastname,
+                email = req.body.email,
+                password = req.body.password + "-this will be encrypted"
+
+    const newUser = new User({
+        phone_number: phone_number,
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
+        password: password
+    })
+    User.create(newUser, (err, user)=>{
+        if(err){
+            res.status(503).json({
+                status: "fail",
+                message: "Could not add user due to an internal error"
+            })
+        }else{
+            res.status(201).json({
+                status: "success",
+                data: user
+            })
+        }
+    })
+}
+
 //#region Fnd a single user with a user_id
 exports.getById = (req, res) => {
     User.findById(req.params.user_id)

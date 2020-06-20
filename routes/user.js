@@ -5,7 +5,8 @@
     const users = require('../controllers/user.controller.js');
 
     
-
+    //Add new user
+    router.post("/user/new", users.new);
    // Retrieve all Users
    router.get('/user/all', users.all);
 
