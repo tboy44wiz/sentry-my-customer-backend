@@ -3,7 +3,7 @@ info:
   description: ""
   version: "1.0.0"
   title: "MyCustomer API"
-host: "customerpay.me"
+host: "dev.customerpay.me"
 basePath: "/v1"
 tags:
 - name: "Notification"
@@ -751,5 +751,5 @@ definitions:
         type: "string"
         example: "mikah@domain.com"
 externalDocs:
-  description: "Find out more about customerpay.me"
-  url: "https://customerpay.me"
+  description: "Find out more about dev.customerpay.me"
+  url: "https://dev.customerpay.me"
