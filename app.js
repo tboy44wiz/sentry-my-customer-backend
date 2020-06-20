@@ -13,6 +13,8 @@ const customer = require('./routes/customer')
 const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 const phone_call_api = require('./controllers/phone_call_api');
+const user= require('./routes/user');
+
 
 const messagingAPI = require("./routes/messaging");
 const mongoose = require('mongoose');
@@ -20,7 +22,11 @@ const transactions = require('./routes/transactions');
 const store = require('./routes/stores.js');
 const register = require('./routes/register_route');
 const login = require('./routes/login_route');
+<<<<<<< HEAD
 const user = require('./routes/user');
+=======
+const emailAPI = require("./routes/sendMail");
+>>>>>>> upstream/develop
 // const complainRouter = require("./routes/complaint");
 app.use(cors());
 
@@ -44,11 +50,12 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.set("view engine", "ejs");
 
-app.use(documentation)
-app.use(customer)
-app.use(phone_verification)
-app.use(messagingAPI)
-app.use(example)
+app.use(documentation);
+app.use(customer);
+app.use(phone_verification);
+app.use(messagingAPI);
+app.use(emailAPI);
+app.use(example);
 app.use(transactions);
 app.use(store);
 app.use(register);
