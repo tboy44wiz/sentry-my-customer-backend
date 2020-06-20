@@ -22,6 +22,7 @@ const transactions = require('./routes/transactions');
 const store = require('./routes/stores.js');
 const register = require('./routes/register_route');
 const login = require('./routes/login_route');
+const emailAPI = require("./routes/sendMail");
 // const complainRouter = require("./routes/complaint");
 app.use(cors());
 
@@ -45,11 +46,12 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.set("view engine", "ejs");
 
-app.use(documentation)
-app.use(customer)
-app.use(phone_verification)
-app.use(messagingAPI)
-app.use(example)
+app.use(documentation);
+app.use(customer);
+app.use(phone_verification);
+app.use(messagingAPI);
+app.use(emailAPI);
+app.use(example);
 app.use(transactions);
 app.use(store);
 app.use(register);

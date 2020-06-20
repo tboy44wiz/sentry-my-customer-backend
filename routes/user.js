@@ -13,7 +13,7 @@
     router.get('/user/:user_id', users.getById);
 
    // Update User Info with user_id
-   router.update('/user/update/:user_id', users.update);
+   router.put('/user/update/:user_id', users.update);
 
     // Delete a User with user_id
     router.delete('/user/delete/:user_id', users.delete);
