@@ -17,7 +17,9 @@ const phone_call_api = require('./controllers/phone_call_api');
 const messagingAPI = require("./routes/messaging");
 const mongoose = require('mongoose');
 const transactions = require('./routes/transactions');
-// const store = require('./routes/stores.js');
+const store = require('./routes/stores.js');
+// const register = require('./routes/register_route');
+// const login = require('./routes/login_route');
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -46,8 +48,9 @@ app.use(phone_verification)
 app.use(messagingAPI)
 app.use(example)
 app.use(transactions);
-// app.use(store);
-
+app.use(store);
+// app.use(register);
+// app.use(login);
 /**
  * phone call api route below
  *
