@@ -2,7 +2,7 @@ const User = require('../models/user.js');
 
 ///#region Get all Users.
 exports.all = (req, res) => {
-    User.find()
+    User.find({})
     .then(users => {
         res.send(users);
     }).catch(err => {
