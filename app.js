@@ -3,19 +3,23 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-require('dotenv').config()
+require('dotenv').config();
 
-var url = example.env.MONGOLAB_URI;
+var url = process.env.MONGOLAB_URI;
+//var url = 'mongodb://localhost/MyCustomer';
 
 const app = express();
 
 const ejs = require("ejs");
 var cors = require('cors');
+const register = require('./routes/register_route');
+const login = require('./routes/login_route');
 const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 const phone_call_api = require('./controllers/phone_call_api');
 require('./routes/transactions.js')(app);
 const mongoose = require('mongoose');
+
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -46,6 +50,8 @@ app.use(example)
  * A post request should  be made to localhost:5000/api/v1/call
  *  
  */
+app.use('/register', register);
+app.use('/login', login);
 app.use('/api', phone_call_api);
 
 app.listen(5000, () => {
