@@ -6,7 +6,7 @@ const User = new mongoose.Schema({
   first_name: { type: String, required: true }, 
   last_name: { type: String, required: true }, 
   email: { type: String, required: true,  unique: true }, 
-  is_active: { type: Boolean, required: true }, 
+  is_active: { type: Boolean, required: true, default: 0 }, 
   password: { type: String,  required: true }, 
   api_token: String, 
   user_role: { type: String, required: true }
