@@ -1,44 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error | 404</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
+
 <body>
-    <div class="main">
-        <div class="top">
-            <p class="text-center">Please return to <a href="/docs">Documentation</a> and you'll find your way</p>
-            <div class="img">
-                <img src="/img/error-page.jpg" alt="404 error image">
-            </div>
-        </div>
+    <div class="img-container">
+        <img src="https://static.vecteezy.com/system/resources/previews/000/362/681/large_2x/vector-website-error-404-page-not-found.jpg"
+            alt="404 error image" class="img-responsive">
     </div>
+    <div class="container return-message px-5">
+        <p class="text-center text-light">Please return to <a href="/docs">Documentation</a> and you'll find your way
+        </p>
+    </div>
+
     <style>
-        body{
-            padding: 0;
-            margin: 0;
+        body {
+            background-color: rgb(255, 172, 19);
         }
-        .top{
-            background-color: #ffa809;
-            padding-bottom: 10%;
-            margin: 0;
-            width: 100%;
-            border-bottom-right-radius: 70%;
-            border-bottom-left-radius: 70%;
+
+        .img-container {
+            max-height: 800px;
+            max-width: 800px;
+            margin: 30px auto 0;
         }
-        .top img{
-            display: block;
-            width: 100%;
-            max-width: 50%;
-            border-bottom-right-radius: 70%;
-            border-bottom-left-radius: 70%;
+
+        .img-responsive {
+            max-width: 100%;
+            max-height: 100%;
             margin: auto;
+            display: block;
         }
-        p{
-            color: #f1f1f1;
+
+        .return-message {
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .container a {
+            text-decoration: none;
+            color: rgb(105, 105, 105)
+        }
+
+        .container a:hover {
+            color: black;
+        }
+
+        ;
+
+        @media (max-width: 576px) {
+            .return-message {
+                font-size: 1rem;
+            }
         }
     </style>
 </body>
+
 </html>
