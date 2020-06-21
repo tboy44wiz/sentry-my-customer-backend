@@ -66,7 +66,7 @@ app.use(docs);
  * A post request should  be made to localhost:5000/api/v1/call
  *
  */
-app.use('/api', phone_call_api);
+app.use("/", phone_call_api);
 //This should be the last route else any after it won't work
 app.use(errorPage);
 const port = API_PORT || 5000;
