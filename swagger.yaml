@@ -23,7 +23,7 @@ tags:
 schemes:
 - "https"
 paths:
-  /call:
+  /call/{customerId}:
     post:
       tags:
       - "Notification"
@@ -35,6 +35,12 @@ paths:
       produces:
       - "application/json"
       parameters:
+      - name: "customerId"
+        in: "path"
+        description: "Customer id to call"
+        required: true
+        type: "integer"
+        format: "int64"
       - in: "body"
         name: "body"
         description: ""
