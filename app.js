@@ -24,6 +24,8 @@ const register = require('./routes/register_route');
 const login = require('./routes/login_route');
 const emailAPI = require("./routes/sendMail");
 const complainRouter = require("./routes/complaint");
+const errorPage = require("./routes/error-page");
+const docs = require("./routes/docs");
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -51,13 +53,13 @@ app.use(customer);
 app.use(phone_verification);
 app.use(messagingAPI);
 app.use(emailAPI);
-app.use(example);
 app.use(transactions);
 app.use(store);
 app.use(register);
 app.use(login);
 app.use(complainRouter);
 app.use(user);
+app.use(docs);
 /**
  * phone call api route below
  *
@@ -65,7 +67,8 @@ app.use(user);
  *
  */
 app.use('/api', phone_call_api);
-
+//This should be the last route else any after it won't work
+app.use(errorPage);
 const port = API_PORT || 5000;
 app.listen(port, () => {
     console.log(`app running on port: ` + port);

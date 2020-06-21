@@ -53,7 +53,7 @@ exports.getById = (req, res) => {
                 message: "User not found with id " + req.params.user_id
             });            
         }
-        res.send(transaction);
+        res.send(user);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
             return res.status(404).send({

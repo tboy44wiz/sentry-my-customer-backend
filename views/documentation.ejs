@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation</title>
+    <link href="//db.onlinewebfonts.com/c/1064f0ad1cb65fdab43bb592ddd8aa91?family=Gilroy-Bold" rel="stylesheet"
+        type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body style="font-family: 'gilroybold';">
+    <div class="nav-bar" style="background-color: #FFD43C;" id="top">
+        <div class="navbar-brand pl-3" style="font-weight: 500;font-family: 'gilroybold'; font-size:xx-large;"><img src="/img/fulllogo.png" alt=""> Documentation</div>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a href="#" class="nav-link">Introduction</a>
+            </li>
+            <li class="nav-item">
+                <a href="#auth" class="nav-link">Authentication</a>
+            </li>
+            <li class="nav-item">
+                <a href="#notification" class="nav-link ">Notification</a>
+            </li>
+            <li class="nav-item">
+                <a href="#transaction" class="nav-link ">Transaction</a>
+            </li>
+            <li class="nav-item">
+                <a href="#user" class="nav-link ">User</a>
+            </li>
+            <li class="nav-item">
+                <a href="#customer" class="nav-link ">Customer</a>
+            </li>
+            <li class="nav-item">
+                <a href="#complaint" class="nav-link ">Complaint</a>
+            </li>
+            <li class="nav-item">
+                <a href="#store" class="nav-link ">Store</a>
+            </li>
+            <li class="nav-item">
+                <a href="#call" class="nav-link ">Call</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main pt-5 container">
+        <div class="intro">
+            <h1>Introduction</h1>
+            <p><strong>/docs</strong> - You are here</p>
+            <hr>
+                <p>The <span style="font-weight: 800;font-family: 'gilroybold';">MyCustomer API</span> is responsible for various actions of the MyCustomer web app and mobile app</p>
+                <p>Such actions include:</p>
+                <ol>
+                    <li>Creating and managing users</li>
+                    <li>Creating and managing customers</li>
+                    <li>Authenticating users and customers</li>
+                    <li>Creating and managing complaints</li>
+                    <li>Creating and managing stores</li>
+                    <li>Sending notifications to customers</li>
+                    <li>Calling customers</li>
+                </ol>
+        </div>
+        <div class="auth" id="auth">
+            <h1 class="">Authentication</h1>
+            <hr>
+            <p>Each user is assigned a unique api_token on registration which will be used in subsequent API calls</p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>User register<strong> - /register/user or /register/customer</strong></li>
+                <li>User login<strong> - /login</strong></li>
+                <ul>
+                    <h5 class="mt-2">Account Activation</h5>
+                    <p>Also, a user is required to verify his/her phone number after registration in order to activate his/her account.</p>
+                    <li>Send SMS(OTP)<strong> - /auth/verify-phone</strong></li>
+                    <li>Verify token<strong> - /auth/verify</strong></li>
+                    <h5 class="mt-2">Account Recovery</h5>
+                    <li>Send password reset link <strong>- /forgot-password</strong></li>
+                    <li>Reset password<strong> - /reset-password</strong></li>
+                </ul>
+            </ul>
+        </div>
+        <div class="user" id="user">
+            <h1 class="">User</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create user<strong>- /user/new</strong></li>
+                <li>Retrieve all users<strong>- /user/all</strong></li>
+                <li>Retrieve user<strong> - /user/:user_id</strong></li>
+                <li>Update user<strong>- /user/update/:user_id</strong></li>
+                <li>Delete user (logical delete)<strong>- /user/delete/:user_id</strong></li>
+            </ul>
+        </div>
+        <div class="store" id="store">
+            <h1 class="">Store</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create store<strong> - /store/new</strong></li>
+                <li>Retrieve store <strong> - /store/:store_id</strong></li>
+                <li>Update store<strong> - /store/update/:store_id</strong></li>
+                <li>Delete store<strong> - /store/delete/:store_id</strong></li>
+                <li>View all user's stores<strong> - /store/all</strong></li>
+            </ul>
+        </div>
+        <div class="user" id="complaint">
+            <h1 class="">Complaint</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Register new complaint<strong>- /complaint/new</strong></li>
+                <li>Retrieve all complaints<strong> - /complaint/all</strong></li>
+                <li>Update complaint<strong> - /complaint/update/:complaint_id</strong></li>
+                <li>Delete a complaint form<strong> - /complaint/delete/:complaint_id</strong></li>
+            </ul>
+        </div>
+        <div class="transaction" id="transaction">
+            <h1 class="">Transaction</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Add new transaction<strong>- /transaction/new</strong></li>
+                <li>View all transactions<strong> - /transaction/all</strong></li>
+                <li>view a single transaction<strong> - /transaction/:transaction_id UPDATE</strong></li>
+                <li>Update transaction<strong> - /transaction/update/:transaction_id</strong></li>
+                <li>Delete transaction (logical delete)<strong>- /transaction/delete/:transaction_id</strong></li>
+            </ul>
+        </div>
+        <div class="customer" id="customer">
+            <h1 class="">Customer</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create customer<strong> - /customer/new</strong></li>
+                <li>Retrieve customer<strong> - /customer/:customer_id</strong></li>
+                <li>Update customer details<strong> - /customer/update/:customer_id</strong></li>
+                <li>Delete customer (logical delete)<strong> - /customer/delete/:customer_id</strong></li>
+            </ul>
+        </div>
+        <div class="notification" id="notification">
+            <h1 class="">Notification</h1>
+            <hr>
+            <p>Notify a customer of outstanding payments or even send them a season's greeting. <br>This can e done via <strong>Email</strong> or <strong>SMS</strong></p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Send SMS reminder<strong> - /reminder/sms/:customer_id</strong></li>
+                <li>Send Email reminder <strong> - /reminder/email/:customer_id</strong></li>
+            </ul>
+        </div>
+        <div class="call" id="call">
+            <h1 class="">Call</h1>
+            <hr>
+            <h4>Endpoint</h4>
+            <p>You can also call a customer using the below endpoint</p>
+            <ul>
+                <li>Call a customer's number<strong>- /call/:customer_id</strong></li>
+            </ul>
+        </div>
+    </div>
+    <a href="#top" id="controller"><div class="controller text-center" style="color: #fff">↑</div></a>
+    <div class="footer" style="background-color: #FFD43C;padding: 20px;">
+        <p class="text-center" style="font-weight: 800;font-family: 'gilroybold';">[HNGi7 TEAM SENTRY]</p>
+        <p class="text-center" style="font-weight: 800;font-family: 'gilroybold';"><a href="https://customerpay.me">customerpay.me</a></p>
+    </div>
+</body>
+<style>
+    html{
+        scroll-behavior: smooth;
+    }
+    body{
+        color: #5b5b5b;
+        font-size: large;
+    }
+    h1,h2,h3,h4,h5{
+        color: #323131;
+    }
+    .nav-link{
+        background-color: #FF8C5F;
+        color: #fff;
+        margin: 0 5px
+    }
+    .controller{
+        padding: 5px;
+        background-color: #FF8C5F;
+        width: 50px;
+        float: right;
+        position: fixed;
+        bottom: 20%;
+        right: 10%;
+    }
+</style>
+<script>
+    const controller = document.getElementById("controller")
+    window.onscroll = function () { toTop() };
+
+        function toTop() {
+            if (document.body.scrollTop > 30 || document.documentElement.scrollTop > 20) {
+                controller.style.display = "block";
+            } else {
+                controller.style.display = "none";
+            }
+        }
+</script>
+</html>
