@@ -3,15 +3,15 @@ const router = express.Router();
 const complaintsController = require("../controllers/complaints.controller");
 
 // Get all complaints
-router.get("/all", complaintsController.findAll);
+router.get("/complaint/all", complaintsController.findAll);
 
 // Update a complaint
-router.get("/update/:id", complaintsController.update);
+router.put("/complaint/update/:id", complaintsController.update);
 
 // Create a new complaint
-router.post("/new", complaintsController.newComplaint);
+router.post("/complaint/new", complaintsController.newComplaint);
 
 // Delete a complaint
-router.delete("/delete/:id", complaintsController.deleteOne);
+router.delete("/complaint/delete/:id", complaintsController.deleteOne);
 
 module.exports = router;

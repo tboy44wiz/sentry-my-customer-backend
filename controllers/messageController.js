@@ -7,8 +7,8 @@ const router = express.Router();
 router.use(require("body-parser").urlencoded({
     extended: true
 }));
-// const messagebird = require('messagebird')('S2LorOevmKnSHrcS9KBXnVXyq');//4505 test
-const messagebird = require('messagebird')('jXFk6Krvh8Lw24Xn1Kw0XjX4M');//production
+const messagebird = require('messagebird')('S2LorOevmKnSHrcS9KBXnVXyq');//4505 test
+// const messagebird = require('messagebird')('jXFk6Krvh8Lw24Xn1Kw0XjX4M');//production
 
 module.exports = {
         sendMessage(req, res) {
