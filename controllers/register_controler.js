@@ -6,7 +6,9 @@ const CustomerModel = require('../models/customer');
 
 //  Register User
 module.exports.registerUser = async (req, res, next) => {
-    const { email, first_name, is_active, last_name, password, phone_number, user_role } = req.body;
+    try {
+		console.log(req);
+		const { email, first_name, is_active, last_name, password, phone_number, user_role } = req.body;
 
     //  Create a Token that will be passed as the "api_token"
     const apiToken = await jwt.sign({
@@ -29,7 +31,7 @@ module.exports.registerUser = async (req, res, next) => {
         api_token: apiToken,
         user_role: user_role,
     });
-
+	console.log(user);
     //  Encrypt the Password
     user.password = await bCrypt.hash(user.password, 12);
 
@@ -76,6 +78,12 @@ module.exports.registerUser = async (req, res, next) => {
                 Error: error,
             });
         });
+	} catch (error) {
+    res.status(500).send({
+      status: "fail",
+      message: error.message || "Some error occurred while creating the transaction.",
+    });
+  }
 };
 
 
