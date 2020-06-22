@@ -1,21 +1,27 @@
 const Response = require("../util/response_manager");
 const HttpStatus = require("../util/http_status");
 const Transaction = require("../models/transaction");
-
+const CustomerModel = require('../models/customer');
+const UserModel = require("../models/user");
+const StoreModel = require("../models/store");
 
 // Create and Save a new Transaction
 exports.create = async (req, res, next) => {
     try {
-        var amount = req.body.amount,
-            interest = req.body.interest,
-            total_amount = req.body.total_amount,
-            description = req.body.description;
+        const {
+            amount,
+            interest,
+            total_amount,
+            description
+        } = req.body;
+
         var req_keys = [
             amount,
             interest,
             total_amount,
             description
         ];
+
         for (var k in req_keys) {
             if (!req_keys[k]) {
                 //console.log(k)
@@ -23,63 +29,62 @@ exports.create = async (req, res, next) => {
             }
         };
         // gets user_ref_id
-        require("../models/user").find({
+        const user_ref_id = UserModel.find({
             email: req.user.email
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 throw err
             };
-            const user_ref_id = result[0]._id;
+            return result[0]._id;
+        });
 
 
-            // gets customer_ref_id
-            require("../models/customer").findOne({
-                phone_number: req.body.phone_number
-            }, function(err, result) {
-                if (err) {
-                    throw err
-                };
-                const customer_ref_id = result._id;
+        // gets customer_ref_id
+        const customer_ref_id = CustomerModel.findOne({
+            phone_number: req.body.phone_number
+        }, function (err, result) {
+            if (err) {
+                throw err
+            };
+            return result._id;
+        });
+        // gets store_ref_id
+        const store_ref_id = StoreModel.find({
+            store_name: req.body.store_name
+        }, function (err, result) {
+            if (err) {
+                throw err
+            };
+            return result[0]._id;
+        });
 
-                // gets store_ref_id
-                require("../models/store").find({
-                    store_name: req.body.store_name
-                }, function(err, result) {
-                    if (err) {
-                        throw err
-                    };
-                    const store_ref_id = result[0]._id;
+        let transaction = new Transaction({
+            amount: amount,
+            interest: interest,
+            total_amount: total_amount,
+            description: description,
+            user_ref_id: user_ref_id,
+            customer_ref_id: customer_ref_id,
+            store_ref_id: store_ref_id,
+            transaction_name: req.body.transaction_name,
+            transaction_role: req.body.transaction_role
+        });
 
-                    let transaction = new Transaction({
-                        amount: amount,
-                        interest: interest,
-                        total_amount: total_amount,
-                        description: description,
-                        user_ref_id: user_ref_id,
-                        customer_ref_id: customer_ref_id,
-                        store_ref_id: store_ref_id,
-                        transaction_name: req.body.transaction_name,
-                        transaction_role: req.body.transaction_role
-                    });
+        //console.log(transaction);
 
-                    //console.log(transaction);
+        if (!transaction) {
+            throw "fail";
+        }
 
-                    if (!transaction) {
-                        throw "fail";
-                    }
+        // Save Transaction in the database
+        transaction.save();
 
-                    // Save Transaction in the database
-                    transaction.save();
-
-                    res.status(200).json({
-                        status: "success",
-                        result: transaction.length,
-                        data: {
-                            transaction,
-                        },
-                    });
-                });
-            });
+        res.status(200).json({
+            status: "success",
+            result: transaction.length,
+            data: {
+                transaction,
+            },
         });
     } catch (error) {
         res.status(500).send({
@@ -92,36 +97,36 @@ exports.create = async (req, res, next) => {
 // Retrieve and return all transactions from the database.
 exports.findAll = async (req, res, next) => {
     try {
-        require("../models/user").findOne({
-            email: req.user.email
-        }, function(err, result) {
-            if (err) {
-                throw err
-            };
-            const query = {
-                user_ref_id: result._id
-            };
-
-
-            // gets store_ref_id
-            require("../models/store").find({
+        const query = {
+            user_ref_id: UserModel.findOne({
                 email: req.user.email
-            }, function(err, result) {
+            }, function (err, result) {
                 if (err) {
                     throw err
                 };
-                //console.log("Found.")
+                return result._id;
+            })
+        };
 
-                Transaction.find(query)
-                    .then(transactions => {
-                        res.send(transactions);
-                    }).catch(err => {
-                        res.status(500).send({
-                            message: err.message || "Some error occurred while retrieving transactions."
-                        });
-                    });
-            });
+
+        // gets store_ref_id
+        StoreModel.find({
+            email: req.user.email
+        }, function (err, result) {
+            if (err) {
+                throw err
+            };
         });
+        //console.log("Found.")
+
+        Transaction.find(query)
+            .then(transactions => {
+                res.send(transactions);
+            }).catch(err => {
+                res.status(500).send({
+                    message: err.message || "Some error occurred while retrieving transactions."
+                });
+            });
     } catch (error) {
         res.status(500).send({
             status: "fail",
@@ -134,24 +139,26 @@ exports.findAll = async (req, res, next) => {
 exports.findOne = async (req, res, next) => {
     try {
         // gets user_ref_id
-        require("../models/user").find({
+        const user_ref_id = UserModel.find({
             email: req.user.email
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 throw err
             };
-            const user_ref_id = result[0]._id;
-        
+            return result[0]._id;
+        });
+
 
         // gets store_ref_id
-        require("../models/store").find({
+        StoreModel.find({
             email: req.user.email
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 throw err
             };
-            //console.log("Found.")
-        
+        });
+        //console.log("Found.")
+
 
         Transaction.findOne({
                 user_ref_id: user_ref_id,
@@ -173,7 +180,7 @@ exports.findOne = async (req, res, next) => {
                 return res.status(500).send({
                     message: "Error retrieving transaction with id " + req.params.transaction_id
                 });
-            });});});
+            });
     } catch (error) {
         res.status(500).send({
             status: "fail",
@@ -193,19 +200,19 @@ exports.update = async (req, res, next) => {
         }
 
         // gets user_ref_id
-        require("../models/user").find({
+        const user_ref_id = UserModel.find({
             email: req.user.email
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 throw err
             };
-            const user_ref_id = result[0]._id;
+            return result[0]._id;
         });
 
         // gets store_ref_id
-        require("../models/store").find({
+        StoreModel.find({
             email: req.user.email
-        }, function(err, result) {
+        }, function (err, result) {
             if (err) {
                 throw err
             };
