@@ -4,7 +4,7 @@ info:
   version: "1.0.0"
   title: "MyCustomer API"
 host: "dev.customerpay.me"
-basePath: "/v1"
+basePath: "/"
 tags:
 - name: "Notification"
   description: "Everything about Notification"
@@ -762,26 +762,30 @@ definitions:
   Transaction:
     type: "object"
     required:
-    - "customerId"
-    - "type"
     - "amount"
-    - "date"
+    - "interest"
+    - "total_amount"
+    - "description"
+    - "customer_phone_number"
+    - "store_name"
+    - "transaction_name"
+    - "transaction_role"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
-      customerId:
-        type: "integer"
-        format: "int64"
-      type:
-        type: "integer"
-        format: "int64"
       amount:
         type: "number"
-      date:
-        type: "string"
-        example: "2020-01-01"
+      interest:
+        type: "number"
+      total_amount:
+        type: "number"
       description:
+        type: "string"
+      customer_phone_number:
+        type: "number"
+      store_name:
+        type: "string"
+      transaction_name:
+        type: "string"
+      transaction_role:
         type: "string"
   Customer:
     type: "object"
