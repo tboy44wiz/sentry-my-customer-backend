@@ -8,7 +8,7 @@ const StoreModel = require("../models/store");
 // Create and Save a new Transaction
 exports.create = async (req, res, next) => {
     try {
-        const {
+        var {
             amount,
             interest,
             total_amount,
@@ -29,34 +29,36 @@ exports.create = async (req, res, next) => {
             }
         };
         // gets user_ref_id
-        const user_ref_id = UserModel.find({
+        var user_ref_id = UserModel.find({
             email: req.user.email
         }, function (err, result) {
             if (err) {
                 throw err
             };
-            return result[0]._id;
         });
+
+		user_ref_id = user_ref_id[0]._id;
 
 
         // gets customer_ref_id
-        const customer_ref_id = CustomerModel.findOne({
+        var customer_ref_id = CustomerModel.findOne({
             phone_number: req.body.phone_number
         }, function (err, result) {
             if (err) {
                 throw err
             };
-            return result._id;
         });
+
+		customer_ref_id = customer_ref_id[0]._id;
         // gets store_ref_id
-        const store_ref_id = StoreModel.find({
+        var store_ref_id = StoreModel.find({
             store_name: req.body.store_name
         }, function (err, result) {
             if (err) {
                 throw err
             };
-            return result[0]._id;
         });
+		store_ref_id = store_ref_id[0]._id;
 
         let transaction = new Transaction({
             amount: amount,
@@ -97,18 +99,15 @@ exports.create = async (req, res, next) => {
 // Retrieve and return all transactions from the database.
 exports.findAll = async (req, res, next) => {
     try {
-        const query = {
-            user_ref_id: UserModel.findOne({
+        var query = await UserModel.findOne({
                 email: req.user.email
             }, function (err, result) {
                 if (err) {
                     throw err
                 };
-                return result._id;
-            })
-        };
-
-
+            });
+		//console.log(query);
+		query = {user_ref_id:query._id};
         // gets store_ref_id
         StoreModel.find({
             email: req.user.email
@@ -139,14 +138,15 @@ exports.findAll = async (req, res, next) => {
 exports.findOne = async (req, res, next) => {
     try {
         // gets user_ref_id
-        const user_ref_id = UserModel.find({
+        var user_ref_id = UserModel.find({
             email: req.user.email
         }, function (err, result) {
             if (err) {
                 throw err
             };
-            return result[0]._id;
         });
+
+		user_ref_id = user_ref_id[0]._id;
 
 
         // gets store_ref_id
@@ -200,14 +200,15 @@ exports.update = async (req, res, next) => {
         }
 
         // gets user_ref_id
-        const user_ref_id = UserModel.find({
+        var user_ref_id = UserModel.find({
             email: req.user.email
         }, function (err, result) {
             if (err) {
                 throw err
             };
-            return result[0]._id;
         });
+
+		user_ref_id = user_ref_id[0]._id;
 
         // gets store_ref_id
         StoreModel.find({
