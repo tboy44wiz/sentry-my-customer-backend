@@ -665,6 +665,39 @@ paths:
                 type: "string"
         "405":
           description: "Invalid input"
+  /auth/verify-phone:
+    post:
+      tags:
+      - "Authentication"
+      summary: "Verify phone"
+      description: ""
+      operationId: "authVerifyPhone"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "UserSignUp object that needs to be registered"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            phone:
+              type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+              message:
+                type: "string"
+        "401":
+          description: "Invalid input"
   /complaint/new:
     post:
       tags:
