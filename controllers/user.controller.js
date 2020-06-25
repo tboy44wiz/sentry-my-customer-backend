@@ -72,21 +72,12 @@ exports.update = (req, res) => {
     // Validate Request
     if(!req.body.content) {
         return res.status(400).send({
-            message: "Transaction content can not be empty"
+            message: "Did not receive any update values"
         });
     }
 else{
     // Find transaction and update it with the request body
-    User.findByIdAndUpdate(req.params.user_id, {
-        phone_number: req.body.phone_number,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        email: req.body.email,
-        is_active: req.body.is_active,
-        password: req.body.password,
-        api_token: req.body.api_token,
-        user_role: req.body.user_role
-    }, {new: true})
+    User.findByIdAndUpdate(req.params.user_id, req.body.content, {new: true})
     .then(user => {
         if(!user) {
             return res.status(404).send({

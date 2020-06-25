@@ -54,7 +54,7 @@ app.use(messagingAPI);
 app.use(emailAPI);
 app.use(transactions);
 app.use(store);
-app.use(register);
+app.use("/register",register);
 app.use(login);
 app.use(complainRouter);
 app.use(user);
