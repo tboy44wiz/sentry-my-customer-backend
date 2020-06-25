@@ -1,6 +1,22 @@
 const Customer = require("../models/customer");
+const { body, validationResult } = require('express-validator/check');
+
+exports.validate = (method) => {
+    switch (method) {
+        case 'body': {
+            return [
+                body('name').isLength({ min: 3 }),
+                body('phone').isInt()
+            ]
+        }
+    }
+}
 
 exports.create = async (req, res) => {// Validate request
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ status: "fail", errors: errors.array() });
+    }
     if(!req.body) {
         return res.status(400).send({
             status: "fail",
@@ -54,6 +70,10 @@ exports.getById = (req, res) => {
 
 exports.updateById = (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ status: "fail", errors: errors.array() });
+        }
         Customer.findById(req.params.customerId, (error, customer) => {
             if(error) {
                 res.status(404).send({
