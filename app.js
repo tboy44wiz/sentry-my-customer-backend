@@ -1,9 +1,8 @@
 const path = require('path');
-
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config()
-var url = process.env.MONGOLAB_URI;
+const { MONGOLAB_URI, API_PORT } = process.env;
 const app = express();
 
 const ejs = require("ejs");
@@ -17,16 +16,20 @@ const example = require('./routes/example');
 
 const messagingAPI = require("./routes/messaging");
 const mongoose = require('mongoose');
-const transactions = require('./routes/transactions');
+const transactions = require('./routes/transaction');
 const store = require('./routes/stores.js');
 const register = require('./routes/register_route');
 const login = require('./routes/login_route');
+const emailAPI = require("./routes/sendMail");
+const complainRouter = require("./routes/complaint");
+const errorPage = require("./routes/error-page");
+const docs = require("./routes/docs");
 app.use(cors());
 
 mongoose.Promise = global.Promise;
 
 // Connecting to the database
-mongoose.connect(url, {
+mongoose.connect(MONGOLAB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
@@ -43,13 +46,16 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.set("view engine", "ejs");
 
-app.use(documentation)
-app.use(customer)
-app.use(phone_verification)
-app.use(messagingAPI)
-app.use(example)
+app.use(documentation);
+app.use(customer);
+app.use(phone_verification);
+app.use(messagingAPI);
+app.use(emailAPI);
 app.use(transactions);
 app.use(store);
+app.use(complainRouter);
+app.use(user);
+app.use(docs);
 /**
  * phone call api route below
  *
@@ -60,7 +66,10 @@ app.use('/register', register);
 app.use('/login', login);
 //app.use('/api', phone_call_api);
 
-const port = 5000;
+app.use("/", phone_call_api);
+//This should be the last route else any after it won't work
+app.use(errorPage);
+const port = API_PORT || 5000;
 app.listen(port, () => {
     console.log(`app running on port: ` + port);
 });

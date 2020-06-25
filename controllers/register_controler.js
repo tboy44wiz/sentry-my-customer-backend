@@ -7,8 +7,9 @@ const CustomerModel = require('../models/customer');
 
 //  Register User
 module.exports.registerUser = async (req, res, next) => {
+  
     const { email, first_name, last_name, password, phone_number } = req.body;
-
+  
     const reqBody = {
         phone_number: phone_number,
         first_name: first_name,
@@ -18,7 +19,7 @@ module.exports.registerUser = async (req, res, next) => {
     };
 
 
-    //Validate the "reqBody" object using joiValidator function imported.
+    //  Validate the "reqBody" object using joiValidator function imported.
     const {error, value} = await joiValidator.userRegistrationValidator.validate(reqBody);
     //  Check if there is any validation error.
     if (error) {
@@ -46,7 +47,6 @@ module.exports.registerUser = async (req, res, next) => {
         password: value.password,
         token: token,
     });
-
     //  Encrypt the Password
     user.password = await bCrypt.hash(user.password, 12);
 
@@ -93,6 +93,12 @@ module.exports.registerUser = async (req, res, next) => {
                 Error: error,
             });
         });
+	} catch (error) {
+    res.status(500).send({
+      status: "fail",
+      message: error.message || "Some error occurred while creating the transaction.",
+    });
+  }
 };
 
 
