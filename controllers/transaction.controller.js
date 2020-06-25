@@ -1,32 +1,37 @@
-const Transaction = require('../schemas/transaction.js');
+const Response = require("../util/response_manager");
+const HttpStatus = require("../util/http_status");
+const Transaction = require("../models/transaction");
+
 
 // Create and Save a new Transaction
-exports.create = (req, res) => {
-    // Validate request
-    if(!req.body.content) {
-        return res.status(400).send({
-            message: "Transaction content can not be empty"
-        });
-    }
-
-    // Create a Transaction
-    const transaction = new Transaction({
-        
-    });
+exports.create = async (req, res, next) => {
+  try {
+    let transaction = new Transaction(req.body);
 
     // Save Transaction in the database
-    transaction.save()
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while creating the Transaction."
-        });
+    transaction.save();
+
+    if (!transaction) {
+      throw "fail";
+    }
+
+    res.status(200).json({
+      status: "success",
+      result: transaction.length,
+      data: {
+        transaction,
+      },
     });
+  } catch (error) {
+    res.status(500).send({
+      status: "fail",
+      message: error.message || "Some error occurred while creating the transaction.",
+    });
+  }
 };
 
 // Retrieve and return all transactions from the database.
-exports.findAll = (req, res) => {
+exports.findAll = async (req, res, next) => {
     Transaction.find()
     .then(transactions => {
         res.send(transactions);
@@ -38,7 +43,7 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single transaction with a transaction_id
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res, next) => {
     Transaction.findById(req.params.transaction_id)
     .then(transaction => {
         if(!transaction) {
@@ -60,22 +65,20 @@ exports.findOne = (req, res) => {
 };
 
 // Update a transaction identified by the transaction_id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res, next) => {
     // Validate Request
-    if(!req.body.content) {
+    if(!req.body) {
         return res.status(400).send({
             message: "Transaction content can not be empty"
         });
     }
 
     // Find transaction and update it with the request body
-    Transaction.findByIdAndUpdate(req.params.transaction_id, {
-        date: Date.now(),
-        from: req.body.from,
-        to: req.body.to,
-        description: req.body.description,
-        payment_method: req.body.pay_method || "Cash"
-    }, {new: true})
+    Transaction.findByIdAndUpdate(
+		req.params.transaction_id,
+		req.body,
+		{new: true}
+	)
     .then(transaction => {
         if(!transaction) {
             return res.status(404).send({
@@ -96,7 +99,7 @@ exports.update = (req, res) => {
 };
 
 // Delete a transaction with the specified transaction_id in the request
-exports.delete = (req, res) => {
+exports.delete = async (req, res, next) => {
     Transaction.findByIdAndRemove(req.params.transaction_id)
     .then(transaction => {
         if(!transaction) {
