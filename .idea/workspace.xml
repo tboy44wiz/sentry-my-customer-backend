@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="226f30c2-19fd-4c3c-8328-92b07606ae6e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/controllers/login_controler.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/login_route.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/register_route.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example.env" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/register_controler.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/register_controler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/user.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +30,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/controllers" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
@@ -60,7 +55,11 @@
       <updated>1592489205118</updated>
       <workItem from="1592489208290" duration="1161000" />
       <workItem from="1592490610324" duration="186000" />
-      <workItem from="1592595513475" duration="15638000" />
+      <workItem from="1592595513475" duration="16015000" />
+      <workItem from="1592646119225" duration="44000" />
+      <workItem from="1592942181485" duration="4136000" />
+      <workItem from="1593019431738" duration="691000" />
+      <workItem from="1593040946754" duration="3661000" />
     </task>
     <servers />
   </component>

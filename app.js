@@ -16,7 +16,7 @@ const register = require('./routes/register_route');
 const login = require('./routes/login_route');
 const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
-const phone_call_api = require('./controllers/phone_call_api');
+//const phone_call_api = require('./controllers/phone_call_api');
 require('./routes/transactions.js')(app);
 const mongoose = require('mongoose');
 
@@ -52,7 +52,7 @@ app.use(example)
  */
 app.use('/register', register);
 app.use('/login', login);
-app.use('/api', phone_call_api);
+//app.use('/api', phone_call_api);
 
 app.listen(5000, () => {
     console.log(`app running on port: http://localhost:5000`);

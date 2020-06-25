@@ -6,13 +6,13 @@ const CustomerModel = require('../models/customer');
 
 //  Register User
 module.exports.registerUser = async (req, res, next) => {
-    const { email, first_name, is_active, last_name, password, phone_number, user_role } = req.body;
+    const { email, first_name, last_name, password, phone_number } = req.body;
 
     //  Create a Token that will be passed as the "api_token"
-    const apiToken = await jwt.sign({
+    const token = await jwt.sign({
+        name: first_name + last_name,
         phone_number: phone_number,
         email: email,
-        user_role: user_role,
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
@@ -24,10 +24,8 @@ module.exports.registerUser = async (req, res, next) => {
         first_name: first_name,
         last_name: last_name,
         email: email,
-        is_active: is_active,
         password: password,
-        api_token: apiToken,
-        user_role: user_role,
+        token: token,
     });
 
     //  Encrypt the Password
