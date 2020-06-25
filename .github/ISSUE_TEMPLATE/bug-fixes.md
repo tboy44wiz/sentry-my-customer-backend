@@ -31,5 +31,8 @@ If applicable, add screenshots to help explain your problem.
 **How do you intend to solve this bug?**
 Describe in clear and concise manner how you intend to approach fixing this bug.
 
+**Slack username**
+Please include your slack username here
+
 **Additional context**
 Add any other context about the problem here.
