@@ -13,15 +13,14 @@ const customer = require('./routes/customer')
 const phone_verification = require('./routes/verify-phone-number')
 const example = require('./routes/example');
 //const phone_call_api = require('./controllers/phone_call_api');
-require('./routes/transactions.js')(app);
-const mongoose = require('mongoose');
+//require('./routes/transactions.js')(app);
 
 const messagingAPI = require("./routes/messaging");
 const mongoose = require('mongoose');
 const transactions = require('./routes/transactions');
 const store = require('./routes/stores.js');
-// const register = require('./routes/register_route');
-// const login = require('./routes/login_route');
+const register = require('./routes/register_route');
+const login = require('./routes/login_route');
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -51,8 +50,6 @@ app.use(messagingAPI)
 app.use(example)
 app.use(transactions);
 app.use(store);
-// app.use(register);
-// app.use(login);
 /**
  * phone call api route below
  *
