@@ -1,6 +1,7 @@
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
+const expressValidator = require('express-validator')
 require("dotenv").config();
 const { MONGOLAB_URI, API_PORT } = process.env;
 const app = express();
@@ -25,6 +26,7 @@ const complainRouter = require("./routes/complaint");
 const errorPage = require("./routes/error-page");
 const docs = require("./routes/docs");
 app.use(cors());
+app.use(expressValidator())
 
 mongoose.Promise = global.Promise;
 
