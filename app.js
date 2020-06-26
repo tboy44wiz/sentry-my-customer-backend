@@ -1,7 +1,8 @@
-const path = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-require('dotenv').config()
+const path = require("path");
+const express = require("express");
+const bodyParser = require("body-parser");
+const expressValidator = require('express-validator')
+require("dotenv").config();
 const { MONGOLAB_URI, API_PORT } = process.env;
 const app = express();
 
@@ -15,34 +16,39 @@ const example = require('./routes/example');
 //require('./routes/transactions.js')(app);
 
 const messagingAPI = require("./routes/messaging");
-const mongoose = require('mongoose');
-const transactions = require('./routes/transaction');
-const store = require('./routes/stores.js');
-const register = require('./routes/register_route');
-const login = require('./routes/login_route');
+const mongoose = require("mongoose");
+const transactions = require("./routes/transaction");
+const store = require("./routes/stores.js");
+const register = require("./routes/register_route");
+const login = require("./routes/login_route");
 const emailAPI = require("./routes/sendMail");
 const complainRouter = require("./routes/complaint");
 const errorPage = require("./routes/error-page");
 const docs = require("./routes/docs");
 app.use(cors());
+app.use(expressValidator())
 
 mongoose.Promise = global.Promise;
 
 // Connecting to the database
-mongoose.connect(MONGOLAB_URI, {
+mongoose
+  .connect(MONGOLAB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
+  .then(() => {
     console.log("Successfully connected to the database");
-}).catch(err => {
-    console.log('Could not connect to the database. Exiting now...', err);
+  })
+  .catch((err) => {
+    console.log("Could not connect to the database. Exiting now...", err);
     process.exit();
-});
+  });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.set("view engine", "ejs");
 
@@ -71,7 +77,7 @@ app.use("/", phone_call_api);
 app.use(errorPage);
 const port = API_PORT || 5000;
 app.listen(port, () => {
-    console.log(`app running on port: ` + port);
+  console.log(`app running on port: ` + port);
 });
 
-require('dotenv').config()
+require("dotenv").config();
