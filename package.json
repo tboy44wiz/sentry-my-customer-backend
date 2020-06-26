@@ -1,0 +1,52 @@
+{
+  "name": "nodejs-complete-guide",
+  "version": "1.0.0",
+  "description": "Complete Node.js Guide",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "start-server": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hngi/sentry-my-customer-backend.git"
+  },
+  "author": "Team Sentry",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "1.18.3",
+    "swagger-ui-express": "^4.1.4",
+    "yamljs": "^0.3.0"
+  },
+  "dependencies": {
+    "@hapi/joi": "^17.1.0",
+    "amqplib": "^0.5.6",
+    "axios": "^0.19.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "1.18.3",
+    "connect-flash": "0.1.1",
+    "connect-mongodb-session": "^2.3.3",
+    "cors": "^2.8.5",
+    "csurf": "1.9.0",
+    "dotenv": "^8.2.0",
+    "ejs": "2.6.1",
+    "email-templates": "^7.0.5",
+    "express": "4.16.3",
+    "express-jwt": "^5.3.1",
+    "express-session": "1.15.6",
+    "express-validator": "5.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "messagebird": "^3.5.0",
+    "mongoose": "5.7.5",
+    "nodemailer": "^4.6.8",
+    "nodemailer-sendgrid-transport": "0.2.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "pdfkit": "0.8.3",
+    "pug": "^2.0.3",
+    "socket.io": "^2.3.0",
+    "twilio": "^3.46.0",
+    "uuid": "^3.4.0"
+  }
+}
