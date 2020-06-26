@@ -1,4 +1,7 @@
 const User = require('../models/user.js');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const joiValidator = require('../util/joi_validator');
 
 ///#region Get all Users.
 exports.all = (req, res) => {
@@ -15,33 +18,111 @@ exports.all = (req, res) => {
 
 //Add new user
 
-exports.new = (req, res) =>{
-    const phone_number = req.body.phone,
-                first_name = req.body.firstname,
-                last_name = req.body.lastname,
-                email = req.body.email,
-                password = req.body.password + "-this will be encrypted"
+exports.new = async (req, res) => {
+    const { first_name, last_name, email, password, phone_number } = req.body;
+
+    // Request that is sent
+    const reqBody = {
+        first_name, 
+        last_name, 
+        email, 
+        password, 
+        phone_number
+    }
+
+    // Validate Request body sent
+    const { error, value } = await joiValidator.userRegistrationValidator.validate(reqBody);
+
+    // Check Validation Error
+    if (error) {
+        return res.status(400).json({
+            error: error.details[0].message
+        });
+    }
+
+    //  Create a Token that will be passed as the "api_token"
+    const token = await jwt.sign({
+        name: value.first_name + value.last_name,
+        phone_number: value.phone_number,
+        email: value.email,
+    }, process.env.JWT_KEY, {
+        expiresIn: "1d",
+    });
+
 
     const newUser = new User({
-        phone_number: phone_number,
-        first_name: first_name,
-        last_name: last_name,
-        email: email,
-        password: password
+        phone_number: value.phone_number,
+        first_name: value.first_name,
+        last_name: value.last_name,
+        email: value.email,
+        password: value.password,
+        token: token
     })
-    User.create(newUser, (err, user)=>{
-        if(err){
-            res.status(503).json({
-                status: "fail",
-                message: "Could not add user due to an internal error"
-            })
-        }else{
-            res.status(201).json({
-                status: "success",
-                data: user
-            })
+
+    // Encrypt Password
+    const salt = await bcrypt.genSalt(10);
+
+    newUser.password = await bcrypt.hash(password, salt);
+
+    // Check if Phone exists
+    const userExists = await User.findOne({ phone_number: newUser.phone_number, email: newUser.email });
+
+    if (userExists) {
+        return res.status(400).json({ message: 'Store owner already exists' });
+    } else {
+        await newUser.save();
+
+        const payload = {
+            newUser: {
+                id: newUser.id
+            }
         }
-    })
+
+        jwt.sign(
+            payload,
+            process.env.JWT_KEY,
+            {
+                expiresIn: 360000
+            },
+            (err, token, data) => {
+                if (err) throw err;
+                res.json({ token, data: newUser });
+            }
+        );
+    }
+
+    // User.create(newUser, (err, user)=>{
+    //     if(err){
+    //         res.status(503).json({
+    //             status: "fail",
+    //             message: "Could not add user due to an internal error"
+    //         })
+    //     }else{
+    //         // res.status(201).json({
+    //         //     status: "success",
+    //         //     data: user
+    //         // })
+
+    //         const payload = {
+    //             newUser: {
+    //                 id: newUser.id
+    //             }
+    //         }
+
+    //         jwt.sign(
+    //             payload,
+    //             process.env.JWT_KEY,
+    //             {
+    //                 expiresIn: 360000
+    //             },
+    //             (err, token, data) => {
+    //                 if (err) throw err;
+    //                 res.json({ token, data: newUser });
+    //             }
+    //         );
+
+    //     }
+    // })
 }
 
 //#region Fnd a single user with a user_id
