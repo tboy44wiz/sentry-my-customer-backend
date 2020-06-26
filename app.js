@@ -25,6 +25,8 @@ const emailAPI = require("./routes/sendMail");
 const complainRouter = require("./routes/complaint");
 const errorPage = require("./routes/error-page");
 const docs = require("./routes/docs");
+const user = require("./routes/user");
+const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
 app.use(expressValidator());
 
