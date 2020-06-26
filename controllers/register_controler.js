@@ -79,6 +79,7 @@ module.exports.registerUser = async (req, res, next) => {
         res.status(500).json({ Error: error });
     }
 
+    
 };
 
 //  Register Customer
