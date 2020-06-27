@@ -44,11 +44,8 @@ module.exports.registerUser = async (req, res, next) => {
         last_name: value.last_name,
         email: value.email,
         password: value.password,
-<<<<<<< HEAD
         api_token: token,
-=======
         api_token: token
->>>>>>> refs/remotes/origin/master
     });
 
     //  Encrypt the Password
