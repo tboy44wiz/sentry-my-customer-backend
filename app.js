@@ -26,6 +26,7 @@ const complainRouter = require("./routes/complaint");
 const errorPage = require("./routes/error-page");
 const docs = require("./routes/docs");
 const user = require("./routes/user");
+const debt = require('./routes/debt_reminder');
 const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
 app.use(expressValidator());
@@ -77,6 +78,7 @@ app.use(docs);
  */
 app.use("/register", register);
 app.use("/login", login);
+app.use(debt)
 //app.use('/api', phone_call_api);
 
 app.use("/", phone_call_api);
