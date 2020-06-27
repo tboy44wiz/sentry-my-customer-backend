@@ -7,7 +7,7 @@ const Transaction = require("../models/transaction")
 exports.create = async (req,res)=>{
     // Add new message
     let transaction_id = req.body.transaction_id || req.params.transaction_id;
-    console.log(transaction_id)
+
     Transaction.findById(transaction_id)
         .then(trans => {
             if(!trans) return Response.failure(res, { error: true, message: 'Transaction could not be found...'}, HttpStatus.NOT_FOUND);
