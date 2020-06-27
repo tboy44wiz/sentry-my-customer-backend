@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const customerController = require("./../controllers/customer.controller.js");
-const jwt = require('jsonwebtoken')
 
 const auth = require('../auth/auth');
 router.post('/customer/new', customerController.validate('body'), customerController.create)
