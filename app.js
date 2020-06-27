@@ -23,7 +23,7 @@ const register = require("./routes/register_route");
 const login = require("./routes/login_route");
 const emailAPI = require("./routes/sendMail");
 const complainRouter = require("./routes/complaint");
-const errorPage = require("./routes/error-page");
+
 const docs = require("./routes/docs");
 const user = require("./routes/user");
 const businessCards = require("./routes/businessCardRoute");
