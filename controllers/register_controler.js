@@ -13,7 +13,7 @@ module.exports.registerUser = async (req, res, next) => {
 
         // check if user exists 
         let user = await UserModel.find({ $or: [{ phone_number: user.phone_number }, { email: user.email }] })
-        if (!user) {
+        if (user) {
             res.status(400).json({
                 Message: "Email or phone number already taken. Please use another email or phone number."
             });
@@ -79,7 +79,7 @@ module.exports.registerUser = async (req, res, next) => {
         res.status(500).json({ Error: error });
     }
 
-    
+
 };
 
 //  Register Customer
