@@ -44,7 +44,7 @@ module.exports.registerUser = async (req, res, next) => {
         last_name: value.last_name,
         email: value.email,
         password: value.password,
-        api_token: token,
+        api_token: token
     });
 
     //  Encrypt the Password
