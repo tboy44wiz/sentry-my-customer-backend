@@ -85,7 +85,7 @@ app.use(passport.initialize());
 passport.use(new Strategy({
   clientID: FB_CLIENT_ID,
   clientSecret: FB_CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/fb/return"
+  callbackURL: `http://localhost:${API_PORT}/fb/return`
 },
 function(accessToken, refreshToken, profile, cb) {
   return cb(null, profile);
@@ -105,7 +105,8 @@ app.get('/fb/return', //facebook signin callback
   passport.authenticate('facebook', { failureRedirect: '/docs' }),
   function(req, res) {
     res.send({
-      message: "Login successful"
+      message: "Login successful",
+      data: req.user
     })
   });  
 app.use("/login", login);
@@ -120,4 +121,3 @@ app.listen(port, () => {
 });
 
 require("dotenv").config();
-
