@@ -512,6 +512,8 @@ paths:
             $ref: "#/definitions/User"
         "405":
           description: "Invalid input"
+      security:
+      - api_key: []
   /user/{userId}:
     get:
       tags:
@@ -613,6 +615,8 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Customer not found"
+      security:
+      - api_key: []
   /login/user:
     post:
       tags:
