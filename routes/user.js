@@ -4,11 +4,11 @@
     
     const users = require('../controllers/user.controller.js');
 
-    
+    const auth = require("../auth/auth");
     //Add new user
-    router.post("/user/new", users.new);
+    router.post("/user/new", auth, users.new);
    // Retrieve all Users
-   router.get('/user/all', users.all);
+   router.get('/user/all', auth, users.all);
 
     // Retrieve a single User with user_id
     router.get('/user/:user_id', users.getById);
