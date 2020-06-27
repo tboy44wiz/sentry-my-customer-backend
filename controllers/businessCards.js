@@ -29,12 +29,17 @@ module.exports = () => async (req, res) => {
 
     //  Iterate through stores and create cards
     const data = userStore.map((store) => {
-      const { store_name, phone_number, email, shop_address } = store;
+      const {
+        store_name,
+        Phone_number,
+        email,
+        shop_address,
+      } = store.shop_ref_id;
       return {
         ownerName: `${user.first_name} ${user.last_name}`,
         storeName: store_name,
         email: email || user.email,
-        phone: phone_number,
+        phone: Phone_number || user.phone_number,
         storeAddress: shop_address,
       };
     });
