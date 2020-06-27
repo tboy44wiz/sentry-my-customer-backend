@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
 require("dotenv").config();
-const { MONGOLAB_URI, API_PORT } = process.env;
+const { MONGOLAB_URI, API_PORT, FB_CLIENT_ID, FB_CLIENT_SECRET } = process.env;
 const app = express();
 
 const ejs = require("ejs");
@@ -28,6 +28,8 @@ const docs = require("./routes/docs");
 const user = require("./routes/user");
 const businessCards = require("./routes/businessCardRoute");
 const phone_call_api = require("./controllers/phone_call_api");
+const passport = require("passport");
+const Strategy = require('passport-facebook').Strategy;
 app.use(cors());
 app.use(expressValidator());
 
@@ -77,7 +79,35 @@ app.use(docs);
  * A post request should  be made to localhost:5000/api/v1/call
  *
  */
+
+// CONFIGURE FACEBOOK SIGNIN
+app.use(passport.initialize());
+passport.use(new Strategy({
+  clientID: FB_CLIENT_ID,
+  clientSecret: FB_CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/fb/return"
+},
+function(accessToken, refreshToken, profile, cb) {
+  return cb(null, profile);
+}));
+
+passport.serializeUser(function(user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+});
+
 app.use("/register", register);
+app.get('/login/fb_login', passport.authenticate('facebook')) // sign in with facebook
+app.get('/fb/return', //facebook signin callback
+  passport.authenticate('facebook', { failureRedirect: '/docs' }),
+  function(req, res) {
+    res.send({
+      message: "Login successful"
+    })
+  });  
 app.use("/login", login);
 //app.use('/api', phone_call_api);
 
@@ -90,3 +120,4 @@ app.listen(port, () => {
 });
 
 require("dotenv").config();
+
