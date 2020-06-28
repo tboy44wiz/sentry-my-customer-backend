@@ -17,13 +17,6 @@ exports.create = async (req, res) => {
   if (!errors.isEmpty()) {
       return res.status(422).json({ status: "fail", errors: errors.array() });
   }
-  // Validate request
-  if (!req.body) {
-    return res.status(400).send({
-      status: "fail",
-      message: "Transaction content can not be empty",
-    });
-  }
 
   const customer = new Customer({
     name: req.body.name,
