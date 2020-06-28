@@ -1,37 +1,33 @@
 const jwt = require("jsonwebtoken");
 const bCrypt = require('bcryptjs');
-const joiValidator = require('../util/joi_validator');
+const { body } = require('express-validator/check');
 
 const UserModel = require('../models/user');
 const CustomerModel = require('../models/customer');
+
+exports.validate = (method) => {
+  switch (method) {
+      case 'body': {
+          return [
+              body('phone_number').isInt(),
+              body('first_name').isLength({ min: 3 }),
+              body('last_name').isLength({ min: 3 }),
+              body('email').matches(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, "i"),
+              body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+          ]
+      }
+  }
+}
 
 //  Register User
 module.exports.registerUser = async (req, res, next) => {
     const { email, first_name, last_name, password, phone_number } = req.body;
 
-    const reqBody = {
-        phone_number: phone_number,
-        first_name: first_name,
-        last_name: last_name,
-        email: email,
-        password: password,
-    };
-
-
-    //Validate the "reqBody" object using joiValidator function imported.
-    const {error, value} = await joiValidator.userRegistrationValidator.validate(reqBody);
-    //  Check if there is any validation error.
-    if (error) {
-        return res.status(400).json({
-            Error: error.details[0].message,
-        });
-    }
-
     //  Create a Token that will be passed as the "api_token"
     const token = await jwt.sign({
-        name: value.first_name + value.last_name,
-        phone_number: value.phone_number,
-        email: value.email,
+        name: first_name + last_name,
+        phone_number: phone_number,
+        email: email,
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
@@ -39,11 +35,11 @@ module.exports.registerUser = async (req, res, next) => {
 
     //  Get instance of the
     const user = new UserModel({
-        phone_number: value.phone_number,
-        first_name: value.first_name,
-        last_name: value.last_name,
-        email: value.email,
-        password: value.password,
+        phone_number: phone_number,
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
+        password: password,
         api_token: token
     });
 
