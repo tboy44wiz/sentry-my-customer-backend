@@ -25,10 +25,6 @@
     "axios": "^0.19.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "1.18.3",
-<<<<<<< HEAD
-    "connect-mongodb-session": "^2.3.3",
-=======
->>>>>>> bcdebe31c9671a7fa88bb6614fdb46425733d4ee
     "cors": "^2.8.5",
     "depcheck": "^0.9.2",
     "dotenv": "^8.2.0",
