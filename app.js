@@ -86,7 +86,7 @@ app.use(passport.initialize());
 passport.use(new Strategy({
   clientID: FB_CLIENT_ID,
   clientSecret: FB_CLIENT_SECRET,
-  callbackURL: `http://localhost:${API_PORT}/fb/return`
+  callbackURL: `http://api-customerpay.herokuapp.com/fb/return`
 },
 function(accessToken, refreshToken, profile, cb) {
   return cb(null, profile);
@@ -124,7 +124,7 @@ app.use("*", (req, res) => {
 });
 
 app.listen(process.env.PORT || 5000, () => {
-  console.log(`app running on port: ` + port);
+  console.log(`app running on port: `);
 });
 
 require("dotenv").config();
