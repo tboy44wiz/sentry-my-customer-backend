@@ -15,7 +15,6 @@
   "author": "Team Sentry",
   "license": "ISC",
   "devDependencies": {
-    "@shelf/jest-mongodb": "^1.1.5",
     "jest": "^26.1.0",
     "nodemon": "1.18.3",
     "swagger-ui-express": "^4.1.4",
