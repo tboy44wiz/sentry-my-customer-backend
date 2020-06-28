@@ -84,22 +84,14 @@ app.use("/login", login);
 app.use("/", phone_call_api);
 
 //This should be the last route else any after it won't work
-<<<<<<< HEAD
-app.use(errorPage);
-// const port = API_PORT || 5000;
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`app running on port: `);
-=======
 app.use("*", (req, res) => {
   res.status(400).json({
     message: "Page not found"
   });
 });
 
-const port = API_PORT || 5000;
-app.listen(port, () => {
-  console.log(`app running on port: ` + port);
->>>>>>> refs/remotes/origin/master
+app.listen(process.env.PORT || 5000, () => {
+  console.log(`app running on port: `);
 });
 
 require("dotenv").config();
