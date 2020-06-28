@@ -158,7 +158,7 @@ exports.findAll = async (req, res, next) => {
 exports.findOne = async (req, res, next) => {
   try {
     // gets user_ref_id
-    var user_ref_id = UserModel.find(
+    var user_ref_id = await UserModel.find(
       {
         email: req.user.email,
       },

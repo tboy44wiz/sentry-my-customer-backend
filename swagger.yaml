@@ -539,6 +539,8 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "User not found"
+      security:
+      - api_key: []
   /user/update/{userId}:
     put:
       tags:
@@ -572,6 +574,8 @@ paths:
           description: "User not found"
         "500":
           description: "Server Error"
+      security:
+      - api_key: []
   /user/delete/{userId}:
     delete:
       tags:
@@ -595,6 +599,8 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Customer not found"
+      security:
+      - api_key: []
   /user/all:
     get:
       tags:
