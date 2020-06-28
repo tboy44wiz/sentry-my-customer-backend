@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
 require("dotenv").config();
-const { MONGOLAB_URI, API_PORT, FB_CLIENT_ID, FB_CLIENT_SECRET } = process.env;
+const { MONGOLAB_URI,FB_CLIENT_ID, FB_CLIENT_SECRET } = process.env;
 const app = express();
 
 const ejs = require("ejs");
@@ -123,7 +123,6 @@ app.use("*", (req, res) => {
   });
 });
 
-// const port = API_PORT || 5000;
 app.listen(process.env.PORT || 5000, () => {
   console.log(`app running on port: ` + port);
 });
