@@ -85,7 +85,14 @@ app.use(passport.initialize());
 passport.use(new Strategy({
   clientID: FB_CLIENT_ID,
   clientSecret: FB_CLIENT_SECRET,
-  callbackURL: `http://localhost:${API_PORT}/fb/return`
+  callbackURL: `http://localhost:${API_PORT}/login/fb_return`,
+  profileFields: [
+    'id',
+    'first_name',
+    'middle_name',
+    'last_name',
+    'displayName'
+  ],
 },
 function(accessToken, refreshToken, profile, cb) {
   return cb(null, profile);
@@ -100,15 +107,15 @@ passport.deserializeUser(function(obj, cb) {
 });
 
 app.use("/register", register);
-app.get('/login/fb_login', passport.authenticate('facebook')) // sign in with facebook
-app.get('/fb/return', //facebook signin callback
-  passport.authenticate('facebook', { failureRedirect: '/docs' }),
-  function(req, res) {
-    res.send({
-      message: "Login successful",
-      data: req.user
-    })
-  });  
+// app.get('/login/fb_login', passport.authenticate('facebook')) // sign in with facebook
+// app.get('/fb/return', //facebook signin callback
+//   passport.authenticate('facebook', { failureRedirect: '/docs' }),
+//   function(req, res) {
+//     res.send({
+//       message: "Login successful",
+//       data: req.user
+//     })
+//   });  
 app.use("/login", login);
 //app.use('/api', phone_call_api);
 
