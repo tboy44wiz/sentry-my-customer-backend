@@ -11,12 +11,12 @@
    router.get('/user/all', auth, users.all);
 
     // Retrieve a single User with user_id
-    router.get('/user/:user_id', users.getById);
+    router.get('/user/:user_id', auth, users.getById);
 
    // Update User Info with user_id
-   router.put('/user/update/:user_id', users.update);
+   router.put('/user/update/:user_id', auth, users.update);
 
     // Delete a User with user_id
-    router.delete('/user/delete/:user_id', users.delete);
+    router.delete('/user/delete/:user_id', auth,users.delete);
 
     module.exports = router;
