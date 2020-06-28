@@ -6,15 +6,19 @@ const Transaction = require("../models/transaction")
 
 exports.create = async (req,res)=>{
     // Add new message
-    Transaction.findById(req.params.transaction_id)
+    let transaction_id = req.body.transaction_id || req.params.transaction_id;
+
+    Transaction.findById(transaction_id)
         .then(trans => {
             if(!trans) return Response.failure(res, { error: true, message: 'Transaction could not be found...'}, HttpStatus.NOT_FOUND);
 
+            let { message, status, pay_date } = req.body;
+
             debt.create({
                 ts_ref_id: trans._id,
-                message: req.params.message,
-                status: req.params.status,
-                expected_pay_date: req.params.pay_date
+                message: message,
+                status: status,
+                expected_pay_date: pay_date
             })
             .then(resp => {
                 if(!resp) return Response.failure(res, { error: true, message: 'Debt Reminder could not be found...'}, HttpStatus.NOT_FOUND);
