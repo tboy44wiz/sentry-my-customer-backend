@@ -82,9 +82,9 @@ app.use("/login", login);
 app.use("/", phone_call_api);
 //This should be the last route else any after it won't work
 app.use(errorPage);
-const port = API_PORT || 5000;
-app.listen(port, () => {
-  console.log(`app running on port: ` + port);
+// const port = API_PORT || 5000;
+app.listen(process.env.PORT || 5000, () => {
+  console.log(`app running on port: `);
 });
 
 require("dotenv").config();
