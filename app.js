@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
 require("dotenv").config();
-const { MONGOLAB_URI } = process.env;
+const { MONGOLAB_URI, API_PORT} = process.env;
 const app = express();
 
 const ejs = require("ejs");
