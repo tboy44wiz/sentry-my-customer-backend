@@ -3,7 +3,7 @@ const axios=require('axios')
 require("dotenv").config();
 const { MONGOLAB_URI, API_PORT } = process.env;
 
-describe('All app', () => {
+describe('Customer endpoints', () => {
   let api_token;
   let customer_id;
 
