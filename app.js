@@ -123,8 +123,8 @@ app.use("*", (req, res) => {
   });
 });
 
-const port = API_PORT || 5000;
-app.listen(port, () => {
+// const port = API_PORT || 5000;
+app.listen(process.env.PORT || 5000, () => {
   console.log(`app running on port: ` + port);
 });
 
