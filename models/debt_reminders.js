@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const DebtReminder = new mongoose.Schema({
   phone_number: {
-    type: String,
+    type: Number,
     required: true,
     unique: true,
   },

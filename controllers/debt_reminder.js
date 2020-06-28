@@ -8,7 +8,7 @@ exports.create = async (req,res)=>{
     // Add new message
     let transaction_id = req.body.transaction_id || req.params.transaction_id;
     
-    let { phone_number } = req.user;  
+    let { phone_number } = req.user;
 
     Transaction.findById(transaction_id)
         .then(trans => {
