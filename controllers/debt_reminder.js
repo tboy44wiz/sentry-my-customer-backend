@@ -7,6 +7,8 @@ const Transaction = require("../models/transaction")
 exports.create = async (req,res)=>{
     // Add new message
     let transaction_id = req.body.transaction_id || req.params.transaction_id;
+    
+    let { phone_number } = req.user;
 
     Transaction.findById(transaction_id)
         .then(trans => {
@@ -15,6 +17,7 @@ exports.create = async (req,res)=>{
             let { message, status, pay_date } = req.body;
 
             debt.create({
+                phone_number: phone_number,
                 ts_ref_id: trans._id,
                 message: message,
                 status: status,
@@ -36,7 +39,9 @@ exports.create = async (req,res)=>{
 
 exports.getAll = async (req,res)=>{
     // Find all the messages
-    debt.find()
+    let { phone_number } = req.user;
+
+    debt.find({ phone_number })
         .then(resp => {
             if(!resp) return Response.failure(res, { error: true, message: resp}, HttpStatus.NOT_FOUND);
             return Response.success(res, { error: false, message: resp});
