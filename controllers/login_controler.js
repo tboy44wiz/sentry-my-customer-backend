@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bCrypt = require("bcryptjs");
 const joiValidator = require("../util/joi_validator");
+const passport = require("passport");
 
 const UserModel = require("../models/user");
 const CustomerModel = require("../models/customer");
@@ -161,5 +162,29 @@ module.exports.loginCustomer = async (req, res, next) => {
     });
 };
 
-//  Login User
+//Sign in with facebook
+module.exports.fbLogin = passport.authenticate('facebook');
+
+//Facebook sign in callback
+module.exports.fbLoginCallback = function (req, res) {
+  if ( !req.user ) {
+    res.status(401).send({
+      success: false,
+      message: "Login with facebook failed",
+      error: {
+        code: 401,
+        message: "Login failed"
+      }
+    });
+  } else {
+    res.status(200).send({
+      success: true,
+      message: "Login successful",
+      data: {
+        user: req.user._json
+      }
+    });
+  }
+}
+
 module.exports.login;
