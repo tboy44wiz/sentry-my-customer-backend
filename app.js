@@ -6,9 +6,9 @@ require("dotenv").config();
 const { MONGOLAB_URI, API_PORT, FB_CLIENT_ID, FB_CLIENT_SECRET } = process.env;
 const app = express();
 
-const ejs = require("ejs");
 var cors = require("cors");
 const documentation = require("./routes/documentation");
+const google = require("./routes/google");
 const customer = require("./routes/customer");
 const phone_verification = require("./routes/verify-phone-number");
 const example = require("./routes/example");
@@ -68,6 +68,7 @@ app.use(transactions);
 app.use(businessCards);
 app.use(store);
 app.use(complainRouter);
+app.use(google);
 app.use(user);
 app.use(docs);
 app.use("/register", register);
