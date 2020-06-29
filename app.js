@@ -27,7 +27,7 @@ const businessCards = require("./routes/businessCardRoute");
 const phone_call_api = require("./controllers/phone_call_api");
 
 // google login route
-const auth = require('./routes/oauth');
+const oauth = require('./routes/oauth');
 
 app.use(cors());
 app.use(expressValidator());
@@ -109,7 +109,7 @@ passport.deserializeUser(function (obj, cb) {
 app.use("/login", login);
 app.use(debt)
 app.use(phone_call_api);
-app.use('/auth', auth)
+app.use('/auth', oauth)
 
 //This should be the last route else any after it won't work
 app.use("*", (req, res) => {
