@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
 require("dotenv").config();
-const { MONGOLAB_URI } = process.env;
+const { MONGOLAB_URI, API_PORT} = process.env;
 const app = express();
 
 const ejs = require("ejs");
@@ -85,7 +85,7 @@ app.use("*", (req, res) => {
   });
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port:`, port);
+  console.log(`app running on port:`+ port);
 });
