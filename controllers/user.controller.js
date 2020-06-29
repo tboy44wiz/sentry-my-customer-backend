@@ -1,7 +1,21 @@
 const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const joiValidator = require('../util/joi_validator');
+const { body, validationResult } = require('express-validator/check');
+
+exports.validate = (method) => {
+    switch (method) {
+        case 'body': {
+            return [
+                body('phone_number').isInt(),
+                body('first_name').isLength({ min: 3 }),
+                body('last_name').isLength({ min: 3 }),
+                body('email').matches(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, "i"),
+                body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+            ]
+        }
+    }
+}
 
 ///#region Get all Users.
 exports.all = (req, res) => {
@@ -21,41 +35,22 @@ exports.all = (req, res) => {
 exports.new = async (req, res) => {
     const { first_name, last_name, email, password, phone_number } = req.body;
 
-    // Request that is sent
-    const reqBody = {
-        first_name, 
-        last_name, 
-        email, 
-        password, 
-        phone_number
-    }
-
-    // Validate Request body sent
-    const { error, value } = await joiValidator.userRegistrationValidator.validate(reqBody);
-
-    // Check Validation Error
-    if (error) {
-        return res.status(400).json({
-            error: error.details[0].message
-        });
-    }
-
     //  Create a Token that will be passed as the "api_token"
     const token = await jwt.sign({
-        name: value.first_name + value.last_name,
-        phone_number: value.phone_number,
-        email: value.email,
+        name: first_name + last_name,
+        phone_number: phone_number,
+        email: email,
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
 
 
     const newUser = new User({
-        phone_number: value.phone_number,
-        first_name: value.first_name,
-        last_name: value.last_name,
-        email: value.email,
-        password: value.password,
+        phone_number: phone_number,
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
+        password: password,
         token: token
     })
 

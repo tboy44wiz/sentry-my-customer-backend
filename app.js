@@ -12,9 +12,6 @@ const documentation = require("./routes/documentation");
 const customer = require("./routes/customer");
 const phone_verification = require("./routes/verify-phone-number");
 const example = require("./routes/example");
-//const phone_call_api = require('./controllers/phone_call_api');
-//require('./routes/transactions.js')(app);
-
 const messagingAPI = require("./routes/messaging");
 const mongoose = require("mongoose");
 const transactions = require("./routes/transaction");
@@ -23,7 +20,6 @@ const register = require("./routes/register_route");
 const login = require("./routes/login_route");
 const emailAPI = require("./routes/sendMail");
 const complainRouter = require("./routes/complaint");
-
 const docs = require("./routes/docs");
 const user = require("./routes/user");
 const businessCards = require("./routes/businessCardRoute");
@@ -73,12 +69,7 @@ app.use(store);
 app.use(complainRouter);
 app.use(user);
 app.use(docs);
-/**
- * phone call api route below
- *
- * A post request should  be made to localhost:5000/api/v1/call
- *
- */
+app.use("/register", register);
 
 // CONFIGURE FACEBOOK SIGNIN
 app.use(passport.initialize());
@@ -106,23 +97,23 @@ passport.deserializeUser(function(obj, cb) {
   cb(null, obj);
 });
 
-app.use("/register", register);
-
 app.use("/login", login);
-//app.use('/api', phone_call_api);
-
-app.use("/", phone_call_api);
+app.use(debt)
+app.use(phone_call_api);
 
 //This should be the last route else any after it won't work
 app.use("*", (req, res) => {
-  res.status(400).json({
-    message: "Page not found"
+  res.status(404).json({
+    success: "false",
+    message: "Page not found",
+    error:{
+      statusCode: 404,
+      message: "You reached a route that is not defined on this server"
+    }
   });
 });
 
-const port = API_PORT || 5000;
+const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port: ` + port);
+  console.log(`app running on port:`+ port);
 });
-
-require("dotenv").config();
