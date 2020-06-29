@@ -2,14 +2,9 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
-const passport = require('passport');
 require("dotenv").config();
-const { MONGOLAB_URI, API_PORT } = process.env;
+const { MONGOLAB_URI, API_PORT, FB_CLIENT_ID, FB_CLIENT_SECRET } = process.env;
 const app = express();
-
-app.use(passport.initialize());
-
-require('./util/passport')(passport);
 
 const ejs = require("ejs");
 var cors = require("cors");
@@ -36,6 +31,12 @@ const auth = require('./routes/auth');
 
 app.use(cors());
 app.use(expressValidator());
+const passport = require("passport");
+const Strategy = require('passport-facebook').Strategy;
+
+app.use(passport.initialize());
+
+require('./util/passport')(passport);
 
 mongoose.Promise = global.Promise;
 
@@ -78,6 +79,33 @@ app.use(complainRouter);
 app.use(user);
 app.use(docs);
 app.use("/register", register);
+
+// CONFIGURE FACEBOOK SIGNIN
+app.use(passport.initialize());
+passport.use(new Strategy({
+  clientID: FB_CLIENT_ID,
+  clientSecret: FB_CLIENT_SECRET,
+  callbackURL: `http://localhost:${API_PORT}/login/fb_login`,
+  profileFields: [
+    'id',
+    'first_name',
+    'middle_name',
+    'last_name',
+    'displayName'
+  ],
+},
+  function (accessToken, refreshToken, profile, cb) {
+    return cb(null, profile);
+  }));
+
+passport.serializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function (obj, cb) {
+  cb(null, obj);
+});
+
 app.use("/login", login);
 app.use(debt)
 app.use(phone_call_api);

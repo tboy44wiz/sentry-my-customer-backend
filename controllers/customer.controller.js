@@ -1,5 +1,6 @@
 const Customer = require("../models/customer");
-const { body, validationResult } = require('express-validator/check');
+const UserModel = require("../models/user");
+const { body } = require('express-validator/check');
 
 exports.validate = (method) => {
     switch (method) {
@@ -13,11 +14,6 @@ exports.validate = (method) => {
 }
 
 exports.create = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return res.status(422).json({ status: "fail", errors: errors.array() });
-  }
-
   const customer = new Customer({
     name: req.body.name,
     phone_number: req.body.phone,
@@ -26,11 +22,14 @@ exports.create = async (req, res) => {
   const result = await customer.save();
 
   res.status(200).json({
-    status: "success",
+    status: true,
+    message: "Customer was created",
     data: {
-      id: customer._id,
-      name: customer.name,
-      phone: customer.phone_number,
+      customer: {
+        id: customer._id,
+        name: customer.name,
+        phone: customer.phone_number,
+      }
     },
   });
 };
@@ -40,34 +39,40 @@ exports.getById = (req, res) => {
     Customer.findById(req.params.customerId, (error, customer) => {
       if (error) {
         res.status(404).send({
-          status: "fail",
+          status: false,
           message: error.message,
+          error: {
+            code: 404,
+            message: error.message
+          }
         });
       } else {
         res.status(200).json({
-          status: "success",
+          status: true,
+          message: "Customer was found",
           data: {
-            id: customer._id,
-            name: customer.name,
-            phone: customer.phone_number,
-          },
+            customer: {
+              id: customer._id,
+              name: customer.name,
+              phone: customer.phone_number,
+            }
+          }
         });
       }
     });
   } catch (error) {
     res.status(500).json({
-      status: "fail",
+      status: false,
       message: error.message,
+      error: {
+        code: 500,
+        message: error.message
+      }
     });
   }
 };
 
 exports.updateById = (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ status: "fail", errors: errors.array() });
-  }
-
   Customer.updateOne({ _id: req.params.customerId }, { $set: {
     name: req.body.name,
     phone_number: req.body.phone,
@@ -75,17 +80,25 @@ exports.updateById = (req, res) => {
     .exec()
     .then((result) => {
       res.status(200).json({
-        status: "success",
+        status: true,
+        message: "Customer was updated",
         data: {
-          id: req.params.customerId,
-          name: req.body.name,
-          phone: req.body.phone,
-        },
+          customer: {
+            id: req.params.customerId,
+            name: req.body.name,
+            phone: req.body.phone,
+          }
+        }
       });
     })
-    .catch((err) => {
+    .catch((error) => {
       res.status(500).json({
-        error: err,
+        status: false,
+        message: error.message,
+        error: {
+          code: 500,
+          message: error.message
+        }
       });
     });
 };
@@ -95,29 +108,40 @@ exports.deleteById = (req, res) => {
     Customer.findByIdAndDelete(req.params.customerId, (error, customer) => {
       if (error) {
         res.status(404).json({
-          status: "fail",
+          status: false,
           //message: error.message,
         });
       } else if (!customer) {
         res.status(404).json({
-          status: "fail",
-          message: "Not found",
+          status: false,
+          message: "Customer not found",
+          error: {
+            code: 404,
+            message: "Customer not found"
+          }
         });
       } else {
         res.status(200).json({
-          status: "success",
+          status: true,
+          message: "Customer was deleted",
           data: {
-            id: customer._id,
-            name: customer.name,
-            phone: customer.phone_number,
+            customer: {
+              id: customer._id,
+              name: customer.name,
+              phone: customer.phone_number,
+            }
           },
         });
       }
     });
   } catch (error) {
     res.status(500).json({
-      status: "fail",
+      status: false,
       message: error.message,
+      error: {
+        code: 500,
+        message: error.message
+      }
     });
   }
 };
@@ -128,18 +152,31 @@ exports.getAll = async (req, res) => {
       createdAt: -1,
     });
     if (!customers) {
-      return next(new Error("Something went wrong"));
+      res.status(404).json({
+        status: false,
+        message: "Customers not found",
+        error: {
+          code: 404,
+          message: "Customers not found"
+        }
+      });
     }
 
     res.status(200).json({
-      status: "success",
-      result: customers.length,
-      data: customers,
+      status: true,
+      message: "Customers",
+      data: {
+        customers: customers
+      }
     });
   } catch (error) {
     res.status(500).json({
-      status: "fail",
+      status: false,
       message: error.message,
+      error: {
+        code: 500,
+        message: error.message
+      }
     });
   }
 };

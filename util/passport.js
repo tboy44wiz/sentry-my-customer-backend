@@ -9,7 +9,7 @@ module.exports = (passport) => {
         callbackURL: `http://localhost:${API_PORT}/auth/google/callback`
     },
         async (accessToken, refreshToken, profile, done) => {
-            console.log(profile);
+            done(null, profile)
         }))
 
     passport.serializeUser((user, done) => done(null, user));
