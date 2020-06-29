@@ -1,4 +1,5 @@
 const Customer = require("../models/customer");
+const UserModel = require("../models/user");
 const { body } = require('express-validator/check');
 
 exports.validate = (method) => {
