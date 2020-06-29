@@ -22,12 +22,13 @@ const emailAPI = require("./routes/sendMail");
 const complainRouter = require("./routes/complaint");
 const docs = require("./routes/docs");
 const user = require("./routes/user");
+const debt = require('./routes/debt_reminder');
 const businessCards = require("./routes/businessCardRoute");
 const phone_call_api = require("./controllers/phone_call_api");
-const passport = require("passport");
-const Strategy = require('passport-facebook').Strategy;
 app.use(cors());
 app.use(expressValidator());
+const passport = require("passport");
+const Strategy = require('passport-facebook').Strategy;
 
 mongoose.Promise = global.Promise;
 
