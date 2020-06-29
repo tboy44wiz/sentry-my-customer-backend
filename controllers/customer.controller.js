@@ -21,15 +21,12 @@ exports.create = async (req, res) => {
 
   const result = await customer.save();
 
-  res.status(200).json({
+  res.status(201).json({
     status: true,
     message: "Customer was created",
     data: {
-      customer: {
-        id: customer._id,
-        name: customer.name,
-        phone: customer.phone_number,
-      }
+      statusCode: 201,
+      customer: customer
     },
   });
 };
@@ -51,11 +48,7 @@ exports.getById = (req, res) => {
           status: true,
           message: "Customer was found",
           data: {
-            customer: {
-              id: customer._id,
-              name: customer.name,
-              phone: customer.phone_number,
-            }
+            customer
           }
         });
       }
