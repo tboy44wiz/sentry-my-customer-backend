@@ -57,16 +57,19 @@ describe('Customer endpoints', () => {
 
     expect(res.data).toEqual(
       expect.objectContaining({
-        status: "success",
-        data: expect.objectContaining({
-          id: expect.any(String),
-          name: "namet",
-          phone: 888888
-        }),
+        status: true,
+        message: "Customer was created",
+        data: {
+          customer: {
+            id: expect.any(String),
+            name: "namet",
+            phone: 888888
+          }
+        }
       }),
     );
 
-    customer_id = res.data.data.id
+    customer_id = res.data.data.customer.id
 
     done()
   });
@@ -78,12 +81,15 @@ describe('Customer endpoints', () => {
 
     expect(res.data).toEqual(
       expect.objectContaining({
-        status: "success",
-        data: expect.objectContaining({
-          id: customer_id,
-          name: "namet",
-          phone: 888888
-        }),
+        status: true,
+        message: "Customer was found",
+        data: {
+          customer: {
+            id: customer_id,
+            name: "namet",
+            phone: 888888
+          }
+        },
       }),
     );
 
@@ -100,12 +106,15 @@ describe('Customer endpoints', () => {
 
     expect(res.data).toEqual(
       expect.objectContaining({
-        status: "success",
-        data: expect.objectContaining({
-          id: customer_id,
-          name: "namet",
-          phone: "999"
-        }),
+        status: true,
+        message: "Customer was updated",
+        data: {
+          customer: {
+            id: customer_id,
+            name: "namet",
+            phone: "999"
+          }
+        }
       }),
     );
 
@@ -119,12 +128,15 @@ describe('Customer endpoints', () => {
 
     expect(res.data).toEqual(
       expect.objectContaining({
-        status: "success",
-        data: expect.objectContaining({
-          id: customer_id,
-          name: "namet",
-          phone: 999
-        }),
+        status: true,
+        message: "Customer was deleted",
+        data: {
+          customer: {
+            id: customer_id,
+            name: "namet",
+            phone: 999
+          }
+        },
       }),
     );
 
@@ -138,14 +150,15 @@ describe('Customer endpoints', () => {
 
     expect(res.data).toEqual(
       expect.objectContaining({
-        status: "success",
-        result: res.data.data.length,
-        data: expect.any(Array)
-        /*expect.toContain(),*/
+        status: true,
+        message: "Customers",
+        data: {
+          customers: expect.any(Array)
+        }
       }),
     );
 
-    res.data.data.forEach(element => {
+    res.data.data.customers.forEach(element => {
       expect(element).toEqual(
         expect.objectContaining({
           _id: expect.any(String),
