@@ -1,19 +1,33 @@
 const jwt = require("jsonwebtoken");
 const bCrypt = require('bcryptjs');
+const { body } = require('express-validator/check');
 
 const UserModel = require('../models/user');
 const CustomerModel = require('../models/customer');
 
+exports.validate = (method) => {
+  switch (method) {
+      case 'body': {
+          return [
+              body('phone_number').isInt(),
+              body('first_name').isLength({ min: 3 }),
+              body('last_name').isLength({ min: 3 }),
+              body('email').matches(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, "i"),
+              body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+          ]
+      }
+  }
+}
+
 //  Register User
 module.exports.registerUser = async (req, res, next) => {
-    try {
-		const { email, first_name, is_active, last_name, password, phone_number, user_role } = req.body;
+    const { email, first_name, last_name, password, phone_number } = req.body;
 
     //  Create a Token that will be passed as the "api_token"
-    const apiToken = await jwt.sign({
+    const token = await jwt.sign({
+        name: first_name + last_name,
         phone_number: phone_number,
         email: email,
-        user_role: user_role,
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
@@ -25,11 +39,10 @@ module.exports.registerUser = async (req, res, next) => {
         first_name: first_name,
         last_name: last_name,
         email: email,
-        is_active: is_active,
         password: password,
-        api_token: apiToken,
-        user_role: user_role,
+        api_token: token
     });
+
     //  Encrypt the Password
     user.password = await bCrypt.hash(user.password, 12);
 
@@ -55,8 +68,7 @@ module.exports.registerUser = async (req, res, next) => {
                                 first_name: result.first_name, 
                                 last_name: result.last_name, 
                                 email: result.email, 
-                                is_active: result.is_active, 
-                                password: result.password, 
+                                is_active: result.is_active,
                                 api_token: result.api_token, 
                                 user_role: result.user_role,
                             },
@@ -76,27 +88,33 @@ module.exports.registerUser = async (req, res, next) => {
                 Error: error,
             });
         });
-	} catch (error) {
-    res.status(500).send({
-      status: "fail",
-      message: error.message || "Some error occurred while creating the transaction.",
-    });
-  }
 };
-
 
 //  Register Customer
 module.exports.registerCustomer = async (req, res, next) => {
     const { name, phone_number } = req.body;
 
+    const reqBody = {
+        phone_number: phone_number,
+        name: name,
+    };
+
+
+    //Validate the "reqBody" object using joiValidator function imported.
+    const {error, value} = await joiValidator.customerValidator.validate(reqBody);
+    //  Check if there is any validation error.
+    if (error) {
+        return res.status(400).json({
+            Error: error.details[0].message,
+        });
+    }
 
     //  Get instance of the
     const customer = new CustomerModel({
-        name: name,
-        phone_number: phone_number,
+        name: value.name,
+        phone_number: value.phone_number,
         /*store_ref_code: store_ref_code,*/
     });
-    console.log(`USER_DETAIL::: ${customer}`);
 
     //  Check if User PhoneNumber already exist.
     await UserModel.findOne({ phone_number: customer.phone_number })
