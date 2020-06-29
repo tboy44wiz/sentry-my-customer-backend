@@ -2,9 +2,14 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
+const passport = require('passport');
 require("dotenv").config();
-const { MONGOLAB_URI, API_PORT} = process.env;
+const { MONGOLAB_URI, API_PORT } = process.env;
 const app = express();
+
+app.use(passport.initialize());
+
+require('./util/passport')(passport);
 
 const ejs = require("ejs");
 var cors = require("cors");
@@ -25,6 +30,10 @@ const user = require("./routes/user");
 const debt = require('./routes/debt_reminder');
 const businessCards = require("./routes/businessCardRoute");
 const phone_call_api = require("./controllers/phone_call_api");
+
+// google login route
+const auth = require('./routes/auth');
+
 app.use(cors());
 app.use(expressValidator());
 
@@ -72,13 +81,14 @@ app.use("/register", register);
 app.use("/login", login);
 app.use(debt)
 app.use(phone_call_api);
+app.use('/auth', auth)
 
 //This should be the last route else any after it won't work
 app.use("*", (req, res) => {
   res.status(404).json({
     success: "false",
     message: "Page not found",
-    error:{
+    error: {
       statusCode: 404,
       message: "You reached a route that is not defined on this server"
     }
@@ -87,5 +97,5 @@ app.use("*", (req, res) => {
 
 const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port:`+ port);
+  console.log(`app running on port:` + port);
 });
