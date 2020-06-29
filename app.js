@@ -25,18 +25,10 @@ const user = require("./routes/user");
 const debt = require('./routes/debt_reminder');
 const businessCards = require("./routes/businessCardRoute");
 const phone_call_api = require("./controllers/phone_call_api");
-
-// google login route
-const oauth = require('./routes/oauth');
-
 app.use(cors());
 app.use(expressValidator());
 const passport = require("passport");
 const Strategy = require('passport-facebook').Strategy;
-
-app.use(passport.initialize());
-
-require('./util/google_passport')(passport);
 
 mongoose.Promise = global.Promise;
 
@@ -94,29 +86,28 @@ passport.use(new Strategy({
     'displayName'
   ],
 },
-  function (accessToken, refreshToken, profile, cb) {
-    return cb(null, profile);
-  }));
+function(accessToken, refreshToken, profile, cb) {
+  return cb(null, profile);
+}));
 
-passport.serializeUser(function (user, cb) {
+passport.serializeUser(function(user, cb) {
   cb(null, user);
 });
 
-passport.deserializeUser(function (obj, cb) {
+passport.deserializeUser(function(obj, cb) {
   cb(null, obj);
 });
 
 app.use("/login", login);
 app.use(debt)
 app.use(phone_call_api);
-app.use('/auth', oauth)
 
 //This should be the last route else any after it won't work
 app.use("*", (req, res) => {
   res.status(404).json({
     success: "false",
     message: "Page not found",
-    error: {
+    error:{
       statusCode: 404,
       message: "You reached a route that is not defined on this server"
     }
@@ -125,5 +116,5 @@ app.use("*", (req, res) => {
 
 const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port:` + port);
+  console.log(`app running on port:`+ port);
 });
