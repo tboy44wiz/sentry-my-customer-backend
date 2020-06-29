@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const Customer = mongoose.Schema({
-  store_ref_code: { type: Schema.Types.ObjectId, ref: 'store' },
+  user_ref_id: { type: Schema.Types.ObjectId, ref: 'user' },
   name: { type: String, required: true},
   phone_number: { type: Number, required: true}
 }, { timestamps: true})
