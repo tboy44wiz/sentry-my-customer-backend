@@ -874,6 +874,24 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Complaints not found"
+  /auth/google:
+    get:
+      tags:
+      - "Google"
+      summary: "List of User google account"
+      description: ""
+      operationId: "get all user account related to google"
+      produces:
+      - "text/html"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+           type: "html like page"
+           items:
+            $ref: "#/definitions/Google"
+        "401":
+          description: "unauthorized"
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -1032,6 +1050,10 @@ definitions:
         type: "string"
       status:
         type: "string"
+  Google:
+    type: "object"
+    required:
+    - "message"
 externalDocs:
   description: "Find out more about dev.customerpay.me"
   url: "https://dev.customerpay.me"
