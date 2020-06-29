@@ -27,7 +27,7 @@ const businessCards = require("./routes/businessCardRoute");
 const phone_call_api = require("./controllers/phone_call_api");
 
 // google login route
-const auth = require('./routes/auth');
+const auth = require('./routes/oauth');
 
 app.use(cors());
 app.use(expressValidator());
