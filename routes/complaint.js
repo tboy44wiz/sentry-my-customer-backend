@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const authController = require('../auth/auth')
 const complaintsController = require("../controllers/complaints.controller");
-
 const auth = require("../auth/auth");
+
 // Get all complaints
 router.get("/complaint/all", auth, complaintsController.findAll);
 
@@ -11,9 +10,9 @@ router.get("/complaint/all", auth, complaintsController.findAll);
 router.put("/complaint/update/:id", auth, complaintsController.update);
 
 // Create a new complaint
-router.post("/complaint/new", authController, complaintsController.newComplaint);
+router.post("/complaint/new", auth, complaintsController.newComplaint);
 
 // Delete a complaint
-router.delete("/complaint/delete/:id", complaintsController.deleteOne);
+router.delete("/complaint/delete/:id", auth, complaintsController.deleteOne);
 
 module.exports = router;
