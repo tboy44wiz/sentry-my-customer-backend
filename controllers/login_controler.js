@@ -160,7 +160,6 @@ module.exports.loginCustomer = async (req, res, next) => {
 //Sign in with facebook
 module.exports.fbLogin = passport.authenticate('facebook');
 
-//Facebook sign in callback
 module.exports.fbLoginCallback = function (req, res) {
   if ( !req.user ) {
     res.status(401).send({

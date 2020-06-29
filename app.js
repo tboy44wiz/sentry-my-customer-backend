@@ -77,7 +77,7 @@ app.use(passport.initialize());
 passport.use(new Strategy({
   clientID: FB_CLIENT_ID,
   clientSecret: FB_CLIENT_SECRET,
-  callbackURL: `http://localhost:${API_PORT}/login/fb_return`,
+  callbackURL: `http://localhost:${API_PORT}/login/fb_login`,
   profileFields: [
     'id',
     'first_name',
