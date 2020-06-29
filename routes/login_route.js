@@ -10,4 +10,7 @@ router.post('/user', LoginController.validate('login'), bodyValidator, LoginCont
 //Customer registration route
 router.post('/customer', LoginController.loginCustomer);
 
+//Facebook sign in
+router.get('/fb_login', LoginController.fbLogin, LoginController.fbLoginCallback)
+
 module.exports = router;
