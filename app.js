@@ -36,7 +36,7 @@ const Strategy = require('passport-facebook').Strategy;
 
 app.use(passport.initialize());
 
-require('./util/passport')(passport);
+require('./util/google_passport')(passport);
 
 mongoose.Promise = global.Promise;
 
