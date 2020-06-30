@@ -9,9 +9,9 @@ const app = express();
 var cors = require("cors");
 const documentation = require("./routes/documentation");
 const google = require("./routes/google");
+const facebook = require("./routes/facebook");
 const customer = require("./routes/customer");
 const phone_verification = require("./routes/verify-phone-number");
-const example = require("./routes/example");
 const messagingAPI = require("./routes/messaging");
 const mongoose = require("mongoose");
 const transactions = require("./routes/transaction");
@@ -27,8 +27,6 @@ const businessCards = require("./routes/businessCardRoute");
 const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
 app.use(expressValidator());
-const passport = require("passport");
-const Strategy = require('passport-facebook').Strategy;
 
 mongoose.Promise = global.Promise;
 
@@ -69,35 +67,10 @@ app.use(businessCards);
 app.use(store);
 app.use(complainRouter);
 app.use(google);
+app.use(facebook);
 app.use(user);
 app.use(docs);
 app.use("/register", register);
-
-// CONFIGURE FACEBOOK SIGNIN
-app.use(passport.initialize());
-passport.use(new Strategy({
-  clientID: FB_CLIENT_ID,
-  clientSecret: FB_CLIENT_SECRET,
-  callbackURL: `http://localhost:${API_PORT}/login/fb_login`,
-  profileFields: [
-    'id',
-    'first_name',
-    'middle_name',
-    'last_name',  
-    'displayName'
-  ],
-},
-function(accessToken, refreshToken, profile, cb) {
-  return cb(null, profile);
-}));
-
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
 
 app.use("/login", login);
 app.use(debt)

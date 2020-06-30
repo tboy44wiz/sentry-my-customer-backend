@@ -1,5 +1,3 @@
-const Response = require("../util/response_manager");
-const HttpStatus = require("../util/http_status");
 const Transaction = require("../models/transaction");
 const CustomerModel = require("../models/customer");
 const UserModel = require("../models/user");
@@ -45,7 +43,8 @@ exports.create = async(req, res, next) => {
         user_ref_id = user._id;
       })
       .catch((err) => {
-        res.status(404).json({
+        res.status(404).send({
+          success: false,
           message: "User not found",
           error: err,
         });
@@ -58,7 +57,8 @@ exports.create = async(req, res, next) => {
         customer_ref_id = data._id;
       })
       .catch((err) => {
-        res.status(404).json({
+        res.status(404).send({
+          success: false,
           message: "invalid phone number",
           error: err,
         });
@@ -70,8 +70,10 @@ exports.create = async(req, res, next) => {
         store_ref_id = data._id;
       })
       .catch((err) => {
-        res.status(404).json({
+        res.status(404).send({
+          success: false,
           message: "Store not found",
+          error: err
         });
       });
     setTimeout(() => {
@@ -88,21 +90,27 @@ exports.create = async(req, res, next) => {
       })
         .save()
         .then((result) => {
-          res.status(200).json({
-            status: "success",
-            result,
+          res.status(200).send({
+            success: true,
+            message: "Record created",
+            data: {
+              result
+            }
           });
         })
         .catch((err) => {
-          res.status(409).json({
-            error:
-              "Error creating transaction details with the same transaction name or role as previously saved data",
+          res.status(409).send({
+            success: false,
+            message: "Error creating transaction details with the same transaction name or role as previously saved data",
+            error: err
           });
         });
     }, 1500);
   } catch (error) {
-    res.status(500).json({
-      message: "something went wrong",
+    res.status(500).send({
+      success: false,
+      message: error.message || "Server error",
+      error
     });
   }
 };
@@ -137,19 +145,26 @@ exports.findAll = async (req, res, next) => {
 
     Transaction.find(query)
       .then((transactions) => {
-        res.send(transactions);
+        res.status(200).send({
+          success: true,
+          message: 'Records loaded',
+          data: {
+            transactions
+          }
+        });
       })
       .catch((err) => {
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving transactions.",
+          success: false,
+          message: err.message || "Some error occurred while retrieving transactions.",
+          error: err
         });
       });
   } catch (error) {
     res.status(500).send({
-      status: "fail",
-      message:
-        error.message || "Some error occurred while creating the transaction.",
+      success: false,
+      message: error.message || "Some error occurred while retrieving transactions.",
+      error: error
     });
   }
 };
@@ -191,29 +206,40 @@ exports.findOne = async (req, res, next) => {
       .then((transaction) => {
         if (!transaction) {
           return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
+            success: false,
+            message: "Transaction not found with id " + req.params.transaction_id,
+            error: {
+              message: "Transaction not found with id " + req.params.transaction_id
+            }
           });
         }
-        res.send(transaction);
+        res.status(200).send({
+          success: true,
+          message: 'Record loaded',
+          data: {
+            transaction
+          }
+        });
       })
       .catch((err) => {
         if (err.kind === "ObjectId") {
           return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
+            success: false,
+            message: "Transaction not found with id " + req.params.transaction_id,
+            error:err
           });
         }
         return res.status(500).send({
-          message:
-            "Error retrieving transaction with id " + req.params.transaction_id,
+          success: false,
+          message: "Error retrieving transaction with id " + req.params.transaction_id,
+          error:err
         });
       });
   } catch (error) {
     res.status(500).send({
-      status: "fail",
-      message:
-        error.message || "Some error occurred while creating the transaction.",
+      success: false,
+      message: err.message || "Some error occurred while retrieving transactions.",
+      error: error
     });
   }
 };
@@ -224,7 +250,11 @@ exports.update = async (req, res, next) => {
     // Validate Request
     if (!req.body) {
       return res.status(400).send({
+        success: false,
         message: "Transaction content can not be empty",
+        error: {
+          message: "Transaction content can not be empty"
+        }
       });
     }
 
@@ -269,8 +299,11 @@ exports.update = async (req, res, next) => {
       .then((transaction) => {
         if (!transaction) {
           return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
+            success: false,
+            message: "Transaction not found with id " + req.params.transaction_id,
+            error: {
+              message: "Transaction not found with id " + req.params.transaction_id
+            }
           });
         }
         res.send(transaction);
@@ -278,20 +311,22 @@ exports.update = async (req, res, next) => {
       .catch((err) => {
         if (err.kind === "ObjectId") {
           return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
+            success: false,
+            message: "Transaction not found with id " + req.params.transaction_id,
+            error: err
           });
         }
         return res.status(500).send({
-          message:
-            "Error updating transaction with id " + req.params.transaction_id,
+          success: false,
+          message: "Error updating transaction with id " + req.params.transaction_id,
+          error: err
         });
       });
   } catch (error) {
     res.status(500).send({
-      status: "fail",
-      message:
-        error.message || "Some error occurred while creating the transaction.",
+      success: false,
+      message: error.message || "Some error occurred while creating the transaction.",
+      error
     });
   }
 };
@@ -303,8 +338,11 @@ exports.delete = async (req, res, next) => {
       .then((transaction) => {
         if (!transaction) {
           return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
+            success: false,
+            message: "Transaction not found with id " + req.params.transaction_id,
+            error: {
+              message: "Transaction not found with id " + req.params.transaction_id
+            }
           });
         }
         res.send({
@@ -314,20 +352,22 @@ exports.delete = async (req, res, next) => {
       .catch((err) => {
         if (err.kind === "ObjectId" || err.name === "NotFound") {
           return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
+            success: false,
+            message: "Transaction not found with id " + req.params.transaction_id,
+            error: err
           });
         }
         return res.status(500).send({
-          message:
-            "Could not delete transaction with id " + req.params.transaction_id,
+          success: false,
+          message: "Could not delete transaction with id " + req.params.transaction_id,
+          error: err
         });
       });
   } catch (error) {
     res.status(500).send({
-      status: "fail",
-      message:
-        error.message || "Some error occurred while creating the transaction.",
+      success: false,
+      message: error.message || "Some error occurred while creating the transaction.",
+      error
     });
   }
 };
