@@ -53,6 +53,8 @@ describe('Customer endpoints', () => {
     let res = await axios.post(`http://localhost:${API_PORT}/customer/new`, {
       "name": "namet",
       "phone": "888888"
+    }, {
+      headers: {"x-access-token": api_token}
     });
 
     expect(res.data).toEqual(
@@ -60,16 +62,21 @@ describe('Customer endpoints', () => {
         status: true,
         message: "Customer was created",
         data: {
+          statusCode: 201,
           customer: {
-            id: expect.any(String),
-            name: "namet",
-            phone: 888888
+            "__v": 0,
+            "_id": expect.any(String),
+            "createdAt": expect.any(String),
+            "email": "Not set",
+            "name": "namet",
+            "phone_number": 888888,
+            "updatedAt": expect.any(String)
           }
         }
       }),
     );
 
-    customer_id = res.data.data.customer.id
+    customer_id = res.data.data.customer._id
 
     done()
   });
@@ -85,9 +92,13 @@ describe('Customer endpoints', () => {
         message: "Customer was found",
         data: {
           customer: {
-            id: customer_id,
-            name: "namet",
-            phone: 888888
+            "__v": 0,
+            "_id": customer_id,
+            "createdAt": expect.any(String),
+            "email": "Not set",
+            "name": "namet",
+            "phone_number": 888888,
+            "updatedAt": expect.any(String)
           }
         },
       }),

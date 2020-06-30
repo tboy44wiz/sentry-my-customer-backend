@@ -56,22 +56,34 @@ module.exports.loginUser = async (req, res, next) => {
                 },
               });
             } else {
-              res.json({
+              res.status(401).json({
+                success: false,
                 message: "Invalid Password.",
-                status: false,
+                error: {
+                  code: 401,
+                  message: "Invalid Passwordr."
+                }
               });
             }
           })
           .catch((error) => {
             res.status(500).json({
-              Error: error,
-              status: "fail"
+              success: false,
+              message: "Invalid Password.",
+              error: {
+                code: 500,
+                message: "Invalid Password."
+              }
             });
           });
       } else {
-        res.json({
-          Message: "Invalid phone number.",
-          Status: false,
+        res.status(401).json({
+          success: false,
+          message: "Invalid phone number.",
+          error: {
+            code: 401,
+            message: "Invalid phone number."
+          }
         });
       }
     })
