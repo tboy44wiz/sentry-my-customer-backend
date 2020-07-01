@@ -1,69 +1,83 @@
 const Store = require("./../models/store");
 const UserModel = require("../models/store_admin");
+const { body } = require('express-validator/check');
 
-exports.createStore = async (req, res, next) => {
-  console.log("here")
-  if (
-    req.body.store_name === "" || req.body.shop_address === "") {
-    return res.status(500).json({
-      status: "fail",
-      message: error.message,
-    });
+exports.validate = (method) => {
+  switch (method) {
+    case 'body': {
+      return [
+        body('store_name').isLength({ min: 3 }),
+        body('shop_address').isLength({ min: 3 })
+      ]
+    }
   }
+}
+
+exports.createStore = async (req, res) => {
   try {
     const id = req.params.current_user;
-    console.log(id)
     const storeOwner = await UserModel.findById(id);
     if (storeOwner) {
-     storeOwner.stores.push({
-       store_name: req.body.store_name,
-       shop_address: req.body.shop_address
-     })
-     storeOwner.save().catch(error =>{
-        res.send(error)
-     }).then(store =>{
-        res.status(201).json({
-          success: true,
-          message: "Store added successfully",
-          data: {
-            statusCode: 201,
-            store: store
-          }
-        })
-     })
+      const store = new Store({
+        store_name: req.body.store_name,
+        shop_address: req.body.shop_address,
+        store_admin: id
+      })
+      await store.save();
+      res.status(201).json({
+        success: true,
+        message: "Store added successfully",
+        data: {
+          statusCode: 201,
+          store: store
+        }
+      })
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+        error:{
+          code: 404,
+          message: "User not found"
+        }
+      });
     }
   } catch (error) {
     res.status(400).json({
       success: false,
       message: error.message,
       error:{
-
+        code: 400,
+        message: error.message
       }
     });
   }
 };
 
-exports.getAllStores = async (req, res, next) => {
+exports.getAllStores = async (req, res) => {
   //current user's id to find user
   const id = req.params.current_user;
   try {
     const store_admin = await UserModel.findById(id)
     if (!store_admin) {
       return res.status(404).json({
-        status: "fail",
-        message: "Something went wrong",
+        success: false,
+        message: error.message,
+        error:{
+          code: 400,
+          message: error.message
+        }
       });
-    }else{
-      let stores = store_admin.stores;
+    } else {
+      const stores = await Store.find({store_admin: req.params.current_user});
       res.status(200).json({
-        status: "success",
-        result: stores.length,
-        message: "Here are all your stores",
+        success: true,
+        message: "Stores",
         data: {
           statusCode: 200,
-          stores
-        },
-      });
+          stores: stores
+        }
+      })
     }
   } catch (error) {
     res.status(500).json({
