@@ -164,7 +164,7 @@ exports.update = async (req, res) => {
 
         // Update User
         user = await User.findByIdAndUpdate(req.params.assistant_id,
-            { $set: {local: userFields} },
+            { $set: {assistants: userFields} },
             { new: true });
 
         // Send updated user details   
