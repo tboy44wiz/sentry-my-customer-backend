@@ -66,8 +66,6 @@ module.exports.registerUser = async (req, res, next) => {
                                 user: result
                             }
                         });
-
-                        //  TODO Redirect to the OTP Activation Page.
                     })
                     .catch((error) => {
                         return res.status(500).json({

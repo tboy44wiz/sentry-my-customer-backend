@@ -22,7 +22,7 @@ exports.create = async (req, res) => {
     UserModel.findOne({ identifier }).catch(err => {  // find user with phone_number identifier
       res.send(err)
     }).then(user => {
-      if(user.stores.length == 0){
+      if(user.stores.length === 0){
         return res.status(403).json({
           message: "please add a store before adding customers"
         })
