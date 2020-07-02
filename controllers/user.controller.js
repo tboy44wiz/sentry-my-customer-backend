@@ -54,17 +54,6 @@ exports.new = async (req, res) => {
         expiresIn: "1d",
     });
 
-
-    // const newUser = new User({
-    //     phone_number: phone_number,
-    //     token: token    
-    // })
-
-    // Encrypt Password
-    // const salt = await bcrypt.genSalt(10);
-
-    // newUser.password = await bcrypt.hash(password, salt);
-
     // Check if Phone exists
     const userExists = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
 
