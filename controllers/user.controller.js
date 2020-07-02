@@ -66,24 +66,24 @@ exports.new = async (req, res) => {
     newUser.password = await bcrypt.hash(password, salt);
 
     // Check if Phone exists
-    const userExists = await User.findOne({ phone_number: phone_number });
-    console.log(phone_number)
+    const userExists = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
 
     if (userExists) {
-        return res.status(409).json({ 
-            success: "false",
-            message: "User already exists",
+        await newUser.save()
+
+        return res.status(200).json({ 
+            success: "true",
+            message: "Assistant Added",
             data: {
                 statusCode: 409,
-                conflict: userExists
+                Assistant: userExists.assistants
             }
         });
     } else {
-        await newUser.save()
-        .then((succ) => {
+        // .then((succ) => {
             
-        })
-        .catch((err) => {console.log(err)})
+        // })
+        // .catch((err) => {console.log(err)})
         const payload = {
             newUser: {
                 id: newUser.id
