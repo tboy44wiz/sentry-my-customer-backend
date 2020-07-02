@@ -45,7 +45,9 @@ module.exports.loginUser = async (req, res, next) => {
                 {
                   expiresIn: "1h",
                 }
-              );
+              )
+              userExist.api_token = apiToken;
+              userExist.save();
               res.status(200).json({
                 success: true,
                 message: "You're logged in successfully.",
