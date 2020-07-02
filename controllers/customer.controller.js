@@ -1,74 +1,81 @@
 const UserModel = require("../models/store_admin");
-const StoreModel = require('../models/store');
 const { body } = require('express-validator/check');
+const Customer = require('../models/customer');
 
 exports.validate = (method) => {
-    switch (method) {
-        case 'body': {
-            return [
-                body('name').isLength({ min: 3 }),
-            ]
-        }
+  switch (method) {
+    case 'body': {
+      return [
+        body('name').isLength({ min: 3 }),
+      ]
     }
+  }
 }
 
 exports.create = async (req, res) => {
-  
-  const identifier = req.user.phone_number;
-  const { phone_number, email, name } = req.body;
 
+  const id = req.params.current_user;
   //get current user's id and add a new customer to it
   try {
     UserModel.findOne({ identifier }).catch(err => {  // find user with phone_number identifier
       res.send(err)
-    }).then(user => {
-      if(user.stores.length === 0){
-        return res.status(403).json({
-          message: "please add a store before adding customers"
-        })
-      }
-      let store_name = req.body.store_name || req.params.store_name; 
-      let wantedStore = user.stores.find((store) => store.store_name === store_name); // find the necessary store form user.stores
-  
-      let customerToReg = { phone_number, email, name }; // customer to register
-      let customerExists = wantedStore.customers.find((customer) => customer.phone_number == customerToReg.phone_number); //truthy if customer is registered
-  
-      if(!customerExists) { // if customer isn't registered
-        wantedStore.customers.push(customerToReg); //push to user.stores
-      } else {
-        return res.status(409).json({
-          sucess: false,
-          message: "Customer already registered", 
-          data: {
-            statusCode: 409,
-          }
-        })
-      }
-  
-      user.save().then((result) => {
-  
-        res.status(201).json({
-          success: true,
-          message: "Customer registration successful",
-          data: {
-              statusCode: 201,
-              customer: customerToReg
-          }
-        })
-      })
-  
     })
-  } catch(err) {
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong while adding customer.",
-      data: {
-          statusCode: 500,
-          error: err
-      }
+        .then(user => {
+          if(user.stores.length === 0){
+            return res.status(403).json({
+              message: "please add a store before adding customers"
+            })
+          }
+          let store_name = req.body.store_name || req.params.store_name;
+          let wantedStore = user.stores.find((store) => store.store_name === store_name); // find the necessary store form user.stores
+
+          let customerToReg = { phone_number, email, name }; // customer to register
+          let customerExists = wantedStore.customers.find((customer) => customer.phone_number == customerToReg.phone_number); //truthy if customer is registered
+
+          if(!customerExists) { // if customer isn't registered
+            wantedStore.customers.push(customerToReg); //push to user.stores
+          } else {
+            return res.status(409).json({
+              sucess: false,
+              message: "Customer already registered",
+              data: {
+                statusCode: 409,
+              }
+            })
+          }
+
+          user.save().then((result) => {
+
+            res.status(201).json({
+              success: true,
+              message: "Customer registration successful",
+              data: {
+                statusCode: 201,
+                customer: customerToReg
+              }
+            })
+          })
+        })
+        .catch((error) => {
+          req.status(500).json({
+            error: error,
+          });
+        })
+  }
+  catch (error) {
+    req.status(500).json({
+      error: error,
     });
   }
-  
+
+  // res.status(201).json({
+  //   status: true,
+  //   message: "Customer was created",
+  //   data: {
+  //     statusCode: 201,
+  //     customer: user
+  //   },
+  // });
 };
 
 exports.getById = (req, res) => {
@@ -106,34 +113,28 @@ exports.getById = (req, res) => {
 };
 
 exports.updateById = (req, res) => {
-  Customer.updateOne({ _id: req.params.customerId }, { $set: {
-    name: req.body.name,
-    phone_number: req.body.phone,
-  }})
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        status: true,
-        message: "Customer was updated",
-        data: {
-          customer: {
-            id: req.params.customerId,
-            name: req.body.name,
-            phone: req.body.phone,
+  const customerId = req.params.customerId;
+  Customer.findByIdAndUpdate(customerId, req.body)
+      .then((updatedCustomer) => {
+        console.log(updatedCustomer);
+        res.status(200).json({
+          status: true,
+          message: "Customer was updated",
+          data: {
+            customer: updatedCustomer,
           }
-        }
+        })
+      })
+      .catch((error) => {
+        res.status(500).json({
+          status: false,
+          message: error.message,
+          error: {
+            code: 500,
+            message: error.message
+          }
+        });
       });
-    })
-    .catch((error) => {
-      res.status(500).json({
-        status: false,
-        message: error.message,
-        error: {
-          code: 500,
-          message: error.message
-        }
-      });
-    });
 };
 
 exports.deleteById = (req, res) => {
