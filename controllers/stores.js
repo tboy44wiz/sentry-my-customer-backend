@@ -105,11 +105,10 @@ exports.getStore = async (req, res, next) => {
 };
 
 exports.updateStore = async (req, res, next) => {
-  if (
-    req.body.current_user === "" || req.body.store_name === "" || req.body.shop_address === "") {
+  if (req.body.current_user === "" || (req.body.store_name == "" && req.body.shop_address == "")) {
     return res.status(500).json({
-      status: "fail",
-      message: error.message,
+      status: false,
+      message: "Current user or Store Name or Shop name required",
     });
   }
   try {
@@ -118,8 +117,8 @@ exports.updateStore = async (req, res, next) => {
     if (storeOwner) {
       const stores = storeOwner.stores.map(element => {
         if(element._id == req.params.store_id) {
-          element.store_name = req.body.store_name
-          element.shop_address = req.body.shop_address
+          element.store_name = req.body.store_name || element.store_name,
+          element.shop_address = req.body.shop_address || element.shop_address
         }
         return element
       });
