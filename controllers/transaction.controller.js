@@ -6,7 +6,7 @@ const UserModel = require("../models/user");
 const StoreModel = require("../models/store");
 
 // Create and Save a new Transaction
-exports.create = (req, res, next) => {
+exports.create = async(req, res, next) => {
   try {
     let {
       amount,
@@ -40,7 +40,7 @@ exports.create = (req, res, next) => {
     // gets user_ref_id
     const email = req.user.email;
     var user_ref_id;
-    UserModel.findOne({ email })
+    await UserModel.findOne({ email })
       .then((user) => {
         user_ref_id = user._id;
       })
@@ -53,7 +53,7 @@ exports.create = (req, res, next) => {
 
     // gets customer_ref_id
     var customer_ref_id;
-    CustomerModel.findOne({ phone_number })
+    await CustomerModel.findOne({ phone_number })
       .then((data) => {
         customer_ref_id = data._id;
       })
@@ -65,7 +65,7 @@ exports.create = (req, res, next) => {
       });
     // gets store_ref_id
     var store_ref_id;
-    StoreModel.findOne({ store_name })
+    await StoreModel.findOne({ store_name })
       .then((data) => {
         store_ref_id = data._id;
       })

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const bCrypt = require('bcryptjs');
 const { body } = require('express-validator/check');
 
-const UserModel = require('../models/user');
+const UserModel = require('../models/store_admin');
 const CustomerModel = require('../models/customer');
 
 exports.validate = (method) => {
@@ -10,10 +10,9 @@ exports.validate = (method) => {
       case 'body': {
           return [
               body('phone_number').isInt(),
-              body('first_name').isLength({ min: 3 }),
-              body('last_name').isLength({ min: 3 }),
-              body('email').matches(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, "i"),
-              body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+              body('password').isLength({
+                  min: 6
+              }),
           ]
       }
   }
@@ -21,39 +20,40 @@ exports.validate = (method) => {
 
 //  Register User
 module.exports.registerUser = async (req, res, next) => {
-    const { email, first_name, last_name, password, phone_number } = req.body;
+    const { password, phone_number } = req.body;
 
     //  Create a Token that will be passed as the "api_token"
     const token = await jwt.sign({
-        name: first_name + last_name,
         phone_number: phone_number,
-        email: email,
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
 
 
     //  Get instance of the
-    const user = new UserModel({
-        phone_number: phone_number,
-        first_name: first_name,
-        last_name: last_name,
-        email: email,
-        password: password,
-        api_token: token
-    });
-
+    const user = await new UserModel({});
+    user.local.phone_number = phone_number;
+    user.local.password = password;
+    user.api_token = token;
+    user.identifier = phone_number
     //  Encrypt the Password
-    user.password = await bCrypt.hash(user.password, 12);
+   user.local.password = await bCrypt.hash(user.local.password, 10);
 
 
     //  Check if User PhoneNumber and Email already exist.
-    await UserModel.findOne({ phone_number: user.phone_number, email: user.email })
+     UserModel.findOne({
+         identifier: user.identifier
+     })
         .then((existingUser) => {
             if(existingUser) {
                 //  This means the user exists.
-                return res.status(200).json({
-                    Message: "Email or phone number already taken. Please use another email or phone number."
+                return res.status(409).json({
+                    success: false,
+                    Message: "User already exists",
+                    error: {
+                        statusCode: 409,
+                        description: "Phone number already taken, please use another phone number"
+                    }
                 });
             }
             else {
@@ -61,31 +61,36 @@ module.exports.registerUser = async (req, res, next) => {
                 user.save()
                     .then((result) => {
                         res.status(201).json({
-                            Message: "User registered successfully...",
-                            User: {
-                                _id: result._id,
-                                phone_number: result.phone_number, 
-                                first_name: result.first_name, 
-                                last_name: result.last_name, 
-                                email: result.email, 
-                                is_active: result.is_active,
-                                api_token: result.api_token, 
-                                user_role: result.user_role,
-                            },
+                            success: true,
+                            message: "User registration successfull",
+                            data: {
+                                statusCode: 201,
+                                user: result
+                            }
                         });
 
                         //  TODO Redirect to the OTP Activation Page.
                     })
                     .catch((error) => {
                         return res.status(500).json({
-                            Error: error,
+                            success: false,
+                            message: "Internal error",
+                            error: {
+                                statusCode: 500,
+                                description: error
+                            }
                         });
                     });
             }
         })
         .catch((error) => {
             res.status(500).json({
-                Error: error,
+                success: false,
+                message:"Internal error",
+                error: {
+                    statusCode: 500,
+                    description: error
+                }
             });
         });
 };
@@ -105,7 +110,12 @@ module.exports.registerCustomer = async (req, res, next) => {
     //  Check if there is any validation error.
     if (error) {
         return res.status(400).json({
-            Error: error.details[0].message,
+            success: false,
+            message: "Bad request",
+            error:{ 
+                statusCode: 400,
+                description:error.details[0].message
+            }
         });
     }
 
