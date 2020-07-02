@@ -151,7 +151,7 @@ exports.update = async (req, res) => {
     const userFields = req.body;
 
     try {
-        let user = await User.findById(req.params.user_id);
+        let user = await User.findById(req.params.assistant_id);
 
         if (!user) return res.status(404).json({
             success: "false",
@@ -163,8 +163,8 @@ exports.update = async (req, res) => {
          });
 
         // Update User
-        user = await User.findByIdAndUpdate(req.params.user_id,
-            { $set: userFields },
+        user = await User.findByIdAndUpdate(req.params.assistant_id,
+            { $set: {local: userFields} },
             { new: true });
 
         // Send updated user details   
