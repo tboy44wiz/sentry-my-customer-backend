@@ -18,16 +18,13 @@ exports.create = async (req, res) => {
   const { phone_number, email, name } = req.body;
 
   //get current user's id and add a new customer to it
-  try {
-    UserModel.findOne({ identifier }).catch(err => {  // find user with phone_number identifier
-      res.send(err)
-    }).then(user => {
+    UserModel.findOne({ identifier }).then(user => {
       if(user.stores.length == 0){
         return res.status(403).json({
           message: "please add a store before adding customers"
         })
       }
-      let store_name = req.body.store_name || req.params.store_name; 
+      let store_name = req.body.store_name || req.params.store_name;
       let wantedStore = user.stores.find((store) => store.store_name === store_name); // find the necessary store form user.stores
   
       let customerToReg = { phone_number, email, name }; // customer to register
@@ -58,16 +55,16 @@ exports.create = async (req, res) => {
       })
   
     })
-  } catch(err) {
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong while adding customer.",
-      data: {
-          statusCode: 500,
-          error: err
-      }
-    });
-  }
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong while adding customer.",
+        data: {
+            statusCode: 500,
+            error: err
+        }
+      });
+    })
   
 };
 
