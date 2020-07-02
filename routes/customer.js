@@ -6,7 +6,7 @@ const bodyValidator = require("../util/body_validator");
 const auth = require("../auth/auth");
 router.use("/customer", auth);
 router.post(
-  "/customer",
+  "/customer/new",
   customerController.validate("body"),
   bodyValidator,
   customerController.create

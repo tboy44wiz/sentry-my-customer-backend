@@ -2,7 +2,6 @@ const UserModel = require("../models/store_admin");
 const { body } = require("express-validator/check");
 const StoreModel = require("../models/store");
 const customerModel = require("../models/customer");
-const store = require("../models/store");
 
 exports.validate = (method) => {
   switch (method) {
