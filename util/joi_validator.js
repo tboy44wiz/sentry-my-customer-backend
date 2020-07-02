@@ -1,5 +1,7 @@
 const Joi = require('@hapi/joi');
 
+
+// User Registration Validation
 module.exports.userRegistrationValidator =  Joi.object({
     phone_number: Joi.string().required(),
     first_name: Joi.string().min(3).max(50).required(),
@@ -7,12 +9,16 @@ module.exports.userRegistrationValidator =  Joi.object({
     email: Joi.string().email(),
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{6,20}$')).required(),
 });
+
+
+// User Login Validation
 module.exports.userLoginValidator =  Joi.object({
     phone_number: Joi.string().required(),
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{6,20}$')),
 });
 
 
+// Customer Registration Validation
 module.exports.customerValidator =  Joi.object({
     name: Joi.string().min(3).max(50).required(),
     phone_number: Joi.string().required(),

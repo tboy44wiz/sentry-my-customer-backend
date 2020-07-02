@@ -16,11 +16,11 @@ module.exports.loginUser = async (req, res, next) => {
 
 
     //Validate the "reqBody" object using joiValidator function imported.
-    const {error, value} = await joiValidator.userLoginValidator.validate(reqBody);
+    const {error, value} = await joiValidator.userLoginValidator.validate(reqBody, {abortEarly: false});
     //  Check if there is any validation error.
     if (error) {
         return res.status(400).json({
-            Error: error.details[0].message,
+            Error: error,
         });
     }
 
@@ -59,7 +59,6 @@ module.exports.loginUser = async (req, res, next) => {
                                     last_name: userExist.last_name,
                                     email: userExist.email,
                                     is_active: userExist.is_active,
-                                    password: userExist.password,
                                     user_role: userExist.user_role,
                                 }
                             });
