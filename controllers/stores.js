@@ -105,21 +105,53 @@ exports.getStore = async (req, res, next) => {
 };
 
 exports.updateStore = async (req, res, next) => {
+  if (req.body.current_user === "" || (req.body.store_name == "" && req.body.shop_address == "")) {
+    return res.status(500).json({
+      status: false,
+      message: "Current user or Store Name or Shop name required",
+    });
+  }
   try {
-    const store = await Store.findOneAndUpdate(req.params.store_id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json({
-      status: "success",
-      data: {
-        store,
-      },
-    });
+    const id = req.body.current_user;
+    const storeOwner = await UserModel.findById(id);
+    if (storeOwner) {
+      const stores = storeOwner.stores.map(element => {
+        if(element._id == req.params.store_id) {
+          element.store_name = req.body.store_name || element.store_name,
+          element.shop_address = req.body.shop_address || element.shop_address
+        }
+        return element
+      });
+     storeOwner.stores = stores
+     storeOwner.save().catch(error =>{
+        res.send(error)
+     }).then(store =>{
+        res.status(201).json({
+          success: true,
+          message: "Store updated successfully",
+          data: {
+            statusCode: 201,
+            store: store
+          }
+        })
+     })
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+        error:{
+          statusCode: 404,
+          message: "User not found",
+        }
+      });
+    }
   } catch (error) {
     res.status(400).json({
-      status: "fail",
+      success: false,
       message: error.message,
+      error:{
+
+      }
     });
   }
 };
