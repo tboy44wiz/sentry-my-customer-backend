@@ -39,22 +39,27 @@ module.exports.loginUser = async (req, res, next) => {
               //  Generate a login api_token for subsequent authentication.
               const apiToken = jwt.sign(
                 {
-                  phone_number: userExist.identifier, //jwt signed it identifier(number in string format)
+                  phone_number: userExist.identifier,
                   password: user.local.password,
                 },
                 process.env.JWT_KEY,
                 {
                   expiresIn: "1h",
                 }
-              );
-              res.status(200).json({
-                success: true,
-                message: "You're logged in successfully.",
-                data: {
-                  statusCode: 200,
-                  user: userExist
-                },
+              )
+              userExist.api_token = apiToken;
+              userExist.save().then(result => {
+                res.status(200).json({
+                  success: true,
+                  api_token: result.api_token,
+                  message: "You're logged in successfully.",
+                  data: {
+                    statusCode: 200,
+                    user: result
+                  },
+                });
               });
+
             } else {
               res.status(401).json({
                 success: false,
