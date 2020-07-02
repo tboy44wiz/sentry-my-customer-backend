@@ -57,7 +57,6 @@ module.exports.loginUser = async (req, res, next) => {
                   user: userExist
                 },
               });
-
             } else {
               res.status(401).json({
                 success: false,
