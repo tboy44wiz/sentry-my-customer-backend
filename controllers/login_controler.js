@@ -48,16 +48,14 @@ module.exports.loginUser = async (req, res, next) => {
                 }
               )
               userExist.api_token = apiToken;
-              userExist.save().then(result => {
-                res.status(200).json({
-                  success: true,
-                  api_token: result.api_token,
-                  message: "You're logged in successfully.",
-                  data: {
-                    statusCode: 200,
-                    user: result
-                  },
-                });
+              userExist.save();
+              res.status(200).json({
+                success: true,
+                message: "You're logged in successfully.",
+                data: {
+                  statusCode: 200,
+                  user: userExist
+                },
               });
 
             } else {
