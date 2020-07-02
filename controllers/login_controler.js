@@ -52,8 +52,7 @@ module.exports.loginUser = async (req, res, next) => {
                 message: "You're logged in successfully.",
                 data: {
                   statusCode: 200,
-                  user: userExist,
-                  api_token: apiToken
+                  user: userExist
                 },
               });
             } else {

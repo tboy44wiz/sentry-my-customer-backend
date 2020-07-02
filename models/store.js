@@ -10,10 +10,9 @@ const storeSchema = new mongoose.Schema({
 	tagline: { type: String , Default: "Not set"},
 	shop_address: { type: String, required: true },
 	email: { type: String, default: "Not set" },
-	store_admin: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'store_admin'
-    }
+	customers: [
+		Customer.schema
+	]
 }, { timestamp: true });
 
 module.exports = mongoose.model("store", storeSchema);
