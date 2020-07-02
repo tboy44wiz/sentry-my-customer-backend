@@ -157,27 +157,48 @@ exports.updateStore = async (req, res, next) => {
 };
 
 exports.deleteStore = async (req, res, next) => {
-  console.log(req.params);
-
-  try {
-    const store = await Store.findOneAndRemove(
-      req.params.store_Id,
-      (error, data) => {
-        if (error)
-          res.status(404).json({
-            status: "fail",
-            message: error.message,
-          });
-      }
-    );
-    res.status(204).json({
-      status: "success",
-      data: null,
+  if (req.body.current_user === "") {
+    return res.status(500).json({
+      status: false,
+      message: "Current user required",
     });
+  }
+  try {
+    const id = req.body.current_user;
+    const storeOwner = await UserModel.findById(id);
+    if (storeOwner) {
+      
+      const stores = storeOwner.stores.filter(element => element._id != req.params.store_id);
+      storeOwner.stores = stores
+      storeOwner.save().catch(error =>{
+        res.send(error)
+      }).then(store =>{
+        res.status(200).json({
+          success: true,
+          message: "Store deleted successfully",
+          data: {
+            statusCode: 200,
+            store: store
+          }
+        })
+     })
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+        error:{
+          statusCode: 404,
+          message: "User not found",
+        }
+      });
+    }
   } catch (error) {
-    res.status(404).json({
-      status: "fail",
-      message: error,
+    res.status(400).json({
+      success: false,
+      message: error.message,
+      error:{
+
+      }
     });
   }
 };
