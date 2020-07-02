@@ -71,50 +71,44 @@ exports.new = async (req, res) => {
     if (userExists) {
         userExists.assistants.push(
             {
-                first_name:first_name
+                first_name:first_name,
                  last_name: last_name,
                   email: email,
                 password: password,
                  phone_number: phone_number
             }
         )
-        return res.status(200).json({ 
-            success: "true",
-            message: "Assistant Added",
-            data: {
-                statusCode: 409,
-                Assistant: userExists.assistants
-            }
-        });
+        await userExists.save()
+        .then((user) => {
+            return res.status(200).json({ 
+                success: "true",
+                message: "Assistant Added Successfully",
+                data: {
+                    statusCode: 200,
+                    assistant: userExists.assistants,
+                    user: user
+                }
+            });
+        } )
+        .catch((err) => {
+            return res.status(500).json({
+                success: "false",
+                message: "Error",
+                data: {
+                    statusCode: 500,
+                    error: err.message
+                }
+            })
+        })
     } else {
-        // .then((succ) => {
-            
-        // })
-        // .catch((err) => {console.log(err)})
-        const payload = {
-            newUser: {
-                id: newUser.id
+        return res.status(404).json({
+            success: "false",
+            message: "User Not Found",
+            data: {
+                statusCode: 404,
+                error: "User Dosen't Exist"
             }
-        }
-
-        jwt.sign(
-            payload,
-            process.env.JWT_KEY,
-            {
-                expiresIn: 360000
-            },
-            (err, token, data) => {
-                if (err) throw err;
-                res.status(201).json({ 
-                    success: "true",
-                    message: "User created successfully",
-                    data: {
-                        token,
-                        newUser
-                    }
-                });
-            }
-        );
+        })
     }
 }
 
