@@ -7,7 +7,7 @@
 
     router.use("/user", auth)
     //Add new user
-    router.post("/user/new", auth, users.validate('body'), bodyValidator, users.new);
+    router.post("/assistant/new", auth, users.validate('body'), bodyValidator, users.new);
    // Retrieve all Users
    router.get('/user/all/:current_user', auth, users.all);
 

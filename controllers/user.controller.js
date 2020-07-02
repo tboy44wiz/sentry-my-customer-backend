@@ -66,7 +66,8 @@ exports.new = async (req, res) => {
     newUser.password = await bcrypt.hash(password, salt);
 
     // Check if Phone exists
-    const userExists = await User.findOne({ phone_number: newUser.phone_number });
+    const userExists = await User.findOne({ phone_number: phone_number });
+    console.log(phone_number)
 
     if (userExists) {
         return res.status(409).json({ 
@@ -78,8 +79,11 @@ exports.new = async (req, res) => {
             }
         });
     } else {
-        await newUser.save();
-
+        await newUser.save()
+        .then((succ) => {
+            
+        })
+        .catch((err) => {console.log(err)})
         const payload = {
             newUser: {
                 id: newUser.id
