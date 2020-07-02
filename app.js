@@ -74,6 +74,7 @@ app.use("/register", register);
 
 // CONFIGURE FACEBOOK SIGNIN
 app.use(passport.initialize());
+
 passport.use(new Strategy({
   clientID: FB_CLIENT_ID,
   clientSecret: FB_CLIENT_SECRET,
