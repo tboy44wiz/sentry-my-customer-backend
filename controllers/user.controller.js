@@ -69,8 +69,15 @@ exports.new = async (req, res) => {
     const userExists = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
 
     if (userExists) {
-        await newUser.save()
-
+        userExists.assistants.push(
+            {
+                first_name:first_name
+                 last_name: last_name,
+                  email: email,
+                password: password,
+                 phone_number: phone_number
+            }
+        )
         return res.status(200).json({ 
             success: "true",
             message: "Assistant Added",
