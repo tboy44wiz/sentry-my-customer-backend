@@ -3,12 +3,13 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator/check");
 
-exports.validate = (method) => {
+
+exports.validate = method => {
   switch (method) {
     case "body": {
       return [
         body("phone_number").isInt(),
-        body("password").matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+        body("password").matches(/^[0-9a-zA-Z]{6,}$/, "i")
       ];
     }
   }
@@ -18,7 +19,7 @@ exports.validate = (method) => {
 exports.all = (req, res) => {
   const id = req.params.current_user;
   User.findById(id)
-    .then((user) => {
+    .then(user => {
       const storeAssistants = user.assistants;
       res.status(200).json({
         success: "true",
@@ -29,14 +30,14 @@ exports.all = (req, res) => {
         },
       });
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).send({
         success: "false",
         message: "Internal Error",
         error: {
           statusCode: 500,
-          message: "Could not retrive users due to an internal error",
-        },
+          message: "Could not retrive users due to an internal error"
+        }
       });
     });
 };
@@ -51,11 +52,11 @@ exports.new = async (req, res) => {
   const token = await jwt.sign(
     {
       phone_number: phone_number,
-      password: password,
+      password: password
     },
     process.env.JWT_KEY,
     {
-      expiresIn: "1d",
+      expiresIn: "1d"
     }
   );
 
@@ -86,15 +87,15 @@ exports.new = async (req, res) => {
 
     const payload = {
       newUser: {
-        id: newUser.id,
-      },
+        id: newUser.id
+      }
     };
 
     jwt.sign(
       payload,
       process.env.JWT_KEY,
       {
-        expiresIn: 360000,
+        expiresIn: 360000
       },
       (err, token, data) => {
         if (err) throw err;
@@ -103,8 +104,8 @@ exports.new = async (req, res) => {
           message: "User created successfully",
           data: {
             token,
-            newUser,
-          },
+            newUser
+          }
         });
       }
     );
@@ -114,15 +115,15 @@ exports.new = async (req, res) => {
 //#region Fnd a single user with a user_id
 exports.getById = (req, res) => {
   User.findById(req.params.user_id)
-    .then((user) => {
+    .then(user => {
       if (!user) {
         return res.status(404).json({
           success: "false",
           message: "User not found",
           error: {
             statusCode: 404,
-            message: "User not found with id " + req.params.user_id,
-          },
+            message: "User not found with id " + req.params.user_id
+          }
         });
       } else {
         res.send(user);
@@ -135,8 +136,8 @@ exports.getById = (req, res) => {
           message: "User not found",
           error: {
             statusCode: 404,
-            message: "User not found with id " + req.params.user_id,
-          },
+            message: "User not found with id " + req.params.user_id
+          }
         });
       } else {
         return res.status(500).send({
@@ -144,8 +145,8 @@ exports.getById = (req, res) => {
           message: "Internal Error",
           error: {
             statusCode: 404,
-            message: "Error finding user with id " + req.params.user_id,
-          },
+            message: "Error finding user with id " + req.params.user_id
+          }
         });
       }
     });
@@ -164,14 +165,20 @@ exports.update = async (req, res) => {
         message: "User not found",
         error: {
           statusCode: 404,
-          message: "User with the provided details does not exist",
-        },
+          message: "User with the provided details does not exist"
+        }
       });
 
     // Update User
     user = await User.findByIdAndUpdate(
       req.params.user_id,
-      { $set: userFields },
+      {
+        $set: {
+          "local.first_name": req.body.first_name,
+          "local.last_name": req.body.last_name,
+          "local.email": req.body.email
+        }
+      },
       { new: true }
     );
 
@@ -181,8 +188,8 @@ exports.update = async (req, res) => {
       message: "User details updated successfully",
       data: {
         statusCode: 201,
-        data: user,
-      },
+        data: user
+      }
     });
   } catch (err) {
     res.status(500).json({
@@ -190,8 +197,8 @@ exports.update = async (req, res) => {
       message: "Internal server error",
       error: {
         statusCode: 500,
-        message: "User details could not be updated",
-      },
+        message: "User details could not be updated"
+      }
     });
   }
 };
@@ -207,8 +214,8 @@ exports.delete = (req, res) => {
           message: "User not found",
           error: {
             statusCode: 404,
-            message: "User not found with id " + req.params.user_id,
-          },
+            message: "User not found with id " + req.params.user_id
+          }
         });
       } else {
         res.status(200).json({
@@ -218,12 +225,12 @@ exports.delete = (req, res) => {
             statusCode: 200,
             message:
               "User with id " + req.params.user_id + " has been deleted ",
-            data: user,
-          },
+            data: user
+          }
         });
       }
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
         return res.status(404).json({
           success: "false",
@@ -231,8 +238,8 @@ exports.delete = (req, res) => {
           error: {
             statusCode: 404,
             message:
-              "User with id: " + req.params.user_id + " could not be found ",
-          },
+              "User with id: " + req.params.user_id + " could not be found "
+          }
         });
       }
       return res.status(500).send({
@@ -243,8 +250,8 @@ exports.delete = (req, res) => {
           message:
             "User with id: " +
             req.params.user_id +
-            " could not be deleted due to an internal error",
-        },
+            " could not be deleted due to an internal error"
+        }
       });
     });
 };
