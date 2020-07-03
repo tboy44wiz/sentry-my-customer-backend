@@ -147,7 +147,6 @@ exports.getById = (req, res) => {
 };
 
 exports.update = async (req, res) => {
-    // Build data based on fields to be submited
     const userFields = req.body;
     try {
 
