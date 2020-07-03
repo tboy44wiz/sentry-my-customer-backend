@@ -96,6 +96,49 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.getById = (req, res) => {
+  const identifier = req.user.phone_number;
+  let customers;
+  UserModel.findOne({ identifier })
+    .then((user) => {
+      let stores = user.stores;
+      stores.forEach((store) => {
+        customers = store.customers;
+        if (customers.length > 0) {
+          customers.forEach((customer) => {
+            if (customer._id == req.params.customerId) {
+              return res.status(200).json({
+                success: true,
+                message: "successful",
+                data: {
+                  customer,
+                },
+              });
+            }
+          });
+        }
+      });
+      return res.status(404).json({
+        status: false,
+        message: "Customer not found",
+        error: {
+          code: 404,
+          message: "customer not found",
+        },
+      });
+    })
+    .catch((err) => {
+      return res.status(404).json({
+        status: false,
+        message: "Customer not found",
+        error: {
+          code: 404,
+          message: "customer not found",
+        },
+      });
+    });
+};
+
 exports.updateById = (req, res) => {
   const customerId = req.params.customerId;
   Customer.findByIdAndUpdate(customerId, req.body)

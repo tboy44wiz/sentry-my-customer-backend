@@ -11,7 +11,11 @@ exports.createStore = async (req, res, next) => {
   }
   try {
     const id = req.user.phone_number;
+<<<<<<< HEAD
     const storeOwner = await UserModel.findOne({identifier: id});
+=======
+    const storeOwner = await UserModel.findOne( { identifier: id });
+>>>>>>> e6bcde7a21151fe661c2113fdc6b607c78f83e2d
     if (storeOwner) {
      storeOwner.stores.push({
        store_name: req.body.store_name,
