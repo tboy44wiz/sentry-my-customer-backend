@@ -140,15 +140,22 @@ exports.getById = (req, res) => {
 };
 
 exports.updateById = (req, res) => {
-  const customerId = req.params.customerId;
-  Customer.findByIdAndUpdate(customerId, req.body)
-      .then((updatedCustomer) => {
-        console.log(updatedCustomer);
+  const customerID = req.params.customerId;
+  const reqBody = req.body;
+  console.log(customerID);
+  console.log(reqBody);
+  Customer.findOneAndUpdate(customerID, reqBody)
+      .then((customer) => {
         res.status(200).json({
           status: true,
           message: "Customer was updated",
           data: {
-            customer: updatedCustomer,
+            customer: {
+              _id: customer._id,
+              name: customer.name,
+              email: customer.email,
+              phone_number: customer.phone_number,
+            },
           }
         })
       })

@@ -37,7 +37,8 @@ mongoose
   .connect(MONGOLAB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("Successfully connected to the database");
@@ -118,5 +119,5 @@ app.use("*", (req, res) => {
 
 const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port:`+ port);
+  console.log(`app running on port:`+ port)
 });
