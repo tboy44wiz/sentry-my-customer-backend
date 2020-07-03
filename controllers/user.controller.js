@@ -161,7 +161,7 @@ exports.update = async (req, res) => {
                     message: "User with the provided details does not exist"
                 }
              });
-    
+
             // Update Assistant
             //user = await User.findById(req.params.assistant_id);
             // ,
