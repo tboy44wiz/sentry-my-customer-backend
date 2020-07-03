@@ -2,7 +2,6 @@ const Store = require("./../models/store");
 const UserModel = require("../models/store_admin");
 
 exports.createStore = async (req, res, next) => {
-  console.log("here")
   if (
     req.body.store_name === "" || req.body.shop_address === "") {
     return res.status(500).json({
