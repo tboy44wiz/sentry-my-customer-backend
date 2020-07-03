@@ -48,69 +48,104 @@ exports.all = (req, res) => {
 exports.new = async (req, res) => {
   const { first_name, last_name, email, password, phone_number } = req.body;
 
-  //  Create a Token that will be passed as the "api_token"
-  const token = await jwt.sign(
-    {
-      phone_number: phone_number,
-      password: password
-    },
-    process.env.JWT_KEY,
-    {
-      expiresIn: "1d"
+
+    // Check if Phone exists
+    let userExists = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
+    if (userExists === null) {
+        let userExists = await User.findOne({ identifier: req.user.phone_number.toString() });
+        if (userExists) {
+            // userExists.local.api_token = token;
+            userExists.assistants.push(
+                {
+                    first_name:first_name,
+                     last_name: last_name,
+                      email: email,
+                    password: password,
+                     phone_number: phone_number
+                }
+            )
+            await userExists.save()
+            .then((user) => {
+                return res.status(200).json({ 
+                    success: "true",
+                    message: "Assistant Added Successfully",
+                    data: {
+                        statusCode: 200,
+                        assistant: userExists.assistants,
+                        user: user
+                    }
+                });
+            } )
+            .catch((err) => {
+                return res.status(500).json({
+                    success: "false",
+                    message: "Error",
+                    data: {
+                        statusCode: 500,
+                        error: err.message
+                    }
+                })
+            })
+        } else {
+            return res.status(404).json({
+                success: "false",
+                message: "User Not Found",
+                data: {
+                    statusCode: 404,
+                    error: "User Dosen't Exist"
+                }
+            })
+        }
     }
-  );
+    else {
+        if (userExists) {
+            // userExists.local.api_token = token;
+            userExists.assistants.push(
+                {
+                    first_name:first_name,
+                     last_name: last_name,
+                      email: email,
+                    password: password,
+                     phone_number: phone_number
+                }
+            )
+            await userExists.save()
+            .then((user) => {
+                return res.status(200).json({ 
+                    success: "true",
+                    message: "Assistant Added Successfully",
+                    data: {
+                        statusCode: 200,
+                        assistant: userExists.assistants,
+                        user: user
+                    }
+                });
+            } )
+            .catch((err) => {
+                return res.status(500).json({
+                    success: "false",
+                    message: "Error",
+                    data: {
+                        statusCode: 500,
+                        error: err.message
+                    }
+                })
+            })
+        } else {
+            return res.status(404).json({
+                success: "false",
+                message: "User Not Found",
+                data: {
+                    statusCode: 404,
+                    error: "User Dosen't Exist"
+                }
+            })
+        }
+    }
 
-  const newUser = new User({
-    phone_number: phone_number,
-    token: token,
-  });
 
-  // Encrypt Password
-  const salt = await bcrypt.genSalt(10);
+}
 
-  newUser.password = await bcrypt.hash(password, salt);
-
-  // Check if Phone exists
-  const userExists = await User.findOne({ phone_number: newUser.phone_number });
-
-  if (userExists) {
-    return res.status(409).json({
-      success: "false",
-      message: "User already exists",
-      data: {
-        statusCode: 409,
-        conflict: userExists,
-      },
-    });
-  } else {
-    await newUser.save();
-
-    const payload = {
-      newUser: {
-        id: newUser.id
-      }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_KEY,
-      {
-        expiresIn: 360000
-      },
-      (err, token, data) => {
-        if (err) throw err;
-        res.status(201).json({
-          success: "true",
-          message: "User created successfully",
-          data: {
-            token,
-            newUser
-          }
-        });
-      }
-    );
-  }
-};
 
 //#region Fnd a single user with a user_id
 exports.getById = (req, res) => {
@@ -153,54 +188,141 @@ exports.getById = (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  // Build data based on fields to be submited
-  const userFields = req.body;
 
-  try {
-    let user = await User.findById(req.params.user_id);
+    const userFields = req.body;
+    try {
 
-    if (!user)
-      return res.status(404).json({
-        success: "false",
-        message: "User not found",
-        error: {
-          statusCode: 404,
-          message: "User with the provided details does not exist"
+        let user = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
+        if (user == null) {
+            let user = await User.findOne({ identifier: req.user.phone_number.toString() });
+            if (!user) return res.status(404).json({
+                success: "false",
+                message: "User not found",
+                error:{
+                    statusCode: 404,
+                    message: "User with the provided details does not exist"
+                }
+             });
+
+            // Update Assistant
+            //user = await User.findById(req.params.assistant_id);
+            // ,
+            //     { $set: {assistants: userFields} },
+            //     { new: true }
+            // Send updated user details
+            if (user.assistants.length !== 0) {
+                user.assistants.map((assist) => {
+                    if (assist._id.equals(req.params.assistant_id)) {
+                        assist.first_name = req.body.first_name,
+                        assist.last_name =  req.body.last_name,
+                        assist.email = req.body.email,
+                        assist.phone_number = req.body.phone_number
+                    }
+                })
+                user.save()
+                .then((userSaved) => {
+                    res.status(201).json({
+                        success: "true",
+                        message: "Assistants details updated successfully",
+                        data:{
+                            statusCode: 201,
+                            data: userSaved,
+                        }
+                    });
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        success: "false",
+                        message: "Internal server error",
+                        error:{
+                            statusCode: 500,
+                            message: "Assistant details could not be updated",
+                        }
+                    });
+                })  
+            }
+            else {
+                res.status(500).json({
+                    success: "false",
+                    message: "You have no assistants yet",
+                    error:{
+                        statusCode: 500,
+                        message: "You have no assistants yet",
+                    }
+                });
+            } 
         }
-      });
-
-    // Update User
-    user = await User.findByIdAndUpdate(
-      req.params.user_id,
-      {
-        $set: {
-          "local.first_name": req.body.first_name,
-          "local.last_name": req.body.last_name,
-          "local.email": req.body.email
+        else {
+            if (!user) return res.status(404).json({
+                success: "false",
+                message: "User not found",
+                error:{
+                    statusCode: 404,
+                    message: "User with the provided details does not exist"
+                }
+             });
+    
+            // Update Assistant
+            //user = await User.findById(req.params.assistant_id);
+            // ,
+            //     { $set: {assistants: userFields} },
+            //     { new: true }
+            // Send updated user details
+            if (user.assistants.length !== 0) {
+                user.assistants.map((assist) => {
+                    if (assist._id.equals(req.params.assistant_id)) {
+                        assist.first_name = req.body.first_name,
+                        assist.last_name =  req.body.last_name,
+                        assist.email = req.body.email,
+                        assist.phone_number = req.body.phone_number
+                    }
+                })
+                user.save()
+                .then((userSaved) => {
+                    res.status(201).json({
+                        success: "true",
+                        message: "Assistants details updated successfully",
+                        data:{
+                            statusCode: 201,
+                            data: userSaved,
+                        }
+                    });
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        success: "false",
+                        message: "Internal server error",
+                        error:{
+                            statusCode: 500,
+                            message: "Assistant details could not be updated",
+                        }
+                    });
+                })  
+            }
+            else {
+                res.status(500).json({
+                    success: "false",
+                    message: "You can't update assistants yet because you have no one presently",
+                    error:{
+                        statusCode: 500,
+                        message: "You have no assistants yet",
+                    }
+                });
+            } 
         }
-      },
-      { new: true }
-    );
 
-    // Send updated user details
-    res.status(201).json({
-      success: "true",
-      message: "User details updated successfully",
-      data: {
-        statusCode: 201,
-        data: user
-      }
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: "false",
-      message: "Internal server error",
-      error: {
-        statusCode: 500,
-        message: "User details could not be updated"
-      }
-    });
-  }
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            success: "false",
+            message: "Internal server error",
+            error:{
+                statusCode: 500,
+                message: "Assistant details could not be updated",
+            }
+        });
+    }
+
 };
 //#endregion
 
