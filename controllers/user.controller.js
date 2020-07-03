@@ -55,51 +55,100 @@ exports.new = async (req, res) => {
     });
 
     // Check if Phone exists
-    const userExists = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
-
-    if (userExists) {
-        userExists.local.api_token = token;
-        userExists.assistants.push(
-            {
-                first_name:first_name,
-                 last_name: last_name,
-                  email: email,
-                password: password,
-                 phone_number: phone_number
-            }
-        )
-        await userExists.save()
-        .then((user) => {
-            return res.status(200).json({ 
-                success: "true",
-                message: "Assistant Added Successfully",
-                data: {
-                    statusCode: 200,
-                    assistant: userExists.assistants,
-                    user: user
+    let userExists = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
+    if (userExists === null) {
+        let userExists = await User.findOne({ identifier: req.user.phone_number.toString() });
+        if (userExists) {
+            userExists.local.api_token = token;
+            userExists.assistants.push(
+                {
+                    first_name:first_name,
+                     last_name: last_name,
+                      email: email,
+                    password: password,
+                     phone_number: phone_number
                 }
-            });
-        } )
-        .catch((err) => {
-            return res.status(500).json({
+            )
+            await userExists.save()
+            .then((user) => {
+                return res.status(200).json({ 
+                    success: "true",
+                    message: "Assistant Added Successfully",
+                    data: {
+                        statusCode: 200,
+                        assistant: userExists.assistants,
+                        user: user
+                    }
+                });
+            } )
+            .catch((err) => {
+                return res.status(500).json({
+                    success: "false",
+                    message: "Error",
+                    data: {
+                        statusCode: 500,
+                        error: err.message
+                    }
+                })
+            })
+        } else {
+            return res.status(404).json({
                 success: "false",
-                message: "Error",
+                message: "User Not Found",
                 data: {
-                    statusCode: 500,
-                    error: err.message
+                    statusCode: 404,
+                    error: "User Dosen't Exist"
                 }
             })
-        })
-    } else {
-        return res.status(404).json({
-            success: "false",
-            message: "User Not Found",
-            data: {
-                statusCode: 404,
-                error: "User Dosen't Exist"
-            }
-        })
+        }
     }
+    else {
+        if (userExists) {
+            userExists.local.api_token = token;
+            userExists.assistants.push(
+                {
+                    first_name:first_name,
+                     last_name: last_name,
+                      email: email,
+                    password: password,
+                     phone_number: phone_number
+                }
+            )
+            await userExists.save()
+            .then((user) => {
+                return res.status(200).json({ 
+                    success: "true",
+                    message: "Assistant Added Successfully",
+                    data: {
+                        statusCode: 200,
+                        assistant: userExists.assistants,
+                        user: user
+                    }
+                });
+            } )
+            .catch((err) => {
+                return res.status(500).json({
+                    success: "false",
+                    message: "Error",
+                    data: {
+                        statusCode: 500,
+                        error: err.message
+                    }
+                })
+            })
+        } else {
+            return res.status(404).json({
+                success: "false",
+                message: "User Not Found",
+                data: {
+                    statusCode: 404,
+                    error: "User Dosen't Exist"
+                }
+            })
+        }
+    }
+
+
 }
 
 //#region Fnd a single user with a user_id
