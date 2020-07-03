@@ -183,9 +183,9 @@ exports.deleteById = (req, res) => {
       stores.forEach((store) => {
         customers = store.customers;
         if (customers.length > 0) {
-          customers.forEach((customer) => {
+          customers.forEach((customer, index) => {
             if (customer._id == req.params.customerId) {
-              customers.pop(customer);
+              customers.splice(index, 1);
             }
           });
         }
