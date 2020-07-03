@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bCrypt = require("bcryptjs");
-const { body } = require('express-validator/check');
+const { body } = require("express-validator/check");
 const passport = require("passport");
 
 const UserModel = require("../models/store_admin");
@@ -8,14 +8,11 @@ const CustomerModel = require("../models/customer");
 
 exports.validate = (method) => {
   switch (method) {
-      case 'login': {
-          return [
-              body('phone_number').isInt(),
-              body('password'),
-          ]
-      }
+    case "login": {
+      return [body("phone_number").isInt(), body("password")];
+    }
   }
-}
+};
 
 //  Login User
 module.exports.loginUser = async (req, res, next) => {
@@ -46,7 +43,7 @@ module.exports.loginUser = async (req, res, next) => {
                 {
                   expiresIn: "1h",
                 }
-              )
+              );
               userExist.api_token = apiToken;
               userExist.save();
               res.status(200).json({
@@ -54,7 +51,7 @@ module.exports.loginUser = async (req, res, next) => {
                 message: "You're logged in successfully.",
                 data: {
                   statusCode: 200,
-                  user: userExist
+                  user: userExist,
                 },
               });
             } 
@@ -64,23 +61,42 @@ module.exports.loginUser = async (req, res, next) => {
                 message: "Invalid Password.",
                 error: {
                   code: 401,
-                  description: "Invalid Password"
-                }
+                  description: "Invalid Password",
+                },
               });
             }
           })
           .catch((error) => {
             res.status(500).json({
               success: false,
-              message: "Invalid Password.",
+              message: error,
               error: {
                 code: 500,
-                description: "Invalid Password."
-              }
+                description: error,
+              },
             });
-          });  
+          });
+      } else {
+        res.status(401).json({
+          success: false,
+          message: "Invalid phone number.",
+          error: {
+            code: 401,
+            description: "Invalid phone number.",
+          },
+        });
       }
     })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "An internal error occurred",
+        error: {
+          statusCode: 500,
+          description: error,
+        },
+      });
+    });
 };
 
 //  Login Customer
@@ -101,10 +117,10 @@ module.exports.loginCustomer = async (req, res, next) => {
     return res.status(400).json({
       success: false,
       message: "An internal error occurred",
-      error: { 
+      error: {
         statusCode: 400,
         description: error.details[0].message,
-      }
+      },
     });
   }
 
@@ -155,27 +171,27 @@ module.exports.loginCustomer = async (req, res, next) => {
 };
 
 //Sign in with facebook
-module.exports.fbLogin = passport.authenticate('facebook');
+module.exports.fbLogin = passport.authenticate("facebook");
 
 module.exports.fbLoginCallback = function (req, res) {
-  if ( !req.user ) {
+  if (!req.user) {
     res.status(401).send({
       success: false,
       message: "Login with facebook failed",
       error: {
         code: 401,
-        description: "Login failed"
-      }
+        description: "Login failed",
+      },
     });
   } else {
     res.status(200).send({
       success: true,
       message: "Login successful",
       data: {
-        user: req.user._json
-      }
+        user: req.user._json,
+      },
     });
   }
-}
+};
 
 module.exports.login;
