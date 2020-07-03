@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator/check");
 
+
 exports.validate = method => {
   switch (method) {
     case "body": {
@@ -25,8 +26,8 @@ exports.all = (req, res) => {
         message: "Successfully retrieved all store assistants",
         data: {
           statusCode: 200,
-          assistants: storeAssistants
-        }
+          assistants: storeAssistants,
+        },
       });
     })
     .catch(err => {
@@ -61,7 +62,7 @@ exports.new = async (req, res) => {
 
   const newUser = new User({
     phone_number: phone_number,
-    token: token
+    token: token,
   });
 
   // Encrypt Password
@@ -78,8 +79,8 @@ exports.new = async (req, res) => {
       message: "User already exists",
       data: {
         statusCode: 409,
-        conflict: userExists
-      }
+        conflict: userExists,
+      },
     });
   } else {
     await newUser.save();
@@ -128,7 +129,7 @@ exports.getById = (req, res) => {
         res.send(user);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).json({
           success: "false",
@@ -153,7 +154,7 @@ exports.getById = (req, res) => {
 
 exports.update = async (req, res) => {
   // Build data based on fields to be submited
-  // const userFields =;
+  const userFields = req.body;
 
   try {
     let user = await User.findById(req.params.user_id);
@@ -206,7 +207,7 @@ exports.update = async (req, res) => {
 //#region Delete a user the user_id
 exports.delete = (req, res) => {
   User.findByIdAndRemove(req.params.user_id)
-    .then(user => {
+    .then((user) => {
       if (!user) {
         return res.status(404).send({
           success: "false",
