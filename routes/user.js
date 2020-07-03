@@ -15,7 +15,7 @@
     router.get('/user/:user_id', auth, users.getById);
 
    // Update User Info with user_id
-   router.put('/user/update/:user_id', auth,users.update);
+   router.put('/assistant/update/:assistant_id', auth, users.update);
 
     // Delete a User with user_id
     router.delete('/user/delete/:user_id', auth, users.delete);
