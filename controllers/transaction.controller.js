@@ -6,7 +6,8 @@ const UserModel = require("../models/user");
 const StoreModel = require("../models/store");
 
 // Create and Save a new Transaction
-exports.create = async(req, res, next) => {
+exports.create = async (req, res, next) => {
+
   try {
     let {
       amount,
@@ -32,11 +33,12 @@ exports.create = async(req, res, next) => {
 
     //checks if any of the above fields is empty
     for (var k in req_keys) {
+      console.log(k)
       if (!req_keys[k]) {
         throw "fail";
       }
     }
-
+    
     // gets user_ref_id
     const email = req.user.email;
     var user_ref_id;
