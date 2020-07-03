@@ -151,8 +151,8 @@ exports.update = async (req, res) => {
     const userFields = req.body;
 
     try {
-        let user = await User.findById(req.params.assistant_id);
-
+        let user = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
+        let alluser = await User.find({})
         if (!user) return res.status(404).json({
             success: "false",
             message: "User not found",
@@ -162,27 +162,63 @@ exports.update = async (req, res) => {
             }
          });
 
-        // Update User
-        user = await User.findByIdAndUpdate(req.params.assistant_id,
-            { $set: {assistants: userFields} },
-            { new: true });
-
-        // Send updated user details   
-        res.status(201).json({
-            success: "true",
-            message: "User details updated successfully",
-            data:{
-                statusCode: 201,
-                data: user
-            }
-        }); 
+        // Update Assistant
+        //user = await User.findById(req.params.assistant_id);
+        // ,
+        //     { $set: {assistants: userFields} },
+        //     { new: true }
+        // Send updated user details
+        if (user.assistants.length !== 0) {
+            user.assistants.map((assist) => {
+                if (assist._id.equals(req.params.assistant_id)) {
+                    assist.first_name = req.body.first_name,
+                    assist.last_name =  req.body.last_name,
+                    assist.email = req.body.email,
+                    assist.phone_number = req.body.phone_number
+                }
+            })
+            user.save()
+            .then((userSaved) => {
+                res.status(201).json({
+                    success: "true",
+                    message: "Assistants details updated successfully",
+                    data:{
+                        statusCode: 201,
+                        data: userSaved,
+                        alluser: alluser
+                    }
+                });
+            })
+            .catch((err) => {
+                console.log(err)
+                res.status(500).json({
+                    success: "false",
+                    message: "Internal server error",
+                    error:{
+                        statusCode: 500,
+                        message: "Assistant details could not be updated",
+                    }
+                });
+            })  
+        }
+        else {
+            res.status(500).json({
+                success: "false",
+                message: "You have no assistants yet",
+                error:{
+                    statusCode: 500,
+                    message: "You have no assistants yet",
+                }
+            });
+        } 
     } catch (err) {
+        console.log(err)
         res.status(500).json({
             success: "false",
             message: "Internal server error",
             error:{
                 statusCode: 500,
-                message: "User details could not be updated"
+                message: "Assistant details could not be updated",
             }
         });
     }
