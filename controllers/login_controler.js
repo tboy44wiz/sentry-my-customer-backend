@@ -54,7 +54,8 @@ module.exports.loginUser = async (req, res, next) => {
                   user: userExist,
                 },
               });
-            } else {
+            } 
+            else {
               res.status(401).json({
                 success: false,
                 message: "Invalid Password.",
@@ -68,10 +69,10 @@ module.exports.loginUser = async (req, res, next) => {
           .catch((error) => {
             res.status(500).json({
               success: false,
-              message: "Invalid Password.",
+              message: error,
               error: {
                 code: 500,
-                description: "Invalid Password.",
+                description: error,
               },
             });
           });

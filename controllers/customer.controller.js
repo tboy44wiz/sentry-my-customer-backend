@@ -1,15 +1,17 @@
 const UserModel = require("../models/store_admin");
-const { body } = require("express-validator/check");
-const StoreModel = require("../models/store");
-const customerModel = require("../models/customer");
+const StoreModel = require('../models/store');
+const { body } = require('express-validator/check');
+const Customer = require('../models/customer');
 
 exports.validate = (method) => {
   switch (method) {
-    case "body": {
-      return [body("name").isLength({ min: 3 })];
+    case 'body': {
+      return [
+        body('name').isLength({ min: 3 }),
+      ]
     }
   }
-};
+}
 
 exports.create = async (req, res) => {
   const identifier = req.user.phone_number;
@@ -138,40 +140,35 @@ exports.getById = (req, res) => {
 };
 
 exports.updateById = (req, res) => {
-  customerModel
-    .updateOne(
-      { _id: req.params.customerId },
-      {
-        $set: {
-          name: req.body.name,
-          phone_number: req.body.phone,
-        },
-      }
-    )
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        status: true,
-        message: "Customer was updated",
-        data: {
-          customer: {
-            id: req.params.customerId,
-            name: req.body.name,
-            phone: req.body.phone,
-          },
-        },
-      });
-    })
-    .catch((error) => {
-      res.status(500).json({
-        status: false,
-        message: error.message,
-        error: {
-          code: 500,
+  const customerID = req.params.customerId;
+  const reqBody = req.body;
+  console.log(customerID);
+  console.log(reqBody);
+  Customer.findOneAndUpdate(customerID, reqBody)
+      .then((customer) => {
+        res.status(200).json({
+          status: true,
+          message: "Customer was updated",
+          data: {
+            customer: {
+              _id: customer._id,
+              name: customer.name,
+              email: customer.email,
+              phone_number: customer.phone_number,
+            },
+          }
+        })
+      })
+      .catch((error) => {
+        res.status(500).json({
+          status: false,
           message: error.message,
-        },
+          error: {
+            code: 500,
+            message: error.message
+          }
+        });
       });
-    });
 };
 
 exports.deleteById = (req, res) => {
