@@ -6,8 +6,8 @@ const transactionSchema = new mongoose.Schema({
 	total_amount: { type: String, required: true },
 	description: { type: String, default: "Not set" },
 	type: { type: String, required: true },
-	store_ref_id: { type: mongoose.Schema.Types.ObjectId, ref: "store" },
-	customer_ref_id: { type: mongoose.Schema.Types.ObjectId, ref: "customer" }
+	store_ref_id: { type: String },
+	customer_ref_id: { type: String }
 });
 
 module.exports = mongoose.model("transaction", transactionSchema);

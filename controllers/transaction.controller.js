@@ -78,32 +78,34 @@ exports.create = async (req, res, next) => {
     //     });
     //   });
 
-    console.log(user_ref_id, customer_ref_id, store_ref_id, "+=+=+=++++++++++==========")
+    // console.log(user_ref_id, customer_ref_id, store_ref_id, "+=+=+=++++++++++==========")
 
     // setTimeout(() => {
-      const transaction = new Transaction({
-        amount,
-        interest,
-        total_amount,
-        description,
-        user_ref_id,
-        customer_ref_id,
-        store_ref_id,
-      })
+    const transaction = new Transaction({
+      amount,
+      interest,
+      total_amount,
+      description,
+      user_ref_id,
+      customer_ref_id,
+      store_ref_id,
+      type
+    })
 
-      transaction.save()
-        .then((result) => {
-          res.status(200).json({
-            status: "success",
-            result,
-          });
-        })
-        .catch((err) => {
-          res.status(409).json({
-            error:
-              "Error creating transaction details with the same transaction name or role as previously saved data",
-          });
+    console.log(transaction)
+
+    transaction.save().then((result) => {
+      res.status(200).json({
+        status: "success",
+        result,
+      });
+    })
+      .catch((err) => {
+        res.status(409).json({
+          error:
+            "Error creating transaction details with the same transaction name or role as previously saved data",
         });
+      });
     // }, 1500);
   } catch (error) {
     res.status(500).json({
