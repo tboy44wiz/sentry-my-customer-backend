@@ -4,7 +4,6 @@ const Transaction = require("../models/transaction");
 const CustomerModel = require("../models/customer");
 const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
-const { gmail } = require("googleapis/build/src/apis/gmail");
 
 // Create and Save a new Transaction
 exports.create = async (req, res, next) => {
@@ -32,6 +31,7 @@ exports.create = async (req, res, next) => {
 
     let customer_ref_id = phone_number
     let store_ref_id = store_name
+    let user_ref_id;
 
     //checks if any of the above fields is empty
     for (var k in req_keys) {
@@ -42,7 +42,6 @@ exports.create = async (req, res, next) => {
 
     // gets user_ref_id
     const phone = req.user.phone_number;
-    var user_ref_id;
     await UserModel.findOne({ identifier: phone })
       .then((user) => {
         user_ref_id = user._id;
