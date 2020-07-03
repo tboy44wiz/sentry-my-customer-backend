@@ -48,69 +48,104 @@ exports.all = (req, res) => {
 exports.new = async (req, res) => {
   const { first_name, last_name, email, password, phone_number } = req.body;
 
-  //  Create a Token that will be passed as the "api_token"
-  const token = await jwt.sign(
-    {
-      phone_number: phone_number,
-      password: password
-    },
-    process.env.JWT_KEY,
-    {
-      expiresIn: "1d"
+
+    // Check if Phone exists
+    let userExists = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
+    if (userExists === null) {
+        let userExists = await User.findOne({ identifier: req.user.phone_number.toString() });
+        if (userExists) {
+            // userExists.local.api_token = token;
+            userExists.assistants.push(
+                {
+                    first_name:first_name,
+                     last_name: last_name,
+                      email: email,
+                    password: password,
+                     phone_number: phone_number
+                }
+            )
+            await userExists.save()
+            .then((user) => {
+                return res.status(200).json({ 
+                    success: "true",
+                    message: "Assistant Added Successfully",
+                    data: {
+                        statusCode: 200,
+                        assistant: userExists.assistants,
+                        user: user
+                    }
+                });
+            } )
+            .catch((err) => {
+                return res.status(500).json({
+                    success: "false",
+                    message: "Error",
+                    data: {
+                        statusCode: 500,
+                        error: err.message
+                    }
+                })
+            })
+        } else {
+            return res.status(404).json({
+                success: "false",
+                message: "User Not Found",
+                data: {
+                    statusCode: 404,
+                    error: "User Dosen't Exist"
+                }
+            })
+        }
     }
-  );
+    else {
+        if (userExists) {
+            // userExists.local.api_token = token;
+            userExists.assistants.push(
+                {
+                    first_name:first_name,
+                     last_name: last_name,
+                      email: email,
+                    password: password,
+                     phone_number: phone_number
+                }
+            )
+            await userExists.save()
+            .then((user) => {
+                return res.status(200).json({ 
+                    success: "true",
+                    message: "Assistant Added Successfully",
+                    data: {
+                        statusCode: 200,
+                        assistant: userExists.assistants,
+                        user: user
+                    }
+                });
+            } )
+            .catch((err) => {
+                return res.status(500).json({
+                    success: "false",
+                    message: "Error",
+                    data: {
+                        statusCode: 500,
+                        error: err.message
+                    }
+                })
+            })
+        } else {
+            return res.status(404).json({
+                success: "false",
+                message: "User Not Found",
+                data: {
+                    statusCode: 404,
+                    error: "User Dosen't Exist"
+                }
+            })
+        }
+    }
 
-  const newUser = new User({
-    phone_number: phone_number,
-    token: token,
-  });
 
-  // Encrypt Password
-  const salt = await bcrypt.genSalt(10);
+}
 
-  newUser.password = await bcrypt.hash(password, salt);
-
-  // Check if Phone exists
-  const userExists = await User.findOne({ phone_number: newUser.phone_number });
-
-  if (userExists) {
-    return res.status(409).json({
-      success: "false",
-      message: "User already exists",
-      data: {
-        statusCode: 409,
-        conflict: userExists,
-      },
-    });
-  } else {
-    await newUser.save();
-
-    const payload = {
-      newUser: {
-        id: newUser.id
-      }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_KEY,
-      {
-        expiresIn: 360000
-      },
-      (err, token, data) => {
-        if (err) throw err;
-        res.status(201).json({
-          success: "true",
-          message: "User created successfully",
-          data: {
-            token,
-            newUser
-          }
-        });
-      }
-    );
-  }
-};
 
 //#region Fnd a single user with a user_id
 exports.getById = (req, res) => {
