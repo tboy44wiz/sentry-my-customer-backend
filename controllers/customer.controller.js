@@ -149,9 +149,9 @@ exports.updateById = (req, res) => {
 
       const customer = store.customers.id(customer_id);
 
-      customer.name = name;
-      customer.phone_number = phone_number;
-      customer.email = email;
+      customer.name = name ? name : customer.name;
+      customer.phone_number = phone_number ? phone_number : customer.phone_number;
+      customer.email = email ? email : customer.email;
 
       user.save()
         .then((user) => {
