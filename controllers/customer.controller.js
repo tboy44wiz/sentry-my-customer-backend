@@ -24,6 +24,7 @@ exports.create = async (req, res) => {
           message: "please add a store before adding customers"
         })
       }
+
       let store_name = req.body.store_name || req.params.store_name;
       let wantedStore = user.stores.find((store) => store.store_name === store_name); // find the necessary store form user.stores
   

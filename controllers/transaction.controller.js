@@ -2,8 +2,9 @@ const Response = require("../util/response_manager");
 const HttpStatus = require("../util/http_status");
 const Transaction = require("../models/transaction");
 const CustomerModel = require("../models/customer");
-const UserModel = require("../models/user");
+const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
+const { gmail } = require("googleapis/build/src/apis/gmail");
 
 // Create and Save a new Transaction
 exports.create = async (req, res, next) => {
@@ -16,8 +17,7 @@ exports.create = async (req, res, next) => {
       description,
       phone_number,
       store_name,
-      transaction_name,
-      transaction_role,
+      type
     } = req.body;
 
     let req_keys = [
@@ -27,22 +27,23 @@ exports.create = async (req, res, next) => {
       description,
       phone_number,
       store_name,
-      transaction_name,
-      transaction_role,
+      type
     ];
+
+    let customer_ref_id = phone_number
+    let store_ref_id = store_name
 
     //checks if any of the above fields is empty
     for (var k in req_keys) {
-      console.log(k)
       if (!req_keys[k]) {
         throw "fail";
       }
     }
-    
+
     // gets user_ref_id
-    const email = req.user.email;
+    const phone = req.user.phone_number;
     var user_ref_id;
-    await UserModel.findOne({ email })
+    await UserModel.findOne({ identifier: phone })
       .then((user) => {
         user_ref_id = user._id;
       })
@@ -53,30 +54,33 @@ exports.create = async (req, res, next) => {
         });
       });
 
-    // gets customer_ref_id
-    var customer_ref_id;
-    await CustomerModel.findOne({ phone_number })
-      .then((data) => {
-        customer_ref_id = data._id;
-      })
-      .catch((err) => {
-        res.status(404).json({
-          message: "invalid phone number",
-          error: err,
-        });
-      });
-    // gets store_ref_id
-    var store_ref_id;
-    await StoreModel.findOne({ store_name })
-      .then((data) => {
-        store_ref_id = data._id;
-      })
-      .catch((err) => {
-        res.status(404).json({
-          message: "Store not found",
-        });
-      });
-    setTimeout(() => {
+    // // gets customer_ref_id
+    // await CustomerModel.findOne({ phone_number })
+    //   .then((data) => {
+    //     customer_ref_id = data._id;
+    //   })
+    //   .catch((err) => {
+    //     res.status(404).json({
+    //       message: "invalid phone number",
+    //       error: err,
+    //     });
+    //   });
+
+
+    // // gets store_ref_id
+    // await StoreModel.findOne({ store_name })
+    //   .then((data) => {
+    //     store_ref_id = data._id;
+    //   })
+    //   .catch((err) => {
+    //     res.status(404).json({
+    //       message: "Store not found",
+    //     });
+    //   });
+
+    console.log(user_ref_id, customer_ref_id, store_ref_id, "+=+=+=++++++++++==========")
+
+    // setTimeout(() => {
       const transaction = new Transaction({
         amount,
         interest,
@@ -85,10 +89,9 @@ exports.create = async (req, res, next) => {
         user_ref_id,
         customer_ref_id,
         store_ref_id,
-        transaction_name,
-        transaction_role,
       })
-        .save()
+
+      transaction.save()
         .then((result) => {
           res.status(200).json({
             status: "success",
@@ -101,7 +104,7 @@ exports.create = async (req, res, next) => {
               "Error creating transaction details with the same transaction name or role as previously saved data",
           });
         });
-    }, 1500);
+    // }, 1500);
   } catch (error) {
     res.status(500).json({
       message: "something went wrong",
