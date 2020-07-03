@@ -13,7 +13,7 @@ router.post(
 );
 router.get("/customer", customerController.getAll);
 router.put(
-  "/customer/update",
+  "/customer/update/:customerId",
   customerController.validate("body"),
   bodyValidator,
   customerController.updateById
