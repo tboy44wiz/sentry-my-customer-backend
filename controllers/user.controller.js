@@ -149,70 +149,128 @@ exports.getById = (req, res) => {
 exports.update = async (req, res) => {
     // Build data based on fields to be submited
     const userFields = req.body;
-
     try {
-        let user = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
-        let alluser = await User.find({})
-        if (!user) return res.status(404).json({
-            success: "false",
-            message: "User not found",
-            error:{
-                statusCode: 404,
-                message: "User with the provided details does not exist"
-            }
-         });
 
-        // Update Assistant
-        //user = await User.findById(req.params.assistant_id);
-        // ,
-        //     { $set: {assistants: userFields} },
-        //     { new: true }
-        // Send updated user details
-        if (user.assistants.length !== 0) {
-            user.assistants.map((assist) => {
-                if (assist._id.equals(req.params.assistant_id)) {
-                    assist.first_name = req.body.first_name,
-                    assist.last_name =  req.body.last_name,
-                    assist.email = req.body.email,
-                    assist.phone_number = req.body.phone_number
+        let user = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
+        if (user == null) {
+            let user = await User.findOne({ identifier: req.user.phone_number.toString() });
+            if (!user) return res.status(404).json({
+                success: "false",
+                message: "User not found",
+                error:{
+                    statusCode: 404,
+                    message: "User with the provided details does not exist"
                 }
-            })
-            user.save()
-            .then((userSaved) => {
-                res.status(201).json({
-                    success: "true",
-                    message: "Assistants details updated successfully",
-                    data:{
-                        statusCode: 201,
-                        data: userSaved,
-                        alluser: alluser
+             });
+    
+            // Update Assistant
+            //user = await User.findById(req.params.assistant_id);
+            // ,
+            //     { $set: {assistants: userFields} },
+            //     { new: true }
+            // Send updated user details
+            if (user.assistants.length !== 0) {
+                user.assistants.map((assist) => {
+                    if (assist._id.equals(req.params.assistant_id)) {
+                        assist.first_name = req.body.first_name,
+                        assist.last_name =  req.body.last_name,
+                        assist.email = req.body.email,
+                        assist.phone_number = req.body.phone_number
                     }
-                });
-            })
-            .catch((err) => {
-                console.log(err)
+                })
+                user.save()
+                .then((userSaved) => {
+                    res.status(201).json({
+                        success: "true",
+                        message: "Assistants details updated successfully",
+                        data:{
+                            statusCode: 201,
+                            data: userSaved,
+                        }
+                    });
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        success: "false",
+                        message: "Internal server error",
+                        error:{
+                            statusCode: 500,
+                            message: "Assistant details could not be updated",
+                        }
+                    });
+                })  
+            }
+            else {
                 res.status(500).json({
                     success: "false",
-                    message: "Internal server error",
+                    message: "You have no assistants yet",
                     error:{
                         statusCode: 500,
-                        message: "Assistant details could not be updated",
+                        message: "You have no assistants yet",
                     }
                 });
-            })  
+            } 
         }
         else {
-            res.status(500).json({
+            if (!user) return res.status(404).json({
                 success: "false",
-                message: "You have no assistants yet",
+                message: "User not found",
                 error:{
-                    statusCode: 500,
-                    message: "You have no assistants yet",
+                    statusCode: 404,
+                    message: "User with the provided details does not exist"
                 }
-            });
-        } 
+             });
+    
+            // Update Assistant
+            //user = await User.findById(req.params.assistant_id);
+            // ,
+            //     { $set: {assistants: userFields} },
+            //     { new: true }
+            // Send updated user details
+            if (user.assistants.length !== 0) {
+                user.assistants.map((assist) => {
+                    if (assist._id.equals(req.params.assistant_id)) {
+                        assist.first_name = req.body.first_name,
+                        assist.last_name =  req.body.last_name,
+                        assist.email = req.body.email,
+                        assist.phone_number = req.body.phone_number
+                    }
+                })
+                user.save()
+                .then((userSaved) => {
+                    res.status(201).json({
+                        success: "true",
+                        message: "Assistants details updated successfully",
+                        data:{
+                            statusCode: 201,
+                            data: userSaved,
+                        }
+                    });
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        success: "false",
+                        message: "Internal server error",
+                        error:{
+                            statusCode: 500,
+                            message: "Assistant details could not be updated",
+                        }
+                    });
+                })  
+            }
+            else {
+                res.status(500).json({
+                    success: "false",
+                    message: "You can't update assistants yet because you have no one presently",
+                    error:{
+                        statusCode: 500,
+                        message: "You have no assistants yet",
+                    }
+                });
+            } 
+        }
+
     } catch (err) {
-        console.log(err)
         res.status(500).json({
             success: "false",
             message: "Internal server error",
