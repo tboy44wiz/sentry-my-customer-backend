@@ -54,7 +54,7 @@ exports.new = async (req, res) => {
     if (userExists === null) {
         let userExists = await User.findOne({ identifier: req.user.phone_number.toString() });
         if (userExists) {
-            userExists.local.api_token = token;
+            // userExists.local.api_token = token;
             userExists.assistants.push(
                 {
                     first_name:first_name,
@@ -99,7 +99,7 @@ exports.new = async (req, res) => {
     }
     else {
         if (userExists) {
-            userExists.local.api_token = token;
+            // userExists.local.api_token = token;
             userExists.assistants.push(
                 {
                     first_name:first_name,
