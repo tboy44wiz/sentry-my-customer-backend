@@ -150,7 +150,7 @@ exports.update = async (req, res) => {
     const userFields = req.body;
     try {
 
-        let user = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
+        let user = await User.findOne({ identifier: '0' + req.user.phgone_number.toString() });
         if (user == null) {
             let user = await User.findOne({ identifier: req.user.phone_number.toString() });
             if (!user) return res.status(404).json({
