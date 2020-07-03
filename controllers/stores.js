@@ -10,9 +10,8 @@ exports.createStore = async (req, res, next) => {
     });
   }
   try {
-    const id = req.params.current_user;
-    console.log(id)
-    const storeOwner = await UserModel.findById(id);
+    const id = req.user.phone_number;
+    const storeOwner = await UserModel.findOne( { identifier: id });
     if (storeOwner) {
      storeOwner.stores.push({
        store_name: req.body.store_name,
