@@ -18,7 +18,7 @@ router.put(
   bodyValidator,
   customerController.updateById
 );
-router.delete("/customer/:customerId", customerController.deleteById);
+router.delete("/customer/delete/:customerId", customerController.deleteById);
 router.get("/customer/:customerId", customerController.getById);
 
 module.exports = router;
