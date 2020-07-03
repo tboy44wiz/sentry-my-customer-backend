@@ -157,7 +157,7 @@ exports.update = async (req, res) => {
     const userFields = req.body;
     try {
 
-        let user = await User.findOne({ identifier: '0' + req.user.phgone_number.toString() });
+        let user = await User.findOne({ identifier: '0' + req.user.phone_number.toString() });
         if (user == null) {
             let user = await User.findOne({ identifier: req.user.phone_number.toString() });
             if (!user) return res.status(404).json({
@@ -277,6 +277,7 @@ exports.update = async (req, res) => {
         }
 
     } catch (err) {
+        console.log(err)
         res.status(500).json({
             success: "false",
             message: "Internal server error",
