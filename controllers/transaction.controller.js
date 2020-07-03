@@ -78,9 +78,7 @@ exports.create = async (req, res, next) => {
     //     });
     //   });
 
-    // console.log(user_ref_id, customer_ref_id, store_ref_id, "+=+=+=++++++++++==========")
-
-    // setTimeout(() => {
+    setTimeout(() => {
     const transaction = new Transaction({
       amount,
       interest,
@@ -91,8 +89,6 @@ exports.create = async (req, res, next) => {
       store_ref_id,
       type
     })
-
-    console.log(transaction)
 
     transaction.save().then((result) => {
       res.status(200).json({
@@ -106,7 +102,7 @@ exports.create = async (req, res, next) => {
             "Error creating transaction details with the same transaction name or role as previously saved data",
         });
       });
-    // }, 1500);
+    }, 1500);
   } catch (error) {
     res.status(500).json({
       message: "something went wrong",
