@@ -119,5 +119,5 @@ app.use("*", (req, res) => {
 
 const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port:`+ port)
+  console.log(`app running on port:`+ port);
 });
