@@ -90,13 +90,13 @@
                     <li>Send SMS(OTP)<strong> - /otp/send [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>phone</li>
+                        <li>phone_number</li>
                     </ul>
                     <li>Verify OTP<strong> - /otp/verify [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>id (from response in <strong>/otp/verify</strong> )</li>
-                        <li>token</li>
+                        <li>verify: (from response in <strong>/otp/verify</strong> )</li>
+                        <li>phone_number</li>
                     </ul>
                     <h5 class="mt-2">Account Recovery</h5>
                     <li>Send password reset link <strong>- /forgot-password [POST]</strong></li>
@@ -163,7 +163,7 @@
                     </ul>
                 </li>
                 <li>Update store<strong> - /store/update/:store_id [PUT]</strong>
-                <h6>Params</h6>
+                <h6>Body</h6>
                 <ul class="alert alert-primary">
                     <li>shop_address</li>
                     <li>store_name</li>
@@ -171,7 +171,7 @@
                 </ul>
                 </li>
                 <li>Delete store<strong> - /store/delete/:store_id [DELETE]</strong>
-                    <h6>Params</h6>
+                    <h6>Body</h6>
                     <ul class="alert alert-primary">
                         <li>current_user</li>
                     </ul>
@@ -264,10 +264,7 @@
                 </li>
                 <li>View all transactions<strong> - /transaction/all</strong></li>
                 <li>view a single transaction<strong> - /transaction/:transaction_id [UPDATE]</strong>
-                    <h6>Params: </h6>
-                    <ul class="alert alert-primary">
-                        <li>transaction_id</li>
-                    </ul>
+                   
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>transaction id </li>
