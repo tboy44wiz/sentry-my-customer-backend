@@ -7,14 +7,11 @@ const CustomerModel = require("../models/customer");
 
 exports.validate = (method) => {
   switch (method) {
-      case 'login': {
-          return [
-              body('phone_number').isInt(),
-              body('password'),
-          ]
-      }
+    case "login": {
+      return [body("phone_number").isInt(), body("password")];
+    }
   }
-}
+};
 
 //  Login User
 module.exports.loginUser = async (req, res, next) => {
@@ -38,14 +35,14 @@ module.exports.loginUser = async (req, res, next) => {
               //  Generate a login api_token for subsequent authentication.
               const apiToken = jwt.sign(
                 {
-                  phone_number: userExist.local.phone_number,
+                  phone_number: userExist.identifier,
                   password: user.local.password,
                 },
                 process.env.JWT_KEY,
                 {
                   expiresIn: "1h",
                 }
-              )
+              );
               userExist.api_token = apiToken;
               userExist.save();
               res.status(200).json({
@@ -53,28 +50,29 @@ module.exports.loginUser = async (req, res, next) => {
                 message: "You're logged in successfully.",
                 data: {
                   statusCode: 200,
-                  user: userExist
+                  user: userExist,
                 },
               });
-            } else {
+            } 
+            else {
               res.status(401).json({
                 success: false,
                 message: "Invalid Password.",
                 error: {
                   code: 401,
-                  description: "Invalid Password"
-                }
+                  description: "Invalid Password",
+                },
               });
             }
           })
           .catch((error) => {
             res.status(500).json({
               success: false,
-              message: "Invalid Password.",
+              message: error,
               error: {
                 code: 500,
-                description: "Invalid Password."
-              }
+                description: error,
+              },
             });
           });
       } else {
@@ -83,8 +81,8 @@ module.exports.loginUser = async (req, res, next) => {
           message: "Invalid phone number.",
           error: {
             code: 401,
-            description: "Invalid phone number."
-          }
+            description: "Invalid phone number.",
+          },
         });
       }
     })
@@ -94,8 +92,8 @@ module.exports.loginUser = async (req, res, next) => {
         message: "An internal error occurred",
         error: {
           statusCode: 500,
-          description: error
-        }
+          description: error,
+        },
       });
     });
 };
@@ -118,10 +116,10 @@ module.exports.loginCustomer = async (req, res, next) => {
     return res.status(400).json({
       success: false,
       message: "An internal error occurred",
-      error: { 
+      error: {
         statusCode: 400,
         description: error.details[0].message,
-      }
+      },
     });
   }
 
@@ -159,7 +157,7 @@ module.exports.loginCustomer = async (req, res, next) => {
         });
       } else {
         res.json({
-          Message: "Invalid phone number.",
+          message: "Invalid phone number.",
           Status: false,
         });
       }
