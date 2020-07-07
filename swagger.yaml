@@ -876,7 +876,7 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Complaints not found"
-  /debt/all:
+  /debt:
     get:
       tags:
       - "Debts"
