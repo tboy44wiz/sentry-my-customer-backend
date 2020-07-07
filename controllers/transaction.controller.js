@@ -15,35 +15,53 @@ exports.create = async (req, res, next) => {
       phone_number,
       store_name,
       type,
+      transaction_name,
+      transaction_role,
     } = req.body;
 
-    let req_keys = { amount, interest, total_amount, description, type };
+    let req_keys = {
+      amount,
+      interest,
+      total_amount,
+      description,
+      type,
+      transaction_name,
+      transaction_role,
+    };
 
     const identifier = req.user.phone_number;
+    let store_ref_id;
+    let customer_ref_id;
 
-    // //checks if any of the above fields is empty
-    for (let key in req_keys) {
-      if (req_keys[key] == undefined || req_keys[key].trim() == "") {
-        return res.status(400).json({
-          success: false,
-          message: "Please provide all the required parameters",
-          error: {
-            code: 500,
-            message: "Please provide all the required parameters",
-          },
-        });
-      }
-    }
+    // // //checks if any of the above fields is empty
+    // for (let key in req_keys) {
+    //   if (req_keys[key] == undefined || req_keys[key].trim() == "") {
+    //     return res.status(400).json({
+    //       success: false,
+    //       message: "Please provide all the required parameters",
+    //       error: {
+    //         code: 500,
+    //         message: "Please provide all the required parameters",
+    //       },
+    //     });
+    //   }
+    // }
 
     UserModel.findOne({ identifier })
       .then((user) => {
         let stores = user.stores;
         stores.forEach((store) => {
           if (store.store_name == store_name) {
+            store_ref_id = store._id;
             customers = store.customers;
             if (customers.length > 0) {
               customers.forEach((customer) => {
                 if (customer.phone_number == phone_number) {
+                  customer_ref_id = customer._id;
+
+                  req_keys.customer_ref_id = customer_ref_id;
+                  req_keys.store_ref_id = store_ref_id;
+
                   customer.transactions.push(req_keys);
                 }
               });
