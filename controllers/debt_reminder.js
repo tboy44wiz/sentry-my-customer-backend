@@ -38,15 +38,18 @@ exports.create = async (req,res)=>{
 }
 
 exports.getAll = async (req,res)=>{
-    // Find all the messages
-    let { phone_number } = req.user;
-
-    debt.find({ phone_number })
-        .then(resp => {
-            if(!resp) return Response.failure(res, { error: true, message: resp}, HttpStatus.NOT_FOUND);
-            return Response.success(res, { error: false, message: resp});
-        })
-        .catch(err => { return Response.failure(res, { error: true, message: err}, HttpStatus.INTERNAL_SERVER_ERROR); })
+    // Find all the debts
+    const { phone_number } = req.user;
+    try{
+        const resp = await debt.find({ phone_number });
+    if(!resp){
+        return Response.failure(res, { error: true, message: "Debt not found", response: resp}, HttpStatus.NOT_FOUND)
+    }
+        return Response.success(res, { error: false, message: "Debt found",response: resp});
+    }
+    catch(err){ 
+        return Response.failure(res, { error: true, message: err}, HttpStatus.INTERNAL_SERVER_ERROR); 
+    }
 }
 
 exports.getById = async (req,res)=>{
