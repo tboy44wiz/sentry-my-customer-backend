@@ -1,3 +1,4 @@
+
 const Debt = require("../models/debt_reminders")
 const Response = require('../util/response_manager')
 const HttpStatus = require('../util/http_status')
@@ -65,10 +66,6 @@ exports.getById = async (req,res)=>{
         .catch(err => { return Response.failure(res, { error: true, message: err}, HttpStatus.INTERNAL_SERVER_ERROR) })
 }
 
-exports.updateById = async (req,res)=>{
-    
-}
+exports.updateById = async (req, res) => {};
 
-exports.deleteById = async (req,res)=>{
-    
-}
+exports.deleteById = async (req, res) => {};
