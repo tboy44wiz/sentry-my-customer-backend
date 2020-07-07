@@ -71,18 +71,28 @@
                     <li>phone_number</li>
                     <li>password</li>
                 </ul>
+                 <li>User update<strong> - /store-admin/update</strong></li>
+                <h6>Body: </h6>
+                <ul  class='alert alert-primary'>
+                  <li>first_name</li>
+                    <li>last_name</li>
+                    <li>phone_number</li> 
+                    <li>email</li>
+                </ul>
+                
+
                 <!-- FACEBOOK LOGIN -->
                 <li>Facebook login<strong> - /login/fb_login [GET]</strong></li>
 
                 <ul>
                     <h5 class="mt-2">Account Activation</h5>
                     <p>Also, a user is required to verify his/her phone number after registration in order to activate his/her account.</p>
-                    <li>Send SMS(OTP)<strong> - /auth/verify-phone [POST]</strong></li>
+                    <li>Send SMS(OTP)<strong> - /otp/send [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>phone</li>
                     </ul>
-                    <li>Verify token<strong> - /auth/verify [POST]</strong></li>
+                    <li>Verify OTP<strong> - /otp/verify [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>id (from response in <strong>/auth/verify-phone</strong> )</li>
