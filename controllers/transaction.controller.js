@@ -58,7 +58,7 @@ exports.create = (req, res, next) => {
           success: false,
           message: "Invalid phone_number and/or store_name",
           error: {
-            statusCode: 404,
+            statusCode: 400,
             message: "Invalid phone_number and/or store_name",
           },
         });
@@ -175,11 +175,11 @@ exports.findOne = (req, res, next) => {
         });
       });
       if (details.length == 0) {
-        res.status(500).json({
+        res.status(404).json({
           success: false,
           Message: "Transaction not Found",
           error: {
-            statusCode: 500,
+            statusCode: 404,
             message: "Transaction not Found",
           },
         });
