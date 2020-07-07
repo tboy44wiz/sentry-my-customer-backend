@@ -5,14 +5,14 @@ const auth = require("../auth/auth");
 const { check, validationResult } = require('express-validator/check');
 
 // Get all complaints
-router.get("/complaint/all", auth, complaintsController.findAll);
+router.get("/complaints/:ownerId", auth, complaintsController.findAll);
 
 // Update a complaint
-router.put("/complaint/update/:id", auth, complaintsController.update);
+router.put("/complaint/update/:ownerId", complaintsController.update);
 
 // Create a new complaint
 // // create and register new complaint
-// @route       GET /complaint/new/:ownerId
+// @route       POST /complaint/new/:ownerId
 // @desc        Public creates complaints to store Owner admins
 // @access      Public
 router.post(
@@ -26,6 +26,6 @@ router.post(
 );
 
 // Delete a complaint
-router.delete("/complaint/delete/:id", auth, complaintsController.deleteOne);
+router.delete("/complaint/delete/:ownerId", auth, complaintsController.deleteOne);
 
 module.exports = router;
