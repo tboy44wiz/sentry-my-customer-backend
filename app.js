@@ -10,9 +10,10 @@ var cors = require("cors");
 const documentation = require("./routes/documentation");
 // const google = require("./routes/google");
 const customer = require("./routes/customer");
-const phone_verification = require("./routes/verify-phone-number");
+//const phone_verification = require("./routes/verify-phone-number");
+const otp = require("./routes/otp");
 // const example = require("./routes/example");
-const messagingAPI = require("./routes/messaging");
+//const messagingAPI = require("./routes/messaging");
 const mongoose = require("mongoose");
 const transactions = require("./routes/transaction");
 const store = require("./routes/stores.js");
@@ -62,8 +63,9 @@ app.get("/", (req, res) => {
 
 app.use(documentation);
 app.use(customer);
-app.use(phone_verification);
-app.use(messagingAPI);
+//app.use(phone_verification);
+app.use(otp);
+//app.use(messagingAPI);
 app.use(emailAPI);
 app.use(transactions);
 // app.use(businessCards);
