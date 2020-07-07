@@ -5,11 +5,6 @@ const africastalking = require("africastalking")({
   username: process.env.AFRICASTALKING_USERNAME
 });
 
-// ===PASSWORD RECOVER AND RESET
-
-// @route POST api/auth/recover
-// @desc Recover Password - Generates token and Sends password reset email
-// @access Public
 module.exports.recover = async (req, res) => {
   console.log(req.body.phone_number);
   const userr = await new User({});
@@ -84,9 +79,7 @@ module.exports.reset = async (req, res) => {
     .catch(err => res.status(500).json({ message: err.message }));
 };
 
-// @route POST api/auth/reset
-// @desc Reset Password
-// @access Public
+
 module.exports.resetPassword = async (req, res, next) => {
   const user = await User.findOne({
     resetPasswordToken: req.body.token,
