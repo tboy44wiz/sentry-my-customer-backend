@@ -201,7 +201,7 @@ exports.findOne = (req, res, next) => {
 exports.update = async (req, res, next) => {
   const identifier = req.user.phone_number;
   const id = req.params.transaction_id;
-  const { store_name, description, amount, interest, total_amount, type } = req.body;
+  const { store_name, description, amount, interest, total_amount, transaction_name, transaction_role, type } = req.body;
 
   try {
 
@@ -223,6 +223,8 @@ exports.update = async (req, res, next) => {
           description: description || transToUpdate.description,
           interest: interest || transToUpdate.interest,
           total_amount: total_amount || transToUpdate.total_amount,
+          transaction_role: transaction_role || transToUpdate.transaction_role,
+          transaction_name: transaction_name || transToUpdate.transaction_name,
           type: type || transToUpdate.type
         } // update with field from req.body or if null still use the value already in db
 
