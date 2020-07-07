@@ -21,6 +21,7 @@ module.exports.recover = async (req, res) => {
 
       //Generate and set password reset token
       user.generatePasswordReset();
+      console.log(user.resetPasswordToken);
 
       // Save the updated user object
       user
@@ -59,9 +60,7 @@ module.exports.recover = async (req, res) => {
     .catch(err => res.status(500).json({ message: err.message }));
 };
 
-// @route POST api/auth/reset
-// @desc Reset Password - Validate password reset token and shows the password reset view
-// @access Public
+
 module.exports.reset = async (req, res) => {
   User.findOne({
     resetPasswordToken: req.body.resetPasswordToken,
