@@ -20,6 +20,8 @@ tags:
   description: "Everything about Authentication"
 - name: "Complaint"
   description: "Everything about Complaint"
+- name: "Debts"
+  description: "Everything on debts"
 schemes:
 - "https"
 paths:
@@ -874,12 +876,55 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Complaints not found"
+  /debt/all:
+    get:
+      tags:
+      - "Debts"
+      summary: "Get all the debts for a user"
+      description: ""
+      produces:
+      - "application/json"
+      responses: 
+        200:
+          description: "Operation successful"
+          schema:
+           type: "object"
+           properties:
+            message:
+              type: "string"
+            code: 
+              type: "string"
+            data: 
+              type: "string"
+            $ref: "#/definitions/Store"  
+        404: 
+          description: "Debts not found for user"
+        500:
+          description: "Internal Server error"         
 securityDefinitions:
   api_key:
     type: "apiKey"
     name: "x-access-token"
     in: "header"
 definitions:
+  Debt: 
+    type: "object"
+    required:
+    - "phone_number"
+    - "message"
+    - "status"
+    properties: 
+      id:
+        type: "integer"
+      phone_number:
+        type: "integer"
+        description: "The phone number of of the customer"
+      message: 
+        type: "string"
+        description: "Message to send to the user"
+      status: 
+        type: "string"
+        description: "The status of the debt"
   Reminder:
     type: "object"
     required:
