@@ -1,3 +1,4 @@
+
 const User = require("../models/store_admin");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -384,6 +385,98 @@ exports.delete = (req, res) => {
 //#endregion
 
 
+
+//reset region
+exports.reset = async (req, res) => {
+  const phone_number = req.body.phone_number.toString();
+  let duser = await User.findOne({identifier: phone_number});
+  const password = await bCrypt.hash(req.body.password, 10);
+  if (!duser) {
+    duser = await User.findOne({identifier: ('0' + phone_number)})
+    if (!duser) {
+    return  res.status(404).json({
+      success: false,
+      message: err.message,
+      data: {
+          statusCode: 404
+      }
+      })
+    }
+    duser.local.password = password;
+
+    duser.save()
+    .then((user) => {
+      
+      return res.status(200).json({
+        success: true,
+        message: "Password Changed Succesfully",
+        data: {
+            statusCode: 200,
+            user: user
+        }
+      })
+  
+    }, (err) => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+          data: {
+              statusCode: 400
+          }
+        })
+      }
+     
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+        data: {
+            statusCode: 400
+        }
+      })
+    })
+  }
+  duser.local.password = password;
+
+  duser.save()
+  .then((user) => {
+    
+    return res.status(200).json({
+      success: true,
+      message: "Password Changed Succesfully",
+      data: {
+          statusCode: 200,
+          user: user
+      }
+    })
+
+  }, (err) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+        data: {
+            statusCode: 400
+        }
+      })
+    }
+   
+  })
+  .catch((err) => {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+      data: {
+          statusCode: 400
+      }
+    })
+  })
+
+
+
+
 exports.updateStoreAdmin = (req, res) => {
   const identifier = req.user.phone_number;
   User.findOne({identifier})
@@ -422,4 +515,6 @@ exports.updateStoreAdmin = (req, res) => {
       }
     });
   })
+
+}
 }

@@ -23,4 +23,5 @@
     // Update User Info with user_id
     router.put('/store-admin/update', auth, users.validate('store_admin'), bodyValidator, users.updateStoreAdmin);
 
+    router.post('/store_admin/reset-password/', users.reset)
     module.exports = router;
