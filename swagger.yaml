@@ -896,11 +896,51 @@ paths:
               type: "string"
             data: 
               type: "string"
-            $ref: "#/definitions/Store"  
         404: 
           description: "Debts not found for user"
         500:
           description: "Internal Server error"         
+  /debt/new:
+    post:
+      tags:
+      - "Debts"
+      summary: "User can add a new debt reminder"
+      description: ""
+      operationId: "addDebtreminder"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "customer_number"
+        description: "customers phone number"
+        required: true
+      - in: "body"
+        name: "status"
+        description: "status of the debt,if fully paid or so"
+        required: true
+      - in: "body"
+        name: "message"
+        description: "reminder message"
+        required: true
+      - in: "body"
+        name: "pay_date"
+        description: "agreed day of payment"
+      - in: "body"
+        name: "token"
+        description: "user token"
+        required: true
+      schema:
+        $ref: "#/definitions/Debt"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            message: 
+              type: "string"
+        "500":
+          description: "Server Error. "
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -910,13 +950,16 @@ definitions:
   Debt: 
     type: "object"
     required:
-    - "phone_number"
+    - "customer_phone_number"
     - "message"
     - "status"
     properties: 
       id:
         type: "integer"
-      phone_number:
+      user_phone_number:
+        type: "integer"
+        description: "The phone number of of the customer"
+      customer_phone_number:
         type: "integer"
         description: "The phone number of of the customer"
       message: 

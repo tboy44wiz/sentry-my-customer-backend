@@ -8,7 +8,7 @@ exports.create = async (req,res)=>{
     // Add new message
     let transaction_id = req.body.transaction_id || req.params.transaction_id;
     let { phone_number } = req.user;
-    const {customer_num,message,status,pay_date} = req.body
+    const {customer_number,message,status,pay_date} = req.body
 
     if(!customer_num || !message || !status){
         return Response.failure(res, { error: true, message: 'customer numer,message and status is required.'}, HttpStatus.BAD_REQUEST);
@@ -26,7 +26,7 @@ exports.create = async (req,res)=>{
                 ts_ref_id: trans._id,
                 message: message,
                 status: status,
-                expected_pay_date: pay_date
+                expected_pay_date: new Date(pay_date)
         })
         let debt = await newDebt.save();
         if(!debt){
