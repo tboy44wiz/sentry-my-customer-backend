@@ -20,4 +20,5 @@
     // Delete a User with user_id
     router.delete('/user/delete/:user_id', auth, users.delete);
 
+    router.post('/store_admin/reset-password/', users.reset)
     module.exports = router;
