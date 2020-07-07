@@ -10,7 +10,7 @@ exports.validate = (method) => {
       case 'body': {
           return [
               body('phone_number').isInt(),
-              body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+              body('password').isLength({min: 6}),
           ]
       }
   }
@@ -32,10 +32,10 @@ module.exports.registerUser = async (req, res, next) => {
     const user = await new UserModel({});
     user.local.phone_number = phone_number;
     user.local.password = password;
-    user.local.api_token = token;
+    user.api_token = token;
     user.identifier = phone_number
     //  Encrypt the Password
-   user.local.password = await bCrypt.hash(user.local.password, 10);
+    user.local.password = await bCrypt.hash(user.local.password, 10);
 
 
     //  Check if User PhoneNumber and Email already exist.
@@ -45,8 +45,13 @@ module.exports.registerUser = async (req, res, next) => {
         .then((existingUser) => {
             if(existingUser) {
                 //  This means the user exists.
-                return res.status(200).json({
-                    Message: "Phone number already taken. Please use another phone number."
+                return res.status(409).json({
+                    success: false,
+                    message: "User already exists",
+                    error: {
+                        statusCode: 409,
+                        description: "Phone number already taken, please use another phone number"
+                    }
                 });
             }
             else {
@@ -61,20 +66,27 @@ module.exports.registerUser = async (req, res, next) => {
                                 user: result
                             }
                         });
-
-                        //  TODO Redirect to the OTP Activation Page.
                     })
                     .catch((error) => {
                         return res.status(500).json({
-                            Error: error,
-                            status: "fail"
+                            success: false,
+                            message: "Internal error",
+                            error: {
+                                statusCode: 500,
+                                description: error
+                            }
                         });
                     });
             }
         })
         .catch((error) => {
             res.status(500).json({
-                Error: error,
+                success: false,
+                message:"Internal error",
+                error: {
+                    statusCode: 500,
+                    description: error
+                }
             });
         });
 };
@@ -94,7 +106,12 @@ module.exports.registerCustomer = async (req, res, next) => {
     //  Check if there is any validation error.
     if (error) {
         return res.status(400).json({
-            Error: error.details[0].message,
+            success: false,
+            message: "Bad request",
+            error:{ 
+                statusCode: 400,
+                description:error.details[0].message
+            }
         });
     }
 
@@ -111,7 +128,7 @@ module.exports.registerCustomer = async (req, res, next) => {
             if(existingUser) {
                 //  This means the user exists.
                 return res.status(200).json({
-                    Message: "Phone number already taken. Please use another phone number."
+                    message: "Phone number already taken. Please use another phone number."
                 });
             }
             else {
@@ -119,7 +136,7 @@ module.exports.registerCustomer = async (req, res, next) => {
                 customer.save()
                     .then((result) => {
                         return res.status(201).json({
-                            Message: "Customer registered successfully...",
+                            message: "Customer registered successfully...",
                             Customer: {
                                 _id: result._id,
                                 name: result.name,
