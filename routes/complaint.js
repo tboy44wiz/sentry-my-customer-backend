@@ -7,6 +7,9 @@ const { check, validationResult } = require('express-validator/check');
 // Get all complaints
 router.get("/complaints/:ownerId", auth, complaintsController.findAll);
 
+// Get a single complaint
+router.get("/complaint/:ownerId", auth, complaintsController.findOne)
+
 // Update a complaint
 router.put("/complaint/update/:ownerId", complaintsController.update);
 
