@@ -37,6 +37,51 @@ exports.findAll = async (req, res) => {
   }
 };
 
+// @route       GET /complaint/:ownerId
+// @desc        Retrieve a single complaint
+// @access      Private
+exports.findOne = async (req, res) => {
+
+  try {
+    const complaint_id = req.body.complaint_id;
+    const store_admin_id = req.params.ownerId;
+
+    const storeAdmin = await StoreOwner.findById(store_admin_id);
+
+    const complaint = storeAdmin.complaints.id(complaint_id);
+
+    if (!complaint) {
+      res.status(422).send({
+        success: false,
+        message: "Error fetching complaint",
+        data: {
+          statusCode: 422,
+          error: error.message
+        }
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      message: "Complaint fetched",
+      data: {
+        statusCode: 200,
+        complaint
+      }
+    });
+    
+  } catch (error) {
+    res.status(422).send({
+      success: false,
+      message: "Error fetching complaint",
+      data: {
+        statusCode: 422,
+        error: error.message
+      }
+    });
+  }
+}
+
 // @route       PUT /complaints/update/:ownerId
 // @desc        Update an existing complaint
 // @access      Public
@@ -134,7 +179,6 @@ exports.newComplaint = async (req, res) => {
 
   // Deconstruct req body
   const { name, email, message } = req.body
-
 
   try {
     // Get Store Owner Id from the URL Parameter

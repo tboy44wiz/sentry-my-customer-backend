@@ -95,7 +95,7 @@
                     <li>Verify OTP<strong> - /otp/verify [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>id (from response in <strong>/auth/verify-phone</strong> )</li>
+                        <li>id (from response in <strong>/otp/verify</strong> )</li>
                         <li>token</li>
                     </ul>
                     <h5 class="mt-2">Account Recovery</h5>
@@ -198,7 +198,25 @@
                         <li>message</li>
                     </ul>
                 </li>
-                <li>Retrieve all complaints<strong> - /complaints/:ownerId [GET]</strong></li>
+                <li>Retrieve all complaints<strong> - /complaints/:ownerId [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+                </li>
+
+                <li>Retrieve a single complaint<strong> - /complaint/:ownerId [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>complaint_id</li>
+                    </ul>
+                </li>
+
                 <li>Update complaint<strong> - /complaint/update/:ownerId [PUT]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
@@ -252,7 +270,7 @@
                     </ul>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li></li>
+                        <li>transaction id </li>
                     </ul>
                 </li>
                 <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
