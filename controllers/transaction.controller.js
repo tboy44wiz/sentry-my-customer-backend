@@ -5,111 +5,96 @@ const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
 
 // Create and Save a new Transaction
-exports.create = async (req, res, next) => {
-  try {
-    let {
-      amount,
-      interest,
-      total_amount,
-      description,
-      phone_number,
-      store_name,
-      type,
-      transaction_name,
-      transaction_role,
-    } = req.body;
+exports.create = (req, res, next) => {
+  let {
+    amount,
+    interest,
+    total_amount,
+    description,
+    phone_number,
+    store_name,
+    type,
+    transaction_name,
+    transaction_role,
+  } = req.body;
 
-    let req_keys = {
-      amount,
-      interest,
-      total_amount,
-      description,
-      type,
-      transaction_name,
-      transaction_role,
-    };
+  let req_keys = {
+    amount,
+    interest,
+    total_amount,
+    description,
+    type,
+    transaction_name,
+    transaction_role,
+  };
 
-    const identifier = req.user.phone_number;
-    let store_ref_id;
-    let customer_ref_id;
+  const identifier = req.user.phone_number;
+  let store_ref_id;
+  let customer_ref_id;
 
-    // // //checks if any of the above fields is empty
-    // for (let key in req_keys) {
-    //   if (req_keys[key] == undefined || req_keys[key].trim() == "") {
-    //     return res.status(400).json({
-    //       success: false,
-    //       message: "Please provide all the required parameters",
-    //       error: {
-    //         code: 500,
-    //         message: "Please provide all the required parameters",
-    //       },
-    //     });
-    //   }
-    // }
+  UserModel.findOne({ identifier })
+    .then((user) => {
+      let stores = user.stores;
+      stores.forEach((store) => {
+        if (store.store_name == store_name) {
+          store_ref_id = store._id;
+          customers = store.customers;
+          if (customers.length > 0) {
+            customers.forEach((customer) => {
+              if (customer.phone_number == phone_number) {
+                customer_ref_id = customer._id;
 
-    UserModel.findOne({ identifier })
-      .then((user) => {
-        let stores = user.stores;
-        stores.forEach((store) => {
-          if (store.store_name == store_name) {
-            store_ref_id = store._id;
-            customers = store.customers;
-            if (customers.length > 0) {
-              customers.forEach((customer) => {
-                if (customer.phone_number == phone_number) {
-                  customer_ref_id = customer._id;
+                req_keys.customer_ref_id = customer_ref_id;
+                req_keys.store_ref_id = store_ref_id;
 
-                  req_keys.customer_ref_id = customer_ref_id;
-                  req_keys.store_ref_id = store_ref_id;
-
-                  customer.transactions.push(req_keys);
-                }
-              });
-            }
+                customer.transactions.push(req_keys);
+              }
+            });
           }
-        });
-        user
-          .save()
-          .then((result) => {
-            return res.status(201).json({
-              success: true,
-              message: "Transaction created",
-              data: {
-                details: req_keys,
-              },
-            });
-          })
-          .catch((err) => {
-            return res.status(500).json({
-              success: false,
-              message: "Error saving to database",
-              error: {
-                code: 500,
-                message: err,
-              },
-            });
-          });
-      })
-      .catch((err) => {
-        return res.status(404).json({
-          status: false,
-          message: "Customer not found",
+        }
+      });
+      if (customer_ref_id == undefined || store_ref_id == undefined) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid phone_number and/or store_name",
           error: {
-            code: 404,
-            message: err,
+            statusCode: 400,
+            message: "Invalid phone_number and/or store_name",
           },
         });
+      }
+      user
+        .save()
+        .then((result) => {
+          return res.status(201).json({
+            success: true,
+            message: "Transaction created",
+            data: {
+              details: req_keys,
+            },
+          });
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            success: false,
+            message: "Error saving to database",
+            error: {
+              statusCode: 500,
+              message: err,
+            },
+          });
+        });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        status: false,
+        message: "Something went wrong",
+        error: {
+          code: 500,
+          message: err,
+        },
       });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error: {
-        code: 500,
-        message: err,
-      },
     });
-  }
 };
 
 // Retrieve and return all transactions from the database.
@@ -190,11 +175,11 @@ exports.findOne = (req, res, next) => {
         });
       });
       if (details.length == 0) {
-        res.status(500).json({
+        res.status(404).json({
           success: false,
           Message: "Transaction not Found",
           error: {
-            statusCode: 500,
+            statusCode: 404,
             message: "Transaction not Found",
           },
         });
@@ -291,37 +276,66 @@ exports.update = async (req, res, next) => {
 };
 
 // Delete a transaction with the specified transaction_id in the request
-exports.delete = async (req, res, next) => {
-  try {
-    Transaction.findByIdAndRemove(req.params.transaction_id)
-      .then((transaction) => {
-        if (!transaction) {
-          return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
+exports.delete = (req, res) => {
+  const identifier = req.user.phone_number;
+  let found = false;
+  UserModel.findOne({ identifier })
+    .then((user) => {
+      let stores = user.stores;
+      stores.forEach((store) => {
+        let customers = store.customers;
+        if (customers.length > 0) {
+          customers.forEach((customer) => {
+            let transactions = customer.transactions;
+            transactions.forEach((transaction, index) => {
+              if (transaction._id == req.params.transaction_id) {
+                found = true;
+                transactions.splice(index, 1);
+              }
+            });
           });
         }
-        res.send({
-          message: "Transaction deleted successfully!",
-        });
-      })
-      .catch((err) => {
-        if (err.kind === "ObjectId" || err.name === "NotFound") {
-          return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
-          });
-        }
-        return res.status(500).send({
-          message:
-            "Could not delete transaction with id " + req.params.transaction_id,
-        });
       });
-  } catch (error) {
-    res.status(500).send({
-      status: "fail",
-      message:
-        error.message || "Some error occurred while creating the transaction.",
+      if (found == false) {
+        return res.status(404).json({
+          status: false,
+          message: "transaction not found",
+          error: {
+            code: 404,
+            message: "transaction not found",
+          },
+        });
+      }
+      user
+        .save()
+        .then((result) => {
+          res.status(200).json({
+            success: true,
+            message: "transaction deleted successful",
+            data: {
+              statusCode: 200,
+            },
+          });
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            success: false,
+            message: "Error deleting transaction",
+            data: {
+              statusCode: 500,
+              err,
+            },
+          });
+        });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        status: false,
+        message: "Something went wrong",
+        error: {
+          code: 404,
+          message: err,
+        },
+      });
     });
-  }
 };
