@@ -95,7 +95,7 @@
                     <li>Verify OTP<strong> - /otp/verify [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>id (from response in <strong>/auth/verify-phone</strong> )</li>
+                        <li>id (from response in <strong>/otp/verify</strong> )</li>
                         <li>token</li>
                     </ul>
                     <h5 class="mt-2">Account Recovery</h5>
@@ -270,7 +270,7 @@
                     </ul>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li></li>
+                        <li>transaction id </li>
                     </ul>
                 </li>
                 <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
