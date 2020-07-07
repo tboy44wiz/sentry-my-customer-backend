@@ -175,9 +175,16 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Register new complaint<strong>- /complaint/new [POST]</strong>
+                <li>Register new complaint<strong>- /complaint/new/:ownerId [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
+                        <li>name</li>
+                        <li>email</li>
                         <li>message</li>
                     </ul>
                 </li>
