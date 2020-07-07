@@ -1,10 +1,13 @@
 const mongoose = require('mongoose')
 
 const DebtReminder = new mongoose.Schema({
-  phone_number: {
+  user_phone_number: {
     type: Number,
     required: true,
-    unique: true,
+  },
+  customer_phone_number: {
+    type: Number,
+    required: true,
   },
   ts_ref_id: { type: mongoose.Schema.Types.ObjectId, ref: 'transaction' },
   message: { type: String, required: true },
