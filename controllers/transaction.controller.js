@@ -223,79 +223,78 @@ exports.findOne = async (req, res, next) => {
 
 // Update a transaction identified by the transaction_id in the request
 exports.update = async (req, res, next) => {
+  const identifier = req.user.phone_number;
+  const id = req.params.transaction_id;
+  const { store_name, description, amount, interest, total_amount, type } = req.body;
+
   try {
-    // Validate Request
-    if (!req.body) {
-      return res.status(400).send({
-        message: "Transaction content can not be empty",
-      });
-    }
 
-    // gets user_ref_id
-    var user_ref_id = UserModel.find(
-      {
-        email: req.user.email,
-      },
-      function (err, result) {
-        if (err) {
-          throw err;
-        }
-      }
-    );
+    UserModel.findOne({ identifier })
+      .then(user => {
+        let store = user.stores.find(store => store.store_name == store_name); //find store
+        let allTransactions = []; // all transactions would be pushed here
 
-    user_ref_id = user_ref_id[0]._id;
-
-    // gets store_ref_id
-    StoreModel.find(
-      {
-        email: req.user.email,
-      },
-      function (err, result) {
-        if (err) {
-          throw err;
-        }
-        //console.log("Found.")
-      }
-    );
-
-    // Find transaction and update it with the request body
-    Transaction.updateOne(
-      {
-        _id: req.params.transaction_id,
-        user_ref_id: user_ref_id,
-      },
-      req.body,
-      {
-        new: true,
-      }
-    )
-      .then((transaction) => {
-        if (!transaction) {
-          return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
-          });
-        }
-        res.send(transaction);
-      })
-      .catch((err) => {
-        if (err.kind === "ObjectId") {
-          return res.status(404).send({
-            message:
-              "Transaction not found with id " + req.params.transaction_id,
-          });
-        }
-        return res.status(500).send({
-          message:
-            "Error updating transaction with id " + req.params.transaction_id,
+        store.customers.forEach(customer => { // loop over customers
+          customer.transactions.forEach(trans => { //loop over transactions
+            allTransactions.push(trans); //push all transactions to allTransactions
+          })
         });
-      });
+
+        let transToUpdate = allTransactions.find(trans => trans._id == id); // find transaction required
+
+        let update = {
+          amount: amount || transToUpdate.amount,
+          description: description || transToUpdate.description,
+          interest: interest || transToUpdate.interest,
+          total_amount: total_amount || transToUpdate.total_amount,
+          type: type || transToUpdate.type
+        } // update with field from req.body or if null still use the value already in db
+
+        transToUpdate = Object.assign(transToUpdate, update); // merge update
+
+        user.save()
+          .then(result => {
+            res.status(200).json({
+              success: true,
+              message: "Transaction updated successfully",
+              data: {
+                  statusCode: 200,
+                  transaction: transToUpdate
+              }
+            })
+          })
+          .catch((err) => {
+            res.status(500).json({
+              sucess: false,
+              message: "Couldn't update transaction",
+              error: {
+                statusCode: 500,
+                message: "Couldn't update transaction"
+              }
+            })
+          })
+        
+      })
+      .catch(err => {
+        res.status(404).json({
+          sucess: false,
+          message: "User not found",
+          error: {
+            statusCode: 404,
+            message: "User not found"
+          }
+        })
+      })
+
   } catch (error) {
-    res.status(500).send({
-      status: "fail",
-      message:
-        error.message || "Some error occurred while creating the transaction.",
-    });
+    res.status(500).json({
+      sucess: false,
+      message: "Couldn't update transaction",
+      error: {
+        statusCode: 500,
+        message: "Couldn't update transaction"
+      }
+    })
   }
 };
 
