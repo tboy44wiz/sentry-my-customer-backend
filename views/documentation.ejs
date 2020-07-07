@@ -98,17 +98,28 @@
                         <li>verify: (from response in <strong>/otp/verify</strong> )</li>
                         <li>phone_number</li>
                     </ul>
-                    <h5 class="mt-2">Account Recovery</h5>
-                    <li>Send password reset link <strong>- /forgot-password [POST]</strong></li>
+
+                            <div class="recover" id="recover">
+            <h1 class="">Password Recovery</h1>
+            <hr>
+            <p>Change password <br>This can be done via <strong>Email</strong> or <strong>SMS (OTP)</strong></p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Recover<strong> - /recover [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>Email address</li>
+                        <li>phone_number</li>
                     </ul>
-                    <li>Reset password<strong> - /reset-password [POST]</strong></li>
+                </li>
+                <li>Reset <strong> - /reset [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>new_password</li>
+                        <li>token</li>
+                        <li>password</li>
                     </ul>
+                </li>
+            </ul>
+        </div>
                 </ul>
             </ul>
         </div>
@@ -350,27 +361,7 @@
                 </li>
             </ul>
         </div>
-        <div class="recover" id="recover">
-            <h1 class="">Password Recovery</h1>
-            <hr>
-            <p>Notify a customer of outstanding payments or even send them a season's greeting. <br>This can e done via <strong>Email</strong> or <strong>SMS</strong></p>
-            <h4>Endpoints</h4>
-            <ul>
-                <li>Recover<strong> - /recover [POST]</strong>
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
-                        <li>phone_number</li>
-                    </ul>
-                </li>
-                <li>Reset <strong> - /reset [POST]</strong>
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
-                        <li>token</li>
-                        <li>password</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+
         <!-- <div class="call" id="call">
             <h1 class="">Call</h1>
             <hr>
