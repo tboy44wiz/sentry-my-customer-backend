@@ -6,9 +6,9 @@ const OAuth2Client = google.auth.OAuth2
 
 //Config google api
 const googleConfig = {
-    clientId: '585502711890-ubdghi2or9gqf6s0h5utr3o9d4ald3e2.apps.googleusercontent.com',
-    clientSecret: 'K3-Aa2dzRO-SgWaRmSvx8MCt',
-    redirect: 'https://dev.api.customerpay.me/google/callback',
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirect: process.env.GOOGLE_REDIRECT_URL,
 };
 
 //Google Scope
@@ -87,6 +87,10 @@ exports.getGoogleAccountFromCode = async (req, res) => {
                 googleId
             });
             user = await newUser.save();
+        }
+
+        if (user && !user.googleId) {
+            user = await User.update({ _id: user.id }, { googleId });
         }
 
         const payload = {

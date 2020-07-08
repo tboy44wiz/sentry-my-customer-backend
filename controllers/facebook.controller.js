@@ -7,9 +7,9 @@ const queryString = require('query-string');
 //Generate a facebook URL
 exports.urlFacebook = (req, res) => {
     const query = queryString.stringify({
-        client_id: '649869395607404',
-        redirect_uri: 'https://dev.api.customerpay.me/facebook/callback',
-        scope: ['email', 'user_friends'].join(','),
+        client_id: process.env.FACEBOOK_APP_ID,
+        redirect_uri: process.env.FACEBOOK_REDIRECT_URL,
+        scope: ['email'],
         response_type: 'code',
         auth_type: 'rerequest',
         display: 'popup',
@@ -28,9 +28,9 @@ async function getToken (code) {
         url: 'https://graph.facebook.com/v4.0/oauth/access_token',
         method: 'get',
         params: {
-            client_id: '649869395607404',
-            client_secret: '3ffbf54d43f74ceb242f07610f5acd86',
-            redirect_uri: 'https://dev.api.customerpay.me/facebook/callback',
+            client_id: process.env.FACEBOOK_APP_ID,
+            client_secret: process.env.FACEBOOK_APP_SECRET,
+            redirect_uri: process.env.FACEBOOK_REDIRECT_URL,
             code,
         },
     });
