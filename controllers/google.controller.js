@@ -89,6 +89,10 @@ exports.getGoogleAccountFromCode = async (req, res) => {
             user = await newUser.save();
         }
 
+        if (user && !user.googleId) {
+            user = await User.update({ _id: user.id }, { googleId });
+        }
+
         const payload = {
             newUser: {
                 id: user.id

@@ -9,7 +9,7 @@ exports.urlFacebook = (req, res) => {
     const query = queryString.stringify({
         client_id: process.env.FACEBOOK_APP_ID,
         redirect_uri: process.env.FACEBOOK_REDIRECT_URL,
-        scope: ['email', 'user_friends'].join(','),
+        scope: ['email'],
         response_type: 'code',
         auth_type: 'rerequest',
         display: 'popup',
