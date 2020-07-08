@@ -23,9 +23,10 @@ module.exports.recover = async (req, res) => {
 
       //Generate and set password reset token
       user.generatePasswordReset();
-      console.log(user.resetPasswordToken);
+      
     
-     user.resetPasswordToken = makeid(codeLength, false
+     user.resetPasswordToken = makeid(codeLength, false)
+    console.log(user.resetPasswordToken);
       // Save the updated user object
       user
         .save()
