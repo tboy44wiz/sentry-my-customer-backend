@@ -303,7 +303,7 @@ exports.deleteById = async (req, res) => {
                     message: "Debt deleted successfully",
                     data: {
                         statusCode: 201,
-                        new_transaction: transaction,
+                        transaction: transaction,
                     }
                 })
             })
