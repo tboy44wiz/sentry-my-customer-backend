@@ -117,7 +117,7 @@ exports.findAll = async (req, res, next) => {
 
           return res.status(200).json({
             success: true,
-            message: "Operation successful",
+            message: "Here is a list of your transactions",
             data: {
               details,
             },
