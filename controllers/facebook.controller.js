@@ -70,6 +70,7 @@ exports.getFacebookAccountFromCode = async (req, res) => {
                 last_name: facebook.last_name,
                 email: facebook.email,
                 token,
+                phone_number: '09887',
                 facebookId: facebook.id
             });
             user = await newUser.save();
