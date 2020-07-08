@@ -19,7 +19,7 @@ exports.create = async (req,res)=>{
             message: "Missing fields",
             error: {
               statusCode: 500,
-              message: "customer_phone_number, message and status are required"
+              message: "customer_phone_number, store_name, pay_date, amount, message and status are required"
             }
           })
     }
@@ -163,7 +163,7 @@ exports.getById = async (req,res)=>{
 exports.updateById = async (req, res) => {
     let identifier = req.user.phone_number;
     let { status, message, amount, pay_date } = req.body;
-    
+
     try {
         UserModel.findOne({ identifier })
         .then(user => {
