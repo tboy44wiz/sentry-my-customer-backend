@@ -84,6 +84,7 @@ exports.getGoogleAccountFromCode = async (req, res) => {
                 last_name,
                 email,
                 token,
+                phone_number: 98767,
                 googleId
             });
             user = await newUser.save();
