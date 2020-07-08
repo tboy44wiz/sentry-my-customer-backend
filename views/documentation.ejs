@@ -216,14 +216,10 @@
                     </ul>
                 </li>
 
-                <li>Retrieve a single complaint<strong> - /complaint/:ownerId [GET]</strong>
+                <li>Retrieve a single complaint<strong> - /complaint/:ownerId/:complaintId [GET]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>ownerId- Store Owner's (Business Owner) id </li>
-                    </ul>
-
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
                         <li>complaint_id</li>
                     </ul>
                 </li>
@@ -242,14 +238,10 @@
                         <li>message</li>
                     </ul>
                 </li>
-                <li>Delete a complaint form<strong> - /complaint/delete/:ownerId [DETETE]</strong>
+                <li>Delete a complaint form<strong> - /complaint/delete/:ownerId/:complaintId [DETETE]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>ownerId- Store Owner's (Business Owner) id </li>
-                    </ul>
-
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
                         <li>complaint_id</li>
                     </ul>
                 </li>
@@ -268,12 +260,13 @@
                         <li>total_amount</li>
                         <li>description</li>
                         <li>transaction_name</li>
+                        <li>transaction_role</li>
                         <li>type</li>
                         <li>store_name</li>
                         <li>phone_number</li>
                     </ul>
                 </li>
-                <li>View all transactions<strong> - /transaction/all</strong></li>
+                <li>View all transactions<strong> - /transaction</strong></li>
                 <li>view a single transaction<strong> - /transaction/:transaction_id [UPDATE]</strong>
                    
                     <h6>Body: </h6>
@@ -329,7 +322,11 @@
                         <li>customer_id</li>
                     </ul>
                 </li>
-            </ul>
+                <li>View all customers<strong> - /customer/ [GET]</strong>
+                    
+                </li>
+                
+           
         </div>
         <div class="notification" id="notification">
             <h1 class="">Notification</h1>

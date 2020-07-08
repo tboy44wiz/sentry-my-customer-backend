@@ -1,4 +1,5 @@
 const { body } = require('express-validator/check');
+const makeid = require("../util/code_random");
 const UserModel = require("../models/store_admin");
 const OTP = require("../models/otp");
 const africastalking = require("africastalking")({
@@ -41,10 +42,10 @@ exports.send = async (req, res) => {
     let otp = await OTP.findOne({ user_ref_code: user._id });
 
     if (otp) {
-      otp.otp_code = makeid(codeLength);
+      otp.otp_code = makeid(codeLength, false);
     } else {
       otp = new OTP({
-        otp_code: makeid(codeLength),
+        otp_code: makeid(codeLength, false),
         user_ref_code: user._id
       });
     }
@@ -139,14 +140,3 @@ exports.verify = async (req, res) => {
     });
   }
 };
-
-function makeid(length) {
-  //const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const characters = "0123456789";
-  const charactersLength = characters.length;
-  let result = "";
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
