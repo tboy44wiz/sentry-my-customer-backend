@@ -5,6 +5,8 @@ const africastalking = require("africastalking")({
   username: process.env.AFRICASTALKING_USERNAME
 });
 
+const makeid = require(“../util/code_random”);
+const codeLength = 6
 module.exports.recover = async (req, res) => {
   console.log(req.body.phone_number);
   const userr = await new User({});
@@ -22,7 +24,8 @@ module.exports.recover = async (req, res) => {
       //Generate and set password reset token
       user.generatePasswordReset();
       console.log(user.resetPasswordToken);
-
+    
+     const code_generated = makeid(codeLength, false)
       // Save the updated user object
       user
         .save()
