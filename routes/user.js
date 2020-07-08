@@ -25,4 +25,8 @@
 
     router.post('/store_admin/reset-password/', users.reset);
 
+    router.post('/store_admin/forgot-password', users.forgot);
+
+    router.post('/store_admin/forgot-password/:token', users.tokenreset)
+
     module.exports = router;

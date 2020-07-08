@@ -2,7 +2,8 @@ const User = require("../models/store_admin");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator/check");
-
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 exports.validate = method => {
   switch (method) {
@@ -316,7 +317,6 @@ exports.update = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err)
         res.status(500).json({
             success: "false",
             message: "Internal server error",
@@ -511,3 +511,268 @@ exports.reset = async (req, res) => {
     })
   })
 };
+
+exports.forgot = async (req, res)  => {
+  await crypto.randomBytes(20, function(err, buf) {
+    let token = buf.toString('hex');
+    if (err) {
+      next(err)
+    }
+
+    User.findOne({ identifier: req.body.phone_number }, function(err, user) {
+      if (err) {
+        return res.status(404).json({
+          success: "false",
+          message: "Error finding user in DB",
+          data: {
+              statusCode: 404,
+              error: err.message
+          }
+      })
+      }
+      if (!user) {
+      return res.status(404).json({
+          success: "false",
+          message: "User Not Found. Make sure you inputted right phone number",
+          data: {
+              statusCode: 404,
+              error: "User Dosen't Exist"
+          }
+      })
+      }
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+      user.save((err) => {
+        if (err) {
+          return res.status(404).json({
+            success: "false",
+            message: "Error saving user",
+            data: {
+                statusCode: 404,
+                error: err.message
+            }
+        })
+        }
+          let smtpTransport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'openhand95@gmail.com',
+              pass: 'Juwon@1234'
+            }
+          });
+          let mailOptions = {
+            to: user.local.email,
+            from: 'passwordreset@mycustomer.com',
+            subject: 'Mycustomer Password Reset',
+            text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+              'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+              'http://' + req.headers.host + '/store_admin/forgot-password/' + token + '\n\n' +
+              'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+          };
+          smtpTransport.sendMail(mailOptions, function(err, info) {
+            if (err) {
+              return res.status(400).json({
+                success: "false",
+                message: "Error sending email.Possibly User has no email",
+                data: {
+                    statusCode: 400,
+                    error: err.message
+                }
+            })
+            }
+          return res.status(200).json({
+              success: "true",
+              message: "Email Sent" + info.response,
+              data: {
+                  statusCode: 200,
+                  message: 'An e-mail has been sent to ' + user.local.email + ' with further instructions.'
+              }
+          })
+            // if (err) {
+            //   next(err)
+            // }
+            // res.redirect('/store_admin/forgot-password');
+          });
+      }, (user) => {
+        let smtpTransport = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'openhand95@gmail.com',
+            pass: 'Juwon@1234'
+          }
+        });
+        let mailOptions = {
+          to: user.local.email,
+          from: 'passwordreset@mycustomer.com',
+          subject: 'Mycustomer Password Reset',
+          text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+            'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+            'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+            'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+        };
+        smtpTransport.sendMail(mailOptions, function(err, info) {
+          if (err) {
+            return res.status(400).json({
+              success: "false",
+              message: "Error sending email. Possibly User has no email",
+              data: {
+                  statusCode: 400,
+                  error: err.message
+              }
+          })
+          }
+        return res.status(200).json({
+            success: "true",
+            message: "Email Sent" + info.response,
+            data: {
+                statusCode: 200,
+                message: 'An e-mail has been sent to ' + user.local.email + ' with further instructions.'
+            }
+        })
+          // if (err) {
+          //   next(err)
+          // }
+          // res.redirect('/store_admin/forgot-password');
+        });
+      });
+
+
+
+    });
+
+
+
+  });
+}
+
+exports.tokenreset = async(req, res) => {
+  if (req.body.password === undefined || req.body.password == "") {
+    return res.status(400).json({
+      success: "false",
+      message: "Password Can't Be Empty",
+      data: {
+        statusCode: 400,
+        error: "password is required"
+    }
+  })
+  }
+  const password = await bcrypt.hash(req.body.password, 10);
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } },
+  function(err, user) {
+    if (err) {
+      return res.status(400).json({
+        success: "false",
+        message: "Error From DB",
+        data: {
+          statusCode: 400,
+          error: err.message
+      }
+    })
+    }
+    if (!user) {
+      return res.status(400).json({
+        success: "false",
+        message: "Password Reset Token Is Invalid or has expired",
+        data: {
+          statusCode: 400,
+          error: "Invalid Token"
+      }
+    })
+  }
+    user.local.password = password;
+    user.resetPasswordToken = undefined; //turn reset password to something not needed
+    user.resetPasswordExpires = undefined;
+
+    user.save(function(err) {
+      if (err) {
+        return res.status(400).json({
+          success: "false",
+          message: "Couldn't save to DB",
+          data: {
+            statusCode: 400,
+            error: err.message
+          }
+        }) 
+      }
+      let smtpTransport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'openhand95@gmail.com',
+          pass: 'Juwon@1234'
+        }
+      });
+      let mailOptions = {
+        to: user.local.email,
+        from: 'mycustomer@customer.com',
+        subject: 'Your MyCustomer Account password has been changed',
+        text: 'Hello,\n\n' +
+          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        if (err) {
+          return res.status(200).json({
+            success: "false",
+            message: "Password Changed Succesfully. But Error Sending Email Notification",
+            data: {
+              statusCode: 200,
+              error: err.message
+          }
+        })
+        }
+        return res.status(200).json({
+          success: "true",
+          message: "Email Notification Sent",
+          data: {
+            statusCode: 200,
+            message: "Password Changed Succesfully"
+        }
+      })
+    });
+
+    });
+  });
+}
+// app.post('/reset/:token', function(req, res) {
+//   async.waterfall([
+//     function(done) {
+      // User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+      //   if (!user) {
+      //     req.flash('error', 'Password reset token is invalid or has expired.');
+      //     return res.redirect('back');
+      //   }
+
+      //   user.password = req.body.password;
+      //   user.resetPasswordToken = undefined;
+      //   user.resetPasswordExpires = undefined;
+
+      //   user.save(function(err) {
+      //     req.logIn(user, function(err) {
+      //       done(err, user);
+      //     });
+      //   });
+      // });
+//     },
+//     function(user, done) {
+//       var smtpTransport = nodemailer.createTransport('SMTP', {
+//         service: 'SendGrid',
+//         auth: {
+//           user: '!!! YOUR SENDGRID USERNAME !!!',
+//           pass: '!!! YOUR SENDGRID PASSWORD !!!'
+//         }
+//       });
+// var mailOptions = {
+//   to: user.email,
+//   from: 'passwordreset@demo.com',
+//   subject: 'Your password has been changed',
+//   text: 'Hello,\n\n' +
+//     'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+// };
+// smtpTransport.sendMail(mailOptions, function(err) {
+//   req.flash('success', 'Success! Your password has been changed.');
+//   done(err);
+// });
+// }
+// ], function(err) {
+// res.redirect('/');
+// });
+// });
