@@ -194,7 +194,7 @@ exports.updateById = async (req, res) => {
                         statusCode: 200,
                         debt: debtById,
                     }
-                  })
+                })
             })
         })
         .catch(err => {
@@ -221,6 +221,114 @@ exports.updateById = async (req, res) => {
 };
 
 exports.deleteById = async (req, res) => {
+    let identifier = req.user.phone_number;
+    let { store_name, customer_phone_number } = req.body;
     let id = req.params.debtId;
+
+    if(!store_name || !customer_phone_number) {
+        res.status(404).json({
+            sucess: false,
+            message: "Please add input fields",
+            error: {
+              statusCode: 404,
+              message: 'Body params store_name, customer_phone_number missing'
+            }
+        })
+    }
+
+    try {
+        UserModel.findOne({ identifier })
+        .then(user => {
+            let store = user.stores.find(store => store.store_name === store_name);
+            let customer = store.customers.find(customer => customer.phone_number == customer_phone_number);
+            let transaction;;
+            customer.transactions.forEach(trans => {
+                trans.debts.forEach(debt => {
+                    if(debt._id == id) {
+                        trans.debts.splice(trans.debts.indexOf(debt), 1);
+                        transaction = trans;
+                    }
+                })
+            });
+
+            user.save().then(result => {
+                res.status(201).json({
+                    success: true,
+                    message: "Debt deleted successfully",
+                    data: {
+                        statusCode: 201,
+                        new_transaction: transaction,
+                    }
+                })
+            })
+            .catch(err => {
+                res.status(404).json({
+                    sucess: false,
+                    message: "Couldn't remove debt",
+                    error: {
+                      statusCode: 404,
+                      message: err.message
+                    }
+                })
+            })
+        })
+        .catch(err => {
+            res.status(404).json({
+                sucess: false,
+                message: "Couldn't find user or some server error occurred",
+                error: {
+                  statusCode: 404,
+                  message: err.message
+                }
+            })
+        })
+    } catch(err) {
+        UserModel.findOne({ identifier })
+        .then(user => {
+            let store = user.stores.find(store => store.store_name === store_name);
+            let customer = store.customers.find(customer => customer.phone_number == customer_phone_number);
+            let transaction;;
+            customer.transactions.forEach(trans => {
+                trans.debts.forEach(debt => {
+                    if(debt._id == id) {
+                        trans.debts.splice(trans.debts.indexOf(debt), 1);
+                        transaction = trans;
+                    }
+                })
+            });
+
+            user.save().then(result => {
+                res.status(201).json({
+                    success: true,
+                    message: "Debt deleted successfully",
+                    data: {
+                        statusCode: 201,
+                        new_transaction: transaction,
+                    }
+                })
+            })
+            .catch(err => {
+                res.status(404).json({
+                    sucess: false,
+                    message: "Couldn't remove debt",
+                    error: {
+                      statusCode: 404,
+                      message: err.message
+                    }
+                })
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                sucess: false,
+                message: "Some server error occurred",
+                error: {
+                  statusCode: 500,
+                  message: err.message
+                }
+            })
+        })
+    }
+    
 };
 
