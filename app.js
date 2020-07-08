@@ -73,7 +73,7 @@ app.use(transactions);
 app.use(store);
 app.use(google);
 app.use(facebook);
-app.use(complainRouter);
+app.use(complaintRouter);
 app.use(user);
 app.use(docs);
 app.use("/register", register);
