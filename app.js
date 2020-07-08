@@ -24,7 +24,8 @@ const emailAPI = require("./routes/sendMail");
 const complaintRouter = require("./routes/complaint");
 const docs = require("./routes/docs");
 const user = require("./routes/user");
-// const debt = require('./routes/debt_reminder');
+const reset = require("./routes/reset");
+const debt = require('./routes/debt_reminder');
 // const businessCards = require("./routes/businessCardRoute");
 // const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
@@ -43,7 +44,7 @@ mongoose
   .then(() => {
     console.log("Successfully connected to the database");
   })
-  .catch(err => {
+  .catch((err) => {
     console.log("Could not connect to the database. Exiting now...", err);
     process.exit();
   });
@@ -64,6 +65,7 @@ app.use(documentation);
 app.use(customer);
 //app.use(phone_verification);
 app.use(otp);
+app.use(reset);
 //app.use(messagingAPI);
 app.use(emailAPI);
 app.use(transactions);
@@ -77,7 +79,7 @@ app.use(docs);
 app.use("/register", register);
 
 app.use("/login", login);
-// app.use(debt)
+app.use(debt)
 // app.use(phone_call_api);
 
 //This should be the last route else any after it won't work
@@ -85,14 +87,14 @@ app.use("*", (req, res) => {
   res.status(404).json({
     success: "false",
     message: "Page not found",
-    error:{
+    error: {
       statusCode: 404,
-      message: "You reached a route that is not defined on this server"
-    }
+      message: "You reached a route that is not defined on this server",
+    },
   });
 });
 
 const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port:`+ port);
+  console.log(`app running on port:` + port);
 });
