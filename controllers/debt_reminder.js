@@ -290,7 +290,14 @@ exports.deleteById = async (req, res) => {
             })
         })
     } catch(err) {
-       
+        res.status(500).json({
+            sucess: false,
+            message: "Some server error occurred",
+            error: {
+              statusCode: 500,
+              message: err.message
+            }
+        });
     }
     
 };
