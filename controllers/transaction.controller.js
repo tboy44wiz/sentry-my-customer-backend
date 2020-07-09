@@ -1,5 +1,3 @@
-const Response = require("../util/response_manager");
-const HttpStatus = require("../util/http_status");
 const Transaction = require("../models/transaction");
 const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
@@ -46,7 +44,8 @@ exports.create = (req, res, next) => {
 
                 req_keys.customer_ref_id = customer_ref_id;
                 req_keys.store_ref_id = store_ref_id;
-
+                req_keys.debts = [];
+                
                 customer.transactions.push(req_keys);
               }
             });
@@ -117,7 +116,7 @@ exports.findAll = async (req, res, next) => {
 
           return res.status(200).json({
             success: true,
-            message: "Operation successful",
+            message: "Here is a list of your transactions",
             data: {
               details,
             },
