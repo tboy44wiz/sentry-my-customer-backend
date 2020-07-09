@@ -3,7 +3,7 @@ const bCrypt = require("bcryptjs");
 
 module.exports = () => async (req, res) => {
   //  Input validation...
-  const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+  const regex = /^(?=.*\d)(?=.*[a-z]).{6,20}$/;
   if (
     !req.body.oldPassword ||
     !req.body.newPassword ||
@@ -24,7 +24,7 @@ module.exports = () => async (req, res) => {
             : { message: "newPassword and confirmPassword must be equal" }
           : {
               message:
-                "new password must be alphanumeric, 6-20 characters long and contain at least one uppercased letter",
+                "new password must be alphanumeric and 6-20 characters long.",
             }
         : { newPassword: 'Path "newPassword" is required' };
     return res.status(422).json({
