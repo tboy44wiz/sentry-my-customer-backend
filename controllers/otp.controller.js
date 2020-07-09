@@ -64,7 +64,16 @@ exports.send = async (req, res) => {
         }
       });
     }
-
+    
+    res.status(200).json({
+      success: true,
+      message: "successful",
+      data: {
+        message: "successful",
+        otp: otpSaveResult.otp_code,
+      }
+    });
+    
     const sms = africastalking.SMS;
     await sms.send({
       to: [`+${req.body.phone_number}`],
@@ -82,7 +91,6 @@ exports.send = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong.",
-      otp: otpSaveResult.otp_code,
       data: {
         statusCode: 500,
         error: err
