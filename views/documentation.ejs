@@ -165,6 +165,9 @@
                     <ul class="alert alert-primary">
                         <li>store_name</li>
                         <li>shop_address</li>
+                        <li>tagline</li>
+                        <li>phone_number</li>
+                        <li>email</li>
                     </ul>
                 </li>
                 <li>Retrieve store <strong> - /store/:store_id [GET]</strong>
@@ -275,13 +278,11 @@
                     </ul>
                 </li>
                 <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
-                    <h6>Params: </h6>
-                    <ul class="alert alert-primary">
-                        <li>store_name</li>
-                    </ul>
+                                         
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>Entries to update</li>
+                        <li>store_name</li>
                     </ul>
                 </li>
                 <li>Delete transaction (logical delete)<strong>- /transaction/delete/:transaction_id</strong></li>

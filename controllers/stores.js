@@ -15,6 +15,9 @@ exports.createStore = async (req, res, next) => {
       storeOwner.stores.push({
         store_name: req.body.store_name,
         shop_address: req.body.shop_address,
+        tagline: req.body.tagline,
+        phone_number:req.body.phone_number,
+        email:req.body.email,
       });
       storeOwner
         .save()
@@ -84,7 +87,7 @@ exports.getStore = async (req, res, next) => {
           found = true;
           return res.status(200).json({
             success: true,
-            Message: "Operation successful",
+            message: "Operation successful",
             data: {
               store,
             },

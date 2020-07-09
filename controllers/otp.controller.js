@@ -1,4 +1,4 @@
-const { body } = require('express-validator/check');
+const { body } = require("express-validator/check");
 const makeid = require("../util/code_random");
 const UserModel = require("../models/store_admin");
 const OTP = require("../models/otp");
@@ -8,27 +8,27 @@ const africastalking = require("africastalking")({
 });
 const codeLength = 6;
 
-exports.validate = (method) => {
+exports.validate = method => {
   switch (method) {
-    case 'send': {
-      return [
-        body('phone_number').isNumeric(),
-      ]
+    case "send": {
+      return [body("phone_number").isNumeric()];
     }
-    case 'verify': {
+    case "verify": {
       return [
-        body('phone_number').isNumeric(),
-        body('verify').isNumeric().isLength({ min: codeLength, max: codeLength })
-      ]
+        /* body('phone_number').isNumeric(), */
+        body("verify")
+          .isNumeric()
+          .isLength({ min: codeLength, max: codeLength })
+      ];
     }
   }
-}
+};
 
 exports.send = async (req, res) => {
   try {
     const user = await UserModel.findOne({ identifier: req.body.phone_number });
 
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -52,9 +52,9 @@ exports.send = async (req, res) => {
 
     const otpSaveResult = await otp.save();
 
-    console.log("otpSaveResult", otpSaveResult)
+    console.log("otpSaveResult", otpSaveResult);
 
-    if(!otpSaveResult) {
+    if (!otpSaveResult) {
       return res.status(500).json({
         success: false,
         message: "Something went wrong.",
@@ -64,12 +64,21 @@ exports.send = async (req, res) => {
         }
       });
     }
-
+    
+    res.status(200).json({
+      success: true,
+      message: "successful",
+      data: {
+        message: "successful",
+        otp: otpSaveResult.otp_code,
+      }
+    });
+    
     const sms = africastalking.SMS;
     await sms.send({
       to: [`+${req.body.phone_number}`],
       message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`
-    })
+    });
 
     res.status(200).json({
       success: true,
@@ -78,7 +87,6 @@ exports.send = async (req, res) => {
         message: "successful"
       }
     });
-
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -93,9 +101,9 @@ exports.send = async (req, res) => {
 
 exports.verify = async (req, res) => {
   try {
-    let user = await UserModel.findOne({ identifier: req.body.phone_number });
+    let user = await UserModel.findOne({ identifier: req.user.phone_number });
 
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -108,7 +116,7 @@ exports.verify = async (req, res) => {
 
     const otp = await OTP.findOne({ user_ref_code: user._id });
 
-    if(!otp || otp.otp_code != req.body.verify) {
+    if (!otp || otp.otp_code != req.body.verify) {
       return res.status(404).json({
         success: false,
         message: "OTP not found",

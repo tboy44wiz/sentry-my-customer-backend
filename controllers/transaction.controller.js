@@ -44,7 +44,8 @@ exports.create = (req, res, next) => {
 
                 req_keys.customer_ref_id = customer_ref_id;
                 req_keys.store_ref_id = store_ref_id;
-
+                req_keys.debts = [];
+                
                 customer.transactions.push(req_keys);
               }
             });
