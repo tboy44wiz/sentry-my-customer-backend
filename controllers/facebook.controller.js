@@ -56,7 +56,6 @@ exports.getFacebookAccountFromCode = async (req, res) => {
     const facebook = await getFacebookData(res_token);
 
     let user = await facebookUser.findOne({ identifier: facebook.email });
-    console.log(user);
     const token = jwt.sign(
       {
         name: facebook.first_name + facebook.last_name,
