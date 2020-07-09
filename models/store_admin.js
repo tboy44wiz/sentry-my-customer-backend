@@ -6,11 +6,11 @@ const mongoose = require("mongoose"),
   StoreAssistant = require("./storeAssistant"),
   Complaints = require("./complaint_form");
 
-const storeAdminSchema = new mongoose.Schema(
+const tstoreAdminSchema = new mongoose.Schema(
   {
     identifier: { type: String, required: true, unique: true },
     local: {
-      phone_number: { type: Number, unique: true },
+      phone_number: { type: Number, unique: true, sparse: true },
       first_name: { type: String, default: "Not set" },
       last_name: { type: String, default: "Not set" },
       email: { type: String, default: "Not set" },
@@ -57,7 +57,7 @@ const storeAdminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-storeAdminSchema.pre("save", function (next) {
+tstoreAdminSchema.pre("save", function (next) {
   const user = this;
 
   if (!user.isModified("password")) return next();
@@ -74,11 +74,11 @@ storeAdminSchema.pre("save", function (next) {
   });
 });
 
-storeAdminSchema.methods.comparePassword = function (password) {
+tstoreAdminSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
-storeAdminSchema.methods.generateJWT = function () {
+tstoreAdminSchema.methods.generateJWT = function () {
   const today = new Date();
   const expirationDate = new Date(today);
   expirationDate.setDate(today.getDate() + 900);
@@ -96,11 +96,11 @@ storeAdminSchema.methods.generateJWT = function () {
   });
 };
 
-storeAdminSchema.methods.generatePasswordReset = function () {
+tstoreAdminSchema.methods.generatePasswordReset = function () {
   this.resetPasswordToken = crypto.randomBytes(6).toString("hex");
   this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
 };
 
 mongoose.set("useFindAndModify", false);
 
-module.exports = mongoose.model("store_admin", storeAdminSchema);
+module.exports = mongoose.model("tstore_admin", tstoreAdminSchema);
