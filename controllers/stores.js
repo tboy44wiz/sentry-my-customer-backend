@@ -4,7 +4,7 @@ const UserModel = require("../models/store_admin");
 exports.createStore = async (req, res, next) => {
   if (req.body.store_name === "" || req.body.shop_address === "") {
     return res.status(500).json({
-      success: "false",
+      success: false,
       message: error.message,
     });
   }
@@ -57,7 +57,7 @@ exports.getAllStores = async (req, res, next) => {
     } else {
       let stores = store_admin.stores;
       res.status(200).json({
-        success: "true",
+        success: true,
         result: stores.length,
         message: "Here are all your stores",
         data: {
