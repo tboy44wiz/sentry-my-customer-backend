@@ -1,71 +1,334 @@
 
-const Debt = require("../models/debt_reminders")
+const UserModel = require('../models/store_admin')
+const Debt = require("../models/debt_reminders");
 const Response = require('../util/response_manager')
 const HttpStatus = require('../util/http_status')
 const mongoose = require('mongoose')
-const Transaction = require("../models/transaction")
+const Transaction = require("../models/transaction");
+const { all } = require('../routes/customer');
 
 exports.create = async (req,res)=>{
     // Add new message
     let transaction_id = req.body.transaction_id || req.params.transaction_id;
-    let { phone_number } = req.user;
-    const {customer_num,message,status,pay_date} = req.body
+    let identifier = req.user.phone_number;
+    const { store_name, customer_phone_number , message, status, pay_date, amount} = req.body;
 
-    if(!customer_num || !message || !status){
-        return Response.failure(res, { error: true, message: 'customer numer,message and status is required.'}, HttpStatus.BAD_REQUEST);
+    if(!customer_phone_number || !message || !status || !pay_date || !amount){
+        res.status(500).json({
+            sucess: false,
+            message: "Missing fields",
+            error: {
+              statusCode: 500,
+              message: "customer_phone_number, store_name, pay_date, amount, message and status are required"
+            }
+          })
     }
 
     try{
-        const trans = await Transaction.findById(transaction_id);
-        if(!trans){
-            return Response.failure(res, { error: true, message: 'Transaction could not be found...'}, HttpStatus.NOT_FOUND);
-        }
 
-        const newDebt = new Debt({
-                user_phone_number: phone_number,
-                customer_phone_number: customer_num,
-                ts_ref_id: trans._id,
-                message: message,
-                status: status,
-                expected_pay_date: new Date(pay_date)
+        UserModel.findOne({ identifier })
+            .then(user => {
+                let store = user.stores.find(store => store.store_name == store_name);
+                
+                let customer = store.customers.find(customer => customer.phone_number === customer_phone_number);
+                let transaction = customer.transactions.find(transaction => transaction._id == transaction_id);
+
+                const newDebt = {
+                    user_phone_number: identifier,
+                    customer_phone_number,
+                    amount: amount,
+                    ts_ref_id: transaction._id,
+                    message: message,
+                    status: status,
+                    expected_pay_date: new Date(pay_date),
+                }
+                
+                transaction.debts.push(newDebt);
+
+
+                user.save().then(result => {
+                    res.status(200).json({
+                        success: true,
+                        message: "Debt created successfully",
+                        data: {
+                            statusCode: 200,
+                            debt: newDebt
+                        }
+                    })
+                });
+
+            })
+            .catch(err => {
+                res.status(404).json({
+                    sucess: false,
+                    message: "User not found",
+                    error: {
+                      statusCode: 404,
+                      message: "User not found"
+                    }
+                })
+            })
+            
+    } catch (err){
+        res.status(500).json({
+            sucess: false,
+            message: "Some error occurred while creating transaction",
+            error: {
+              statusCode: 500,
+              message: err.message
+            }
         })
-        let debt = await newDebt.save();
-        if(!debt){
-            return Response.failure(res, { error: true, message: 'Debt reminder could not be created..'}, HttpStatus.NOT_IMPLEMENTED);
-        }
-        return Response.success(res, { error: false, message: 'Debt Reminder was created.'});
-    }
-    catch (err){
-        return Response.failure(res, { error: true, message: err}, HttpStatus.INTERNAL_SERVER_ERROR);
     }
         
 }
 
 exports.getAll = async (req,res)=>{
     // Find all the Debts
-    const { phone_number } = req.user;
-    try{
-        const resp = await Debt.find({ user_phone_number : phone_number});
-    if(!resp){
-        return Response.failure(res, { error: true, message: "Debt not found", response: resp}, HttpStatus.NOT_FOUND)
-    }
-        return Response.success(res, { error: false, message: "Debt found",response: resp});
-    }
-    catch(err){ 
-        return Response.failure(res, { error: true, message: err}, HttpStatus.INTERNAL_SERVER_ERROR); 
-    }
+    const identifier = req.user.phone_number;
+
+    UserModel.findOne({ identifier })
+        .then(user => {
+            let allDebts = [];
+            user.stores.forEach(store => {
+                store.customers.forEach(customer => {
+                    customer.transactions.forEach(transaction => {
+                        transaction.debts.forEach(debt => {
+                            allDebts.push(debt);
+                        })
+                    })
+                })
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "All Debts",
+                data: {
+                    statusCode: 200,
+                    debts: allDebts
+                }
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                sucess: false,
+                message: "Couldn't find user or some server error occurred",
+                error: {
+                  statusCode: 500,
+                  message: err.message
+                }
+            });
+        })
 }
 
 exports.getById = async (req,res)=>{
-    if(!req.params._id) return Response.failure(res, { error: true, message: "The following parameter "}, HttpStatus.NOT_FOUND)
-    Debt.findById(req.params._id)
-        .then(resp => {
-            if(!resp) return Response.failure(res, { error: true, message: resp}, HttpStatus.NOT_FOUND)
-            return Response.success(res, { error: false, message: resp})
+    let identifier = req.user.phone_number;
+    if(!req.params.debtId) return Response.failure(res, { error: true, message: "The following parameter "}, HttpStatus.NOT_FOUND)
+    
+    UserModel.findOne({ identifier })
+        .then(user => {
+            let allDebts = [];
+            user.stores.forEach(store => {
+                store.customers.forEach(customer => {
+                    customer.transactions.forEach(transaction => {
+                        transaction.debts.forEach(debt => {
+                            allDebts.push(debt);
+                        })
+                    })
+                })
+            });
+            
+            let debtById = allDebts.find(debt => debt._id == req.params.debtId);
+
+            return res.status(200).json({
+                success: true,
+                message: "Debt found",
+                data: {
+                    statusCode: 200,
+                    debt: debtById
+                }
+            }); 
         })
-        .catch(err => { return Response.failure(res, { error: true, message: err}, HttpStatus.INTERNAL_SERVER_ERROR) })
+        .catch(err => {
+            res.status(500).json({
+                sucess: false,
+                message: "Couldn't find user or some server error occurred",
+                error: {
+                  statusCode: 500,
+                  message: err.message
+                }
+            });
+        })
 }
 
-exports.updateById = async (req, res) => {};
+exports.updateById = async (req, res) => {
+    let identifier = req.user.phone_number;
+    let { status, message, amount, pay_date } = req.body;
 
-exports.deleteById = async (req, res) => {};
+    try {
+        UserModel.findOne({ identifier })
+        .then(user => {
+            let allDebts = [];
+            user.stores.forEach(store => {
+                store.customers.forEach(customer => {
+                    customer.transactions.forEach(transaction => {
+                        transaction.debts.forEach(debt => {
+                            allDebts.push(debt);
+                        })
+                    })
+                })
+            });
+            
+            let debtById = allDebts.find(debt => debt._id == req.params.debtId);
+            let update = {
+                amount: amount || debtById.amount,
+                message: message || debtById.message,
+                status: status || debtById.status,
+                pay_date: Date(pay_date) || debtById.expected_pay_date
+            }
+            debtById = Object.assign(debtById, update);
+            user.save().then(result => {
+                res.status(200).json({
+                    success: true,
+                    message: "Debt updated successfully",
+                    data: {
+                        statusCode: 200,
+                        debt: debtById,
+                    }
+                })
+            })
+        })
+        .catch(err => {
+            res.status(404).json({
+                sucess: false,
+                message: "Couldn't find user or some server error occurred",
+                error: {
+                  statusCode: 404,
+                  message: err.message
+                }
+            });
+        })
+    } catch(err) {
+        res.status(500).json({
+            sucess: false,
+            message: "Some server error occurred",
+            error: {
+              statusCode: 500,
+              message: err.message
+            }
+        });
+    }
+     
+};
+
+exports.deleteById = async (req, res) => {
+    let identifier = req.user.phone_number;
+    let { store_name, customer_phone_number } = req.body;
+    let id = req.params.debtId;
+
+    if(!store_name || !customer_phone_number) {
+        res.status(404).json({
+            sucess: false,
+            message: "Please add input fields",
+            error: {
+              statusCode: 404,
+              message: 'Body params store_name, customer_phone_number missing'
+            }
+        })
+    }
+
+    try {
+        UserModel.findOne({ identifier })
+        .then(user => {
+            let store = user.stores.find(store => store.store_name === store_name);
+            let customer = store.customers.find(customer => customer.phone_number == customer_phone_number);
+            let transaction;;
+            customer.transactions.forEach(trans => {
+                trans.debts.forEach(debt => {
+                    if(debt._id == id) {
+                        trans.debts.splice(trans.debts.indexOf(debt), 1);
+                        transaction = trans;
+                    }
+                })
+            });
+
+            user.save().then(result => {
+                res.status(201).json({
+                    success: true,
+                    message: "Debt deleted successfully",
+                    data: {
+                        statusCode: 201,
+                        new_transaction: transaction,
+                    }
+                })
+            })
+            .catch(err => {
+                res.status(404).json({
+                    sucess: false,
+                    message: "Couldn't remove debt",
+                    error: {
+                      statusCode: 404,
+                      message: err.message
+                    }
+                })
+            })
+        })
+        .catch(err => {
+            res.status(404).json({
+                sucess: false,
+                message: "Couldn't find user or some server error occurred",
+                error: {
+                  statusCode: 404,
+                  message: err.message
+                }
+            })
+        })
+    } catch(err) {
+        UserModel.findOne({ identifier })
+        .then(user => {
+            let store = user.stores.find(store => store.store_name === store_name);
+            let customer = store.customers.find(customer => customer.phone_number == customer_phone_number);
+            let transaction;;
+            customer.transactions.forEach(trans => {
+                trans.debts.forEach(debt => {
+                    if(debt._id == id) {
+                        trans.debts.splice(trans.debts.indexOf(debt), 1);
+                        transaction = trans;
+                    }
+                })
+            });
+
+            user.save().then(result => {
+                res.status(201).json({
+                    success: true,
+                    message: "Debt deleted successfully",
+                    data: {
+                        statusCode: 201,
+                        transaction: transaction,
+                    }
+                })
+            })
+            .catch(err => {
+                res.status(404).json({
+                    sucess: false,
+                    message: "Couldn't remove debt",
+                    error: {
+                      statusCode: 404,
+                      message: err.message
+                    }
+                })
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                sucess: false,
+                message: "Some server error occurred",
+                error: {
+                  statusCode: 500,
+                  message: err.message
+                }
+            })
+        })
+    }
+    
+};
+
