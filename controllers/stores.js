@@ -57,7 +57,7 @@ exports.getAllStores = async (req, res, next) => {
     } else {
       let stores = store_admin.stores;
       res.status(200).json({
-        success: "success",
+        success: "true",
         result: stores.length,
         message: "Here are all your stores",
         data: {
