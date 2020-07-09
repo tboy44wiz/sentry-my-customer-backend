@@ -115,14 +115,6 @@ exports.findAll = async (req, res, next) => {
           obj.transactions = customer.transactions;
 
           details.push(obj);
-
-          return res.status(200).json({
-            success: true,
-            message: "Here is a list of your transactions",
-            data: {
-              details,
-            },
-          });
         });
       });
 
@@ -133,6 +125,14 @@ exports.findAll = async (req, res, next) => {
           error: {
             code: 404,
             message: "No transaction associated with this user account",
+          },
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "Here is a list of your transactions",
+          data: {
+            details,
           },
         });
       }
