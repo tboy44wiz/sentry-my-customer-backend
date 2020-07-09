@@ -51,7 +51,7 @@ exports.getAllStores = async (req, res, next) => {
     const store_admin = await UserModel.findOne({ identifier: id });
     if (!store_admin) {
       return res.status(404).json({
-        success: "false",
+        success: false,
         message: "Something went wrong",
       });
     } else {
