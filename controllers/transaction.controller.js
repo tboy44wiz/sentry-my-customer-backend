@@ -22,6 +22,7 @@ exports.create = (req, res, next) => {
     total_amount,
     description,
     type,
+    store_name,
     transaction_name,
     transaction_role,
   };
@@ -36,7 +37,7 @@ exports.create = (req, res, next) => {
       stores.forEach((store) => {
         if (store.store_name == store_name) {
           store_ref_id = store._id;
-          customers = store.customers;
+          var customers = store.customers;
           if (customers.length > 0) {
             customers.forEach((customer) => {
               if (customer.phone_number == phone_number) {
@@ -45,6 +46,7 @@ exports.create = (req, res, next) => {
                 req_keys.customer_ref_id = customer_ref_id;
                 req_keys.store_ref_id = store_ref_id;
                 req_keys.debts = [];
+                req_keys.store_name = store_name;
                 
                 customer.transactions.push(req_keys);
               }
