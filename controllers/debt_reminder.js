@@ -45,14 +45,13 @@ exports.create = async (req,res)=>{
                 
                 transaction.debts.push(newDebt);
 
-
                 user.save().then(result => {
                     res.status(200).json({
                         success: true,
                         message: "Debt created successfully",
                         data: {
                             statusCode: 200,
-                            debt: newDebt
+                            debt: transaction.debts[transaction.debts.length - 1]
                         }
                     })
                 });
@@ -61,7 +60,7 @@ exports.create = async (req,res)=>{
             .catch(err => {
                 res.status(404).json({
                     sucess: false,
-                    message: "User not found",
+                    message: "User not found or some error occurred",
                     error: {
                       statusCode: 404,
                       message: "User not found"
@@ -122,7 +121,15 @@ exports.getAll = async (req,res)=>{
 
 exports.getById = async (req,res)=>{
     let identifier = req.user.phone_number;
-    if(!req.params.debtId) return Response.failure(res, { error: true, message: "The following parameter "}, HttpStatus.NOT_FOUND)
+    if(!req.params.debtId) 
+        return res.json({
+            success: false,
+            message: "No Id sent",
+            error: {
+                statusCode: 400,
+                message: "No Id sent"
+            }
+        });
     
     UserModel.findOne({ identifier })
         .then(user => {
