@@ -451,10 +451,12 @@ exports.updatePicture = (req,res) => {
         return responseManager.success(res,{message: `Image updated. New imgage url : ${result.url}`},200)
     })
     .catch((err) => {
+      console.log(err)
       return responseManager.failure(res,{message: "Picture not set. Unexpected error occured"});
     })
   })
   .catch((err) => {
+    console.log(err)
     return responseManager.failure(res,{message: "Picture not set. Unexpected error occured"});
   })
 }

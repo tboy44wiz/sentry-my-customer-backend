@@ -46,7 +46,7 @@ const storeAdminSchema = new mongoose.Schema({
     imgage: {
       type: String,
       required: true,
-      default: 'Not set'
+      default: 'https://res.cloudinary.com/dl8587hyx/image/upload/v1594302398/user-default_zcpir8.png'
     }
 }, {timestamps: true});
 
