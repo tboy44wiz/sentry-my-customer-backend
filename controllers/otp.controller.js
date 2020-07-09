@@ -101,7 +101,7 @@ exports.send = async (req, res) => {
 
 exports.verify = async (req, res) => {
   try {
-    let user = await UserModel.findOne({ identifier: req.user.phone_number });
+    let user = await UserModel.findOne({ identifier: req.body.phone_number });
 
     if (!user) {
       return res.status(404).json({
