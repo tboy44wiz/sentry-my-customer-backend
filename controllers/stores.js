@@ -87,7 +87,7 @@ exports.getStore = async (req, res, next) => {
           found = true;
           return res.status(200).json({
             success: true,
-            Message: "Operation successful",
+            message: "Operation successful",
             data: {
               store,
             },
