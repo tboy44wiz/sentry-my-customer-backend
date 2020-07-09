@@ -2,8 +2,10 @@ const User = require("../models/store_admin");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator/check");
-
-
+const responseManager = require('../util/response_manager');
+const DataUri = require('datauri/parser');
+const path = require('path');
+const {uploader} = require('./cloudinaryController')
 exports.validate = method => {
   switch (method) {
     case "body": {
@@ -421,5 +423,38 @@ exports.updateStoreAdmin = (req, res) => {
         message: error.message
       }
     });
+  })
+}
+
+exports.updatePicture = (req,res) => {
+  // check if an image is uploaded 
+  if(!req.file){
+    return responseManager.failure(res,{message: "Upload a picture"},400)
+  }
+
+  // use dataUri to convert image from buffer to dataUri
+  let dturi = new DataUri();
+
+  let dataUri = dturi.format(path.extname(req.file.originalname),req.file.buffer);
+  const file = dataUri.content
+  // upload the image using cloudinary
+  uploader.upload(file)
+    .then((result) => {
+    // update the user image to this image
+    User.updateOne({identifier: req.user.phone_number},{$set: {image: result.url}})
+    .then((dbResult) => {
+      // if the user is not found throw an error
+      if(!dbResult.n){
+        return responseManager.failure(res,{message: "User not found"},404)
+        };
+        // successful response
+        return responseManager.success(res,{message: `Image updated. New imgage url : ${result.url}`},200)
+    })
+    .catch((err) => {
+      return responseManager.failure(res,{message: "Picture not set. Unexpected error occured"});
+    })
+  })
+  .catch((err) => {
+    return responseManager.failure(res,{message: "Picture not set. Unexpected error occured"});
   })
 }

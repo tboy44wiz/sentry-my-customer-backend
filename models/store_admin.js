@@ -39,10 +39,14 @@ const storeAdminSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-
     resetPasswordExpires: {
         type: Date,
         required: false
+    },
+    imgage: {
+      type: String,
+      required: true,
+      default: 'Not set'
     }
 }, {timestamps: true});
 
