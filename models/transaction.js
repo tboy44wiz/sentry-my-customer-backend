@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const CreditReminderSchema = require('./credit_reminders');
+const Debt = require('./debt_reminders')
 
 const transactionSchema = new mongoose.Schema({
   amount: { type: String, required: true },
@@ -12,7 +13,7 @@ const transactionSchema = new mongoose.Schema({
   store_ref_id: { type: String },
   customer_ref_id: { type: String },
   credits: [CreditReminderSchema.schema],
-
+  debts: [Debt.schema]
 });
 
 module.exports = mongoose.model("transaction", transactionSchema);
