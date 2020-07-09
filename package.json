@@ -21,8 +21,8 @@
     "yamljs": "^0.3.0"
   },
   "dependencies": {
-    "axios": "^0.19.2",
     "africastalking": "^0.4.7",
+    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "1.18.3",
     "cors": "^2.8.5",

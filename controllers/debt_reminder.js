@@ -28,8 +28,8 @@ exports.create = async (req,res)=>{
 
         UserModel.findOne({ identifier })
             .then(user => {
-                let store = user.stores.find(store => store.store_name == store_name);
                 
+                let store = user.stores.find(store => store.store_name == store_name);
                 let customer = store.customers.find(customer => customer.phone_number === customer_phone_number);
                 let transaction = customer.transactions.find(transaction => transaction._id == transaction_id);
 
@@ -60,10 +60,10 @@ exports.create = async (req,res)=>{
             .catch(err => {
                 res.status(404).json({
                     sucess: false,
-                    message: "User not found or some error occurred",
+                    message: "User not found or some body parameters are not correct",
                     error: {
                       statusCode: 404,
-                      message: "User not found"
+                      message: err.message
                     }
                 })
             })
@@ -71,7 +71,7 @@ exports.create = async (req,res)=>{
     } catch (err){
         res.status(500).json({
             sucess: false,
-            message: "Some error occurred while creating transaction",
+            message: "Some error occurred while creating debt",
             error: {
               statusCode: 500,
               message: err.message
@@ -290,51 +290,7 @@ exports.deleteById = async (req, res) => {
             })
         })
     } catch(err) {
-        UserModel.findOne({ identifier })
-        .then(user => {
-            let store = user.stores.find(store => store.store_name === store_name);
-            let customer = store.customers.find(customer => customer.phone_number == customer_phone_number);
-            let transaction;;
-            customer.transactions.forEach(trans => {
-                trans.debts.forEach(debt => {
-                    if(debt._id == id) {
-                        trans.debts.splice(trans.debts.indexOf(debt), 1);
-                        transaction = trans;
-                    }
-                })
-            });
-
-            user.save().then(result => {
-                res.status(201).json({
-                    success: true,
-                    message: "Debt deleted successfully",
-                    data: {
-                        statusCode: 201,
-                        transaction: transaction,
-                    }
-                })
-            })
-            .catch(err => {
-                res.status(404).json({
-                    sucess: false,
-                    message: "Couldn't remove debt",
-                    error: {
-                      statusCode: 404,
-                      message: err.message
-                    }
-                })
-            })
-        })
-        .catch(err => {
-            res.status(500).json({
-                sucess: false,
-                message: "Some server error occurred",
-                error: {
-                  statusCode: 500,
-                  message: err.message
-                }
-            })
-        })
+       
     }
     
 };
