@@ -32,8 +32,10 @@ exports.create = (req, res, next) => {
   let store_ref_id;
   let customer_ref_id;
 
+
   UserModel.findOne({ identifier })
     .then((user) => {
+
       let stores = user.stores;
       stores.forEach((store) => {
         if (store.store_name == store_name) {
