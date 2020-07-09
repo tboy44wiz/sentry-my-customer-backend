@@ -82,6 +82,7 @@ exports.send = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong.",
+      otp: otpSaveResult.otp_code,
       data: {
         statusCode: 500,
         error: err
