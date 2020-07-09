@@ -2,9 +2,9 @@ const {config , uploader} = require('cloudinary');
 
 const cloudConfig = (req,res,next) => {
     config({
-        cloud_name: "dl8587hyx",
-        api_key: "257517161539154",
-        api_secret: 'HZ5Jn5-N94Pr_2z_e-FKPWzDRRI',
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
         });
         next();
 }
