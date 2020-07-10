@@ -5,6 +5,10 @@
     const bodyValidator = require('../util/body_validator')
     const auth = require("../auth/auth");
 
+    const multer  = require('multer');
+    const storage = multer.memoryStorage();
+    const uploads = multer({ storage }).single('image');
+    const cloudConfig = require('../controllers/cloudinaryController').cloudConfig
     router.use("/assistant", auth)
     //Add new user
     router.post("/assistant/new", auth, users.validate('body'), bodyValidator, users.new);
@@ -28,5 +32,6 @@
     router.post('/store_admin/forgot-password', users.forgot);
 
     router.post('/store_admin/forgot-password/:token', users.tokenreset)
+    router.patch('/store-admin/picture/update', uploads, auth, cloudConfig, users.updatePicture);
 
     module.exports = router;
