@@ -4,7 +4,7 @@ const UserModel = require("../models/store_admin");
 exports.createStore = async (req, res, next) => {
   if (req.body.store_name === "" || req.body.shop_address === "") {
     return res.status(500).json({
-      status: "fail",
+      success: false,
       message: error.message,
     });
   }
@@ -15,6 +15,9 @@ exports.createStore = async (req, res, next) => {
       storeOwner.stores.push({
         store_name: req.body.store_name,
         shop_address: req.body.shop_address,
+        tagline: req.body.tagline,
+        phone_number:req.body.phone_number,
+        email:req.body.email,
       });
       storeOwner
         .save()
@@ -48,13 +51,13 @@ exports.getAllStores = async (req, res, next) => {
     const store_admin = await UserModel.findOne({ identifier: id });
     if (!store_admin) {
       return res.status(404).json({
-        status: "fail",
+        success: false,
         message: "Something went wrong",
       });
     } else {
       let stores = store_admin.stores;
       res.status(200).json({
-        status: "success",
+        success: true,
         result: stores.length,
         message: "Here are all your stores",
         data: {
@@ -84,7 +87,7 @@ exports.getStore = async (req, res, next) => {
           found = true;
           return res.status(200).json({
             success: true,
-            Message: "Operation successful",
+            message: "Operation successful",
             data: {
               store,
             },
@@ -120,7 +123,7 @@ exports.updateStore = async (req, res, next) => {
     (req.body.store_name == "" && req.body.shop_address == "")
   ) {
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "Current user or Store Name or Shop name required",
     });
   }
@@ -174,7 +177,7 @@ exports.updateStore = async (req, res, next) => {
 exports.deleteStore = async (req, res, next) => {
   if (req.body.current_user === "") {
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "Current user required",
     });
   }
