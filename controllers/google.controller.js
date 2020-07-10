@@ -1,8 +1,8 @@
 const { google } = require("googleapis");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
 const OAuth2Client = google.auth.OAuth2;
+const googleUser = require("../models/test");
 
 //Config google api
 const googleConfig = {
@@ -34,7 +34,6 @@ function getConnectionUrl(auth) {
     scope: defaultScope,
   });
 }
-
 function getGooglePlusApi(auth) {
   return google.people({ version: "v1", auth });
 }
@@ -73,8 +72,8 @@ exports.getGoogleAccountFromCode = async (req, res) => {
     const first_name = me.data.names[0].givenName;
     const last_name = me.data.names[0].familyName;
 
-    let user = await User.findOne({ email, googleId });
-    const token = await jwt.sign(
+    let user = await googleUser.findOne({ identifier: email });
+    const token = jwt.sign(
       {
         name: first_name + last_name,
         email: email,
@@ -86,44 +85,40 @@ exports.getGoogleAccountFromCode = async (req, res) => {
     );
 
     if (!user) {
-      const newUser = new User({
-        first_name,
-        last_name,
-        email,
-        token,
-        googleId,
-      });
-      user = await newUser.save();
+      const newUser = new googleUser({});
+      (newUser.identifier = email),
+        (newuser.google.first_name = first_name),
+        (newuser.google.last_name = last_name),
+        (newuser.google.email = email),
+        (newuser.google.api_token = token),
+        (newuser.google.googleId = googleId),
+        (user = await newUser.save());
+    } else {
+      const payload = {
+        newUser: {
+          id: user.id,
+        },
+      };
+
+      jwt.sign(
+        payload,
+        process.env.JWT_KEY,
+        {
+          expiresIn: 360000,
+        },
+        (err, token, data) => {
+          if (err) throw err;
+          return res.status(200).send({
+            success: true,
+            message: "User signed in successfully",
+            data: {
+              user,
+              token,
+            },
+          });
+        }
+      );
     }
-
-    if (user && !user.googleId) {
-      user = await User.update({ _id: user.id }, { googleId });
-    }
-
-    const payload = {
-      newUser: {
-        id: user.id,
-      },
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_KEY,
-      {
-        expiresIn: 360000,
-      },
-      (err, token, data) => {
-        if (err) throw err;
-        return res.status(200).send({
-          success: true,
-          message: "User signed in successfully",
-          data: {
-            user,
-            token,
-          },
-        });
-      }
-    );
   } catch (e) {
     res.status(400).send({
       success: false,
@@ -132,4 +127,3 @@ exports.getGoogleAccountFromCode = async (req, res) => {
     });
   }
 };
-
