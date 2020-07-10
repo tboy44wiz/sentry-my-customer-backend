@@ -49,15 +49,19 @@ const storeAdminSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-
     resetPasswordExpires: {
       type: Date,
       required: false,
     },
+    image: {
+      type: String,
+      required: true,
+      default:
+        "https://res.cloudinary.com/dl8587hyx/image/upload/v1594302398/user-default_zcpir8.png",
+    },
   },
   { timestamps: true }
 );
-
 storeAdminSchema.pre("save", function (next) {
   const user = this;
 
