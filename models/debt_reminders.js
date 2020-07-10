@@ -10,6 +10,7 @@ const DebtReminder = new mongoose.Schema({
     required: true,
   },
   name: {
+    default: '',
     type: String,
     required: true,
   },
