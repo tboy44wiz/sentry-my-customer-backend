@@ -118,6 +118,18 @@
                         <li>password</li>
                     </ul>
                 </li>
+
+                 <h4>Update Password</h4>
+            <ul>
+                <li>Update password<strong> - /update-password [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>oldPassword</li>
+                          <li>newPassword</li>
+                            <li>confirmPassword</li>
+                    </ul>
+                </li>
+
             </ul>
         </div>
                 </ul>
@@ -133,6 +145,8 @@
                     <ul class="alert alert-primary">
                         <li>phone_number</li>
                         <li>name</li>
+                        <li>email</li>
+                        <li>password</li>
                     </ul>
                 </li>
                 <li>Retrieve all users<strong>- /assistant [GET]</strong></li>
@@ -142,7 +156,7 @@
                         <li>customer_id</li>
                     </ul>
                 </li>
-                <li>Update assistant<strong>- /assistant/update/:user_id</strong>
+                <li>Update assistant<strong>- /assistant/update/:assistant_id [PUT]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>assistant_id</li>
@@ -152,7 +166,7 @@
                         <li>content[data]</li>
                     </ul>
                 </li>
-                <li>Delete assistant (logical delete)<strong>- /assistant/delete/:user_id</strong></li>
+                <li>Delete assistant (logical delete)<strong>- /assistant/delete/:assistant_id</strong></li>
             </ul>
         </div>
         <div>
@@ -278,13 +292,11 @@
                     </ul>
                 </li>
                 <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
-                    <h6>Params: </h6>
-                    <ul class="alert alert-primary">
-                        <li>store_name</li>
-                    </ul>
+                                         
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>Entries to update</li>
+                        <li>store_name</li>
                     </ul>
                 </li>
                 <li>Delete transaction (logical delete)<strong>- /transaction/delete/:transaction_id</strong></li>
@@ -326,6 +338,51 @@
                     </ul>
                 </li>
                 <li>View all customers<strong> - /customer/ [GET]</strong>
+                    
+                </li>
+                
+           
+        </div>
+                <div class="debt" id="debt">
+            <h1 class="">Debt</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create Debt<strong> - /debt/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>transaction_id</li>
+                        <li>customer_phone_number</li>
+                        <li>store_name</li>
+                        <li>amount</li>
+                        <li>status</li>
+                        <li>message</li>
+                        <li>pay_date</li>
+                    </ul>
+                </li>
+                <li>Retrieve debts<strong> - /debt/:debt_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Update debt details<strong> - /debt/update/:debt_id [PUT] </strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>debt_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Entries to update</li>
+                    </ul>
+                </li>
+                <li>Delete debt (logical delete)<strong> - /debt/delete/:debt_id [DELETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>debt_id</li>
+                    </ul>
+                </li>
+                <li>View all debts<strong> - /debt/ [GET]</strong>
                     
                 </li>
                 
