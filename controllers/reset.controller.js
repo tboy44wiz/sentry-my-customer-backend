@@ -6,7 +6,7 @@ const africastalking = require("africastalking")({
 });
 
 const makeid = require("../util/code_random");
-const codeLength = 6
+const codeLength = 6;
 
 module.exports.recover = async (req, res) => {
   console.log(req.body.phone_number);
@@ -24,13 +24,21 @@ module.exports.recover = async (req, res) => {
 
       //Generate and set password reset token
       user.generatePasswordReset();
-      user.resetPasswordToken = makeid(codeLength, false)
+      user.resetPasswordToken = makeid(codeLength, false);
       console.log(user.resetPasswordToken);
 
       // Save the updated user object
       user
         .save()
         .then(user => {
+          res.status(200).json({
+            success: true,
+            message: "successful",
+            data: {
+              message: "successful",
+              otp: user.resetPasswordToken,
+            }
+          });
           const sms = africastalking.SMS;
           sms
             .send({
@@ -52,6 +60,7 @@ module.exports.recover = async (req, res) => {
               res.status(500).json({
                 success: false,
                 message: "Something went wrong.",
+                otp: user.resetPasswordToken,
                 data: {
                   statusCode: 500,
                   error: "Something went wrong."
@@ -63,7 +72,6 @@ module.exports.recover = async (req, res) => {
     })
     .catch(err => res.status(500).json({ message: err.message }));
 };
-
 
 module.exports.reset = async (req, res) => {
   User.findOne({
@@ -81,7 +89,6 @@ module.exports.reset = async (req, res) => {
     })
     .catch(err => res.status(500).json({ message: err.message }));
 };
-
 
 module.exports.resetPassword = async (req, res, next) => {
   const user = await User.findOne({
