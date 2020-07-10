@@ -1,8 +1,8 @@
 const { google } = require("googleapis");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 const OAuth2Client = google.auth.OAuth2;
-const googleUser = require("../models/store_admin");
 
 //Config google api
 const googleConfig = {
@@ -73,8 +73,8 @@ exports.getGoogleAccountFromCode = async (req, res) => {
     const first_name = me.data.names[0].givenName;
     const last_name = me.data.names[0].familyName;
 
-    let user = await googleUser.findOne({ identifier: email });
-    const token = jwt.sign(
+    let user = await User.findOne({ email, googleId });
+    const token = await jwt.sign(
       {
         name: first_name + last_name,
         email: email,
@@ -86,45 +86,50 @@ exports.getGoogleAccountFromCode = async (req, res) => {
     );
 
     if (!user) {
-      const newUser = new googleUser({});
-      (newUser.identifier = email),
-        (newUser.google.first_name = first_name),
-        (newUser.google.last_name = last_name),
-        (newUser.google.email = email),
-        (newUser.google.api_token = token),
-        (newUser.google.googleId = googleId),
-        (user = await newUser.save());
-    } else {
-      const payload = {
-        newUser: {
-          id: user.id,
-        },
-      };
-
-      jwt.sign(
-        payload,
-        process.env.JWT_KEY,
-        {
-          expiresIn: 360000,
-        },
-        (err, token, data) => {
-          if (err) throw err;
-          return res.status(200).send({
-            success: true,
-            message: "User signed in successfully",
-            data: {
-              user,
-              token,
-            },
-          });
-        }
-      );
+      const newUser = new User({
+        first_name,
+        last_name,
+        email,
+        token,
+        googleId,
+      });
+      user = await newUser.save();
     }
+
+    if (user && !user.googleId) {
+      user = await User.update({ _id: user.id }, { googleId });
+    }
+
+    const payload = {
+      newUser: {
+        id: user.id,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_KEY,
+      {
+        expiresIn: 360000,
+      },
+      (err, token, data) => {
+        if (err) throw err;
+        return res.status(200).send({
+          success: true,
+          message: "User signed in successfully",
+          data: {
+            user,
+            token,
+          },
+        });
+      }
+    );
   } catch (e) {
     res.status(400).send({
       success: false,
       message: "Error signing user in",
-      response: e.message,
+      response: e,
     });
   }
 };
+
