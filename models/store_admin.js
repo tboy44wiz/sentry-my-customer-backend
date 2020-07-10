@@ -6,7 +6,7 @@ const mongoose = require("mongoose"),
   StoreAssistant = require("./storeAssistant"),
   Complaints = require("./complaint_form");
 
-const tstoreAdminSchema = new mongoose.Schema(
+const storeAdminSchema = new mongoose.Schema(
   {
     identifier: { type: String, required: true, unique: true },
     local: {
@@ -57,7 +57,7 @@ const tstoreAdminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-tstoreAdminSchema.pre("save", function (next) {
+storeAdminSchema.pre("save", function (next) {
   const user = this;
 
   if (!user.isModified("password")) return next();
@@ -74,11 +74,11 @@ tstoreAdminSchema.pre("save", function (next) {
   });
 });
 
-tstoreAdminSchema.methods.comparePassword = function (password) {
+storeAdminSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
-tstoreAdminSchema.methods.generateJWT = function () {
+storeAdminSchema.methods.generateJWT = function () {
   const today = new Date();
   const expirationDate = new Date(today);
   expirationDate.setDate(today.getDate() + 900);
@@ -96,11 +96,11 @@ tstoreAdminSchema.methods.generateJWT = function () {
   });
 };
 
-tstoreAdminSchema.methods.generatePasswordReset = function () {
+storeAdminSchema.methods.generatePasswordReset = function () {
   this.resetPasswordToken = crypto.randomBytes(6).toString("hex");
   this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
 };
 
 mongoose.set("useFindAndModify", false);
 
-module.exports = mongoose.model("tstore_admin", tstoreAdminSchema);
+module.exports = mongoose.model("store_admin", storeAdminSchema);
