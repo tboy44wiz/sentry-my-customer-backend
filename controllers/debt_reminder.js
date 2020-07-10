@@ -191,7 +191,7 @@ exports.getById = async (req,res)=>{
 
 exports.updateById = async (req, res) => {
     let identifier = req.user.phone_number;
-    let { status, message, amount, pay_date } = req.body;
+    let { status, message, amount, pay_date, name } = req.body;
 
     try {
         UserModel.findOne({ identifier })
@@ -209,6 +209,7 @@ exports.updateById = async (req, res) => {
             
             let debtById = allDebts.find(debt => debt._id == req.params.debtId);
             let update = {
+                name: name || debtById.name,
                 amount: amount || debtById.amount,
                 message: message || debtById.message,
                 status: status || debtById.status,
@@ -323,4 +324,3 @@ exports.deleteById = async (req, res) => {
     }
     
 };
-

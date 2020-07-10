@@ -5,7 +5,7 @@ const debt = require("./../controllers/debt_reminder.js");
 const auth = require("../auth/auth");
 
 router.post('/debt/new', auth, debt.validate('body'), bodyValidator, debt.create)
-router.post('/debt/new/:transaction_id', debt.validate('body'), bodyValidator, auth, debt.create)
+router.post('/debt/new/:transaction_id', auth, debt.validate('body'), bodyValidator, debt.create)
 router.get('/debt', auth, debt.getAll)
 router.put('/debt/update/:debtId', auth, debt.updateById)
 router.delete('/debt/delete/:debtId', auth, debt.deleteById)
