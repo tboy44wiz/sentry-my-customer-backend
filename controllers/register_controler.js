@@ -10,9 +10,7 @@ exports.validate = (method) => {
       case 'body': {
           return [
               body('phone_number').isInt(),
-              body('password').isLength({
-                  min: 6
-              }),
+              body('password').isLength({min: 6}),
           ]
       }
   }
@@ -34,10 +32,10 @@ module.exports.registerUser = async (req, res, next) => {
     const user = await new UserModel({});
     user.local.phone_number = phone_number;
     user.local.password = password;
-    user.local.api_token = token;
+    user.api_token = token;
     user.identifier = phone_number
     //  Encrypt the Password
-   user.local.password = await bCrypt.hash(user.local.password, 10);
+    user.local.password = await bCrypt.hash(user.local.password, 10);
 
 
     //  Check if User PhoneNumber and Email already exist.
@@ -49,7 +47,7 @@ module.exports.registerUser = async (req, res, next) => {
                 //  This means the user exists.
                 return res.status(409).json({
                     success: false,
-                    Message: "User already exists",
+                    message: "User already exists",
                     error: {
                         statusCode: 409,
                         description: "Phone number already taken, please use another phone number"
@@ -68,8 +66,6 @@ module.exports.registerUser = async (req, res, next) => {
                                 user: result
                             }
                         });
-
-                        //  TODO Redirect to the OTP Activation Page.
                     })
                     .catch((error) => {
                         return res.status(500).json({
@@ -132,7 +128,7 @@ module.exports.registerCustomer = async (req, res, next) => {
             if(existingUser) {
                 //  This means the user exists.
                 return res.status(200).json({
-                    Message: "Phone number already taken. Please use another phone number."
+                    message: "Phone number already taken. Please use another phone number."
                 });
             }
             else {
@@ -140,7 +136,7 @@ module.exports.registerCustomer = async (req, res, next) => {
                 customer.save()
                     .then((result) => {
                         return res.status(201).json({
-                            Message: "Customer registered successfully...",
+                            message: "Customer registered successfully...",
                             Customer: {
                                 _id: result._id,
                                 name: result.name,
