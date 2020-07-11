@@ -15,14 +15,14 @@
    // Retrieve all Users
    router.get('/assistant', auth, users.all);
 
-    // Retrieve a single User with user_id
+    //Retrieve a single User with user_id
     router.get('/assistant/:assistant_id', auth, users.getById);
 
    // Update User Info with user_id
    router.put('/assistant/update/:assistant_id', auth, users.update);
 
     // Delete a User with user_id
-    router.delete('/assistant/delete/:user_id', auth, users.delete);
+    router.delete('/assistant/delete/:assistant_id', auth, users.delete);
 
     // Update User Info with user_id
     router.put('/store-admin/update', auth, users.validate('store_admin'), bodyValidator, users.updateStoreAdmin);

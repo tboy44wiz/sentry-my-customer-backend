@@ -15,7 +15,7 @@ exports.validate = method => {
     case "body": {
       return [
         body("phone_number").isInt(),
-        body("name").matches(/^[0-9a-zA-Z]{2,}$/, "i"),
+        body("name").matches(/^[0-9a-zA-Z ]{2,}$/, "i"),
       ];
     }
     case "store_admin": {
@@ -232,7 +232,7 @@ exports.update = async (req, res) => {
               message: "Assistants details updated successfully",
               data: {
                 statusCode: 201,
-                data: userSaved,
+                data: userSaved.assistants,
               },
             });
           })
@@ -330,55 +330,57 @@ exports.update = async (req, res) => {
 //#endregion
 
 //#region Delete a user the user_id
-exports.delete = (req, res) => {
-  User.findByIdAndRemove(req.params.user_id)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({
-          success: "false",
-          message: "User not found",
-          error: {
-            statusCode: 404,
-            message: "User not found with id " + req.params.user_id,
-          },
-        });
-      } else {
-        res.status(200).json({
-          success: "true",
-          message: "User deleted successfully",
-          error: {
-            statusCode: 200,
-            message:
-              "User with id " + req.params.user_id + " has been deleted ",
-            data: user,
-          },
-        });
-      }
-    })
-    .catch((err) => {
-      if (err.kind === "ObjectId" || err.name === "NotFound") {
-        return res.status(404).json({
-          success: "false",
-          message: "User delete failed",
-          error: {
-            statusCode: 404,
-            message:
-              "User with id: " + req.params.user_id + " could not be found ",
-          },
-        });
-      }
-      return res.status(500).send({
-        success: "false",
-        message: "User delete failed",
+exports.delete = async (req, res) => {
+  await User.findOne({ identifier: req.user.phone_number }, (error, store_admin)=>{
+    if(error){
+      return res.status(200).json({
+        success: false,
+        message: "User not found",
         error: {
           statusCode: 404,
-          message:
-            "User with id: " +
-            req.params.user_id +
-            " could not be deleted due to an internal error",
+          message: "User with identifier " + req.user.phone_number + " not found",
         },
       });
-    });
+    }else{
+       const assistants = store_admin.assistants;
+       console.log(assistants)
+      if(assistants.length > 0){
+            assistants.forEach((assistant) => {
+              if (assistant._id.equals(req.params.assistant_id)) {
+                assistant.remove()
+                store_admin.save();
+                return res.status(200).json({
+                  success: "true",
+                  message: "User deleted successfully",
+                  error: {
+                    statusCode: 200,
+                    message: "Assistant with id " + req.params.assistant_id + " has been deleted ",
+                    data: assistant,
+                  }
+                });
+              } else {
+                return res.status(404).send({
+                  success: "false",
+                  message: "Assistant not found",
+                  error: {
+                    statusCode: 404,
+                    message: "Assistant not found with id " + req.params.user_id,
+                  }
+                });
+              }
+            })
+      }else{
+        return res.status(400).json({
+          success: false,
+          message: "You have no assistants yet",
+          error: {
+            statusCode: 400,
+            message: "You have not added any assistants yet"
+          }
+        })
+      }
+    }
+  })
 };
 //#endregion
 

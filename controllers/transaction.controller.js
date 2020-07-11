@@ -109,22 +109,23 @@ exports.findAll = async (req, res, next) => {
       stores.forEach((store) => {
         let customers = store.customers;
         customers.forEach((customer) => {
-          let obj = {};
-          obj.storeName = store.store_name;
-          obj.customerName = customer.name;
-          obj.transactions = customer.transactions;
+          if (customer.transactions.length != 0) {
+            let obj = {};
+            obj.storeName = store.store_name;
+            obj.customerName = customer.name;
+            obj.transactions = customer.transactions;
 
-          details.push(obj);
+            details.push(obj);
+          }
         });
       });
 
       if (details.length == 0) {
-        res.status(404).json({
-          success: false,
+        res.status(200).json({
+          success: true,
           message: "No transaction associated with this user account",
-          error: {
-            code: 404,
-            message: "No transaction associated with this user account",
+          data: {
+            transactions: details,
           },
         });
       } else {
@@ -132,7 +133,7 @@ exports.findAll = async (req, res, next) => {
           success: true,
           message: "Here is a list of your transactions",
           data: {
-            details,
+            transactions: details,
           },
         });
       }
