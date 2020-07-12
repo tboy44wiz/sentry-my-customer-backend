@@ -109,12 +109,14 @@ exports.findAll = async (req, res, next) => {
       stores.forEach((store) => {
         let customers = store.customers;
         customers.forEach((customer) => {
-          let obj = {};
-          obj.storeName = store.store_name;
-          obj.customerName = customer.name;
-          obj.transactions = customer.transactions;
+          if (customer.transactions.length != 0) {
+            let obj = {};
+            obj.storeName = store.store_name;
+            obj.customerName = customer.name;
+            obj.transactions = customer.transactions;
 
-          details.push(obj);
+            details.push(obj);
+          }
         });
       });
 
@@ -131,7 +133,7 @@ exports.findAll = async (req, res, next) => {
           success: true,
           message: "Here is a list of your transactions",
           data: {
-            details,
+            transactions: details,
           },
         });
       }
