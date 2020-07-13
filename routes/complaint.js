@@ -10,7 +10,7 @@ const { check, validationResult } = require('express-validator/check');
 // @access      Private
 router.get("/complaints", auth, complaintsController.findAll);
 
-// @route       GET /complaint/new/:complaintId
+// @route       GET /complaint/:complaintId
 // @desc        User gets single complaint
 // @access      Private
 router.get("/complaint/:complaintId", auth, complaintsController.findOne);
