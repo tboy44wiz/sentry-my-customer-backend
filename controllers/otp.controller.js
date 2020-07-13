@@ -26,7 +26,8 @@ exports.validate = method => {
 
 exports.send = async (req, res) => {
   try {
-    const user = await UserModel.findOne({ identifier: req.body.phone_number });
+    const number = await req.body.phone_number.substring(4, )
+    const user = await UserModel.findOne({ identifier: "0" + number });
 
     if (!user) {
       return res.status(404).json({
@@ -51,7 +52,7 @@ exports.send = async (req, res) => {
     }
 
     const otpSaveResult = await otp.save();
-
+    
     if (!otpSaveResult) {
       return res.status(500).json({
         success: false,
@@ -62,7 +63,16 @@ exports.send = async (req, res) => {
         }
       });
     }
-    
+    const sms = africastalking.SMS;
+    await sms.send({
+      to: [req.body.phone_number],
+      message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`
+    }).then((response)=>{
+      console.log(response)
+    }).catch((error)=>{
+      console.log(error)
+    })
+
     res.status(200).json({
       success: true,
       message: "successful",
