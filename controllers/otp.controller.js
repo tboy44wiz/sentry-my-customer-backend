@@ -4,11 +4,11 @@ const UserModel = require("../models/store_admin");
 const OTP = require("../models/otp");
 const africastalking = require("africastalking")({
   apiKey: process.env.AFRICASTALKING_API_KEY,
-  username: process.env.AFRICASTALKING_USERNAME
+  username: process.env.AFRICASTALKING_USERNAME,
 });
 const codeLength = 6;
 
-exports.validate = method => {
+exports.validate = (method) => {
   switch (method) {
     case "send": {
       return [body("phone_number").isNumeric()];
@@ -18,7 +18,7 @@ exports.validate = method => {
         /* body('phone_number').isNumeric(), */
         body("verify")
           .isNumeric()
-          .isLength({ min: codeLength, max: codeLength })
+          .isLength({ min: codeLength, max: codeLength }),
       ];
     }
   }
@@ -26,8 +26,8 @@ exports.validate = method => {
 
 exports.send = async (req, res) => {
   try {
-    const number = await req.body.phone_number.substring(4, )
-    const user = await UserModel.findOne({ identifier: "0" + number });
+    const number = await req.body.phone_number;
+    const user = await UserModel.findOne({ identifier: number });
 
     if (!user) {
       return res.status(404).json({
@@ -35,8 +35,8 @@ exports.send = async (req, res) => {
         message: "User not found",
         data: {
           statusCode: 404,
-          error: "User not found"
-        }
+          error: "User not found",
+        },
       });
     }
 
@@ -47,31 +47,34 @@ exports.send = async (req, res) => {
     } else {
       otp = new OTP({
         otp_code: makeid(codeLength, false),
-        user_ref_code: user._id
+        user_ref_code: user._id,
       });
     }
 
     const otpSaveResult = await otp.save();
-    
+
     if (!otpSaveResult) {
       return res.status(500).json({
         success: false,
         message: "Something went wrong.",
         data: {
           statusCode: 500,
-          error: "Something went wrong."
-        }
+          error: "Something went wrong.",
+        },
       });
     }
     const sms = africastalking.SMS;
-    await sms.send({
-      to: [req.body.phone_number],
-      message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`
-    }).then((response)=>{
-      console.log(response)
-    }).catch((error)=>{
-      console.log(error)
-    })
+    await sms
+      .send({
+        to: ["+" + req.body.phone_number],
+        message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     res.status(200).json({
       success: true,
@@ -79,9 +82,9 @@ exports.send = async (req, res) => {
       data: {
         message: "successful",
         otp: otpSaveResult.otp_code,
-      }
+      },
     });
-    
+
     // const sms = africastalking.SMS;
     // await sms.send({
     //   to: [`+${req.body.phone_number}`],
@@ -101,8 +104,8 @@ exports.send = async (req, res) => {
       message: "Something went wrong.",
       data: {
         statusCode: 500,
-        error: err
-      }
+        error: err,
+      },
     });
   }
 };
@@ -117,8 +120,8 @@ exports.verify = async (req, res) => {
         message: "User not found",
         data: {
           statusCode: 404,
-          error: "User not found"
-        }
+          error: "User not found",
+        },
       });
     }
 
@@ -130,8 +133,8 @@ exports.verify = async (req, res) => {
         message: "OTP not found",
         data: {
           statusCode: 404,
-          error: "OTP not found"
-        }
+          error: "OTP not found",
+        },
       });
     }
 
@@ -142,8 +145,8 @@ exports.verify = async (req, res) => {
       success: true,
       message: "successful",
       data: {
-        message: "successful"
-      }
+        message: "successful",
+      },
     });
   } catch (err) {
     res.status(500).json({
@@ -151,8 +154,8 @@ exports.verify = async (req, res) => {
       message: "Something went wrong.",
       data: {
         statusCode: 500,
-        error: err
-      }
+        error: err,
+      },
     });
   }
 };
