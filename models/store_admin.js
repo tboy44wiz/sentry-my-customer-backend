@@ -25,6 +25,7 @@ const storeAdminSchema = new mongoose.Schema(
       googleId: { type: String },
       api_token: { type: String },
       user_role: { type: String, default: "store_admin" },
+      picture: { type: String },
     },
     facebook: {
       //facebook login data

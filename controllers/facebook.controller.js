@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const axios = require("axios");
 const queryString = require("query-string");
-const facebookUser = require("../models/test");
+const facebookUser = require("../models/store_admin");
 
 //Generate a facebook URL
 exports.urlFacebook = (req, res) => {
@@ -56,16 +56,16 @@ exports.getFacebookAccountFromCode = async (req, res) => {
     const res_token = await getToken(req.query.code);
     const facebook = await getFacebookData(res_token);
 
-    let user = await facebookUser.findOne({ identifier: facebook.email });
+    let user = await facebookUser.findOne({
+      identifier: facebook.email,
+    });
+    console.log(user);
     const token = jwt.sign(
       {
         name: facebook.first_name + facebook.last_name,
         email: facebook.email,
       },
-      process.env.JWT_KEY,
-      {
-        expiresIn: "1d",
-      }
+      process.env.JWT_KEY
     );
 
     if (!user) {
@@ -77,32 +77,42 @@ exports.getFacebookAccountFromCode = async (req, res) => {
         (newUser.facebook.api_token = token),
         (newUser.facebook.facebookId = facebook.id);
       user = await newUser.save();
-    } else {
-      const payload = {
-        newUser: {
-          id: user.id,
-        },
-      };
-
-      jwt.sign(
-        payload,
-        process.env.JWT_KEY,
-        {
-          expiresIn: 360000,
-        },
-        (err, token, data) => {
-          if (err) throw err;
-          return res.status(200).send({
-            success: true,
-            message: "User signed in successfully",
-            data: {
-              user,
-              token,
-            },
-          });
-        }
-      );
     }
+    if (user && !user.facebook.facebookId) {
+      user.update({
+        facebook: {
+          first_name: facebook.first_name,
+          last_name: facebook.last_name,
+          email: facebook.email,
+          api_token: token,
+          facebookId: facebook.id,
+        },
+      });
+    }
+    const payload = {
+      newUser: {
+        id: user.id,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_KEY,
+      {
+        expiresIn: 360000,
+      },
+      (err, token, data) => {
+        if (err) throw err;
+        return res.status(200).send({
+          success: true,
+          message: "User signed in successfully",
+          data: {
+            user,
+            token,
+          },
+        });
+      }
+    );
   } catch (e) {
     res.status(400).send({
       success: false,
@@ -111,4 +121,3 @@ exports.getFacebookAccountFromCode = async (req, res) => {
     });
   }
 };
-
