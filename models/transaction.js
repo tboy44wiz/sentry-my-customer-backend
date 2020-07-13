@@ -13,6 +13,6 @@ const transactionSchema = new mongoose.Schema({
   store_ref_id: { type: String },
   customer_ref_id: { type: String },
   debts: [Debt.schema]
-}, { timestamp: true });
+}, { timestamps: true });
 
 module.exports = mongoose.model("transaction", transactionSchema);
