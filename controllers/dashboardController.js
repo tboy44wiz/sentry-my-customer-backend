@@ -6,8 +6,8 @@ const customerModel = require('../models/customer');
 exports.storeAdminDashboard = async (req, res)=>{
     const identifier = req.user.phone_number;
     
-    const user = await userModel.findOne({phone_number: identifier});
-    if (!user) {
+    const storeAdmin = await storeAdminModel.findOne({identifier});
+    if (!storeAdmin) {
         return res.status(404).json({
             success: false,
             message: 'User not found',
@@ -15,32 +15,39 @@ exports.storeAdminDashboard = async (req, res)=>{
         })
     }
 
-    if (user.user_role == "store_admin") {
-        const storeAdmin = await storeAdminModel.findOne({identifier});
-        const data = {};
-        const stores = user.stores;
-        const assistants = user.assistants
-        data.storeCount = stores.length;
-        data.assistantCount = assistants.length;
-        data.customerCount = 0;
-        data.newCustomers = []
-        data.transactions = []
-        stores.forEach(store => {
-            data.customerCount = data.customerCount + store.customers.length;
-            const customers = store.customers;
-            let date = new Date();
-            const newCustomers = customers.filter(element => {
-                return element.createdAt.toDateString() == date.toDateString()
-            });
-            if (newCustomers.length > 0) {
-                newCustomers.forEach(element => data.newCustomers.push({
-                    name: element.name, 
-                    phone_number: element.phone_number, 
-                    email: element.email
-                }));
-            }
+    const data = {};
+    const stores = storeAdmin.stores;
+    const assistants = storeAdmin.assistants
+    //get number of stores
+    data.storeCount = stores.length;
+    //get number of assisstants
+    data.assistantCount = assistants.length;
+    //initialize customer count, new customers and transactions
+    data.customerCount = 0;
+    data.newCustomers = []
+    data.transactions = []
+        
+    stores.forEach(store => {
+        //increment customer count by number of customers in each store
+        data.customerCount = data.customerCount + store.customers.length;
+
+        const customers = store.customers;
+        let date = new Date();
+        //filter customers array to get all new customers
+        const newCustomers = customers.filter(element => {
+            return element.createdAt.toDateString() == date.toDateString()
+        });
+        if (newCustomers.length > 0) {
+            //push in customer details into new customers array
+            newCustomers.forEach(element => data.newCustomers.push({
+                name: element.name, 
+                phone_number: element.phone_number, 
+                email: element.email
+            }));
+        }
            
-            customers.forEach(customer => {
+        customers.forEach(customer => {
+            //push in transaction details for each customer
             if (customer.transactions.length != 0) {
                 let obj = {};
                 obj.storeName = store.store_name;
@@ -49,16 +56,24 @@ exports.storeAdminDashboard = async (req, res)=>{
 
                 data.transactions.push(obj);
             }
-            });
         });
-        
+    });
+
+    function compare(a, b) {
+        if (a.transactions.createdAt.getTime() > b.transactions.createdAt.getTime()) return -1;
+        if (b.transactions.createdAt.getTime() < a.transactions.createdAt.getTime()) return 1;
+         
+        return 0;
     }
-   
-    
-    
-    stores.forEach((store) => {
+    // sort transactions by date in descending order 
+    data.transactions.sort(compare);
+
+    return res.status(200).json({
+        success: true,
+        message: 'Store Admin dashboard data',
+        data: data
+    });
         
-      });
 }
 
 

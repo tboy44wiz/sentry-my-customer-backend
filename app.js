@@ -28,6 +28,7 @@ const reset = require("./routes/reset");
 const debt = require('./routes/debt_reminder');
 const businessCards = require("./routes/businessCardRoute");
 const updates = require("./routes/update_routes");
+const dashboard = require("./routes/dashboard");
 // const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
 app.use(expressValidator());
@@ -78,6 +79,7 @@ app.use(facebook);
 app.use(complaintRouter);
 app.use(user);
 app.use(docs);
+app.use(dashboard);
 app.use("/register", register);
 
 app.use("/login", login);
