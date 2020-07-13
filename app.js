@@ -77,6 +77,7 @@ app.use(docs);
 app.use("/register", register);
 
 app.use("/login", login);
+app.user(debt);
 
 //This should be the last route else any after it won't work
 app.use("*", (req, res) => {
