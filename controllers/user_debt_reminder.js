@@ -7,30 +7,38 @@ const Transaction = require("../models/transaction");
 exports.create = async (req,res)=> {
     // Add new message
     const identifier = req.user.phone_number;
-    const {phone_number, store_name, transaction_id, message, status, pay_date} = req.body
+    const {distributor_store_name, transaction_id, message, status, pay_date} = req.body
 
-    if (!phone_number || !store_name || !transaction_id || !message || !status || !pay_date) {
+    if (!distributor_store_name || !message || !status || !pay_date) {
         return res.status(400).json({
             success: false,
-            message: "phone_number, store_name, transaction_id, message and status are required.",
+            message: "distributor_store_name, message, status and expected_pay_date are required.",
             data: {
                 statusCode: 400,
-                message: "phone_number, store_name, transaction_id, message and status are required.",
+                message: "distributor_store_name, message, status and expected_pay_date are required.",
             },
         });
     }
 
     const newCredit = new Credit({
         user_phone_number: identifier,
-        store_name: store_name,
-        customer_phone_number: phone_number,
-        ts_ref_id: transaction_id,
+        distributor_store_name: distributor_store_name,
         message: message,
         status: status,
         expected_pay_date: pay_date,
     });
 
     UserModel.findOne({identifier})
+        .then((user) => {
+            if (user) {
+
+            }
+        })
+        .catch(() => {
+
+        })
+
+    /*UserModel.findOne({identifier})
         .then((user) => {
             const stores = user.stores;
             stores.forEach((store) => {
@@ -44,9 +52,9 @@ exports.create = async (req,res)=> {
                                     transactions.forEach((transaction) => {
                                         if (transaction._id == transaction_id) {
                                             transaction.credits.push(newCredit);
-                                           /* res.status(201).json({
+                                           /!* res.status(201).json({
                                                 transaction: transaction,
-                                            })*/
+                                            })*!/
                                         }
                                     })
                                 }
@@ -95,7 +103,7 @@ exports.create = async (req,res)=> {
                     message: "Internal server error",
                 },
             });
-        });
+        });*/
 }
 
 exports.getAll = async (req,res) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const CreditController = require("./../controllers/credit_reminder");
+const CreditController = require("../controllers/user_dept_reminder");
 const auth = require("../auth/auth");
 
 router.post('/credit/new', auth, CreditController.create)
