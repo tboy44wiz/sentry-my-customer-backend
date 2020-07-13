@@ -32,8 +32,8 @@ module.exports = () => async (req, res) => {
       return {
         ownerName: `${user.local.first_name} ${user.local.last_name}`,
         storeName: store_name,
-        email: email || user.email,
-        phone: phone_number || user.phone_number,
+        email: email || user.local.email,
+        phone: phone_number || user.local.phone_number,
         storeAddress: shop_address,
       };
     });
