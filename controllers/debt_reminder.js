@@ -18,7 +18,7 @@ exports.validate = (method) => {
           body('status').isLength({ min: 3 }),
           body('pay_date').isLength({ min: 3 }),
           body('transaction_id').optional(),
-          body('name').isString(),
+          body('name').isString().isLength({ min: 1 }),
           body('amount').isLength({ min: 3 })
         ]
       }

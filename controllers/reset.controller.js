@@ -8,9 +8,21 @@ const africastalking = require("africastalking")({
 const makeid = require("../util/code_random");
 const codeLength = 6;
 
+
 module.exports.recover = async (req, res) => {
+<<<<<<< HEAD
   User.findOne({ identifier: req.body.phone_number })
     .then((user) => {
+=======
+
+  const userr = await new User({});
+  userr.local.phone_number = req.body.phone_number;
+  userr.local.password = req.body.password;
+  userr.identifier = req.body.phone_number;
+
+  User.findOne({ identifier: userr.identifier })
+    .then(user => {
+>>>>>>> 8b04d9c8b3a8a011fceead35e358bc9926cc9195
       if (!user)
         return res.status(401).json({
           message:
@@ -148,3 +160,5 @@ module.exports.resetPassword = async (req, res, next) => {
       });
     });
 };
+
+
