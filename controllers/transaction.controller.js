@@ -318,7 +318,7 @@ exports.update = async (req, res) => {
   } catch(error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong while adding customer",
+      message: "Something went wrong",
       data: {
         statusCode: 500,
         message: error,
