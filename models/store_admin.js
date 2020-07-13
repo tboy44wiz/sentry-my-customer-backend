@@ -12,7 +12,6 @@ const storeAdminSchema = new mongoose.Schema(
     identifier: { type: String, required: true, unique: true },
     user_role: {
       type: String,
-      required: true,
       default: "store_admin"
     },
     local: {
