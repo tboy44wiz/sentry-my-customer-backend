@@ -1,28 +1,29 @@
 const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
-const Credit = require("../models/credit_reminders");
+const UserDebt = require("../models/user_debt_reminder");
 const Transaction = require("../models/transaction");
 
-//  Create a Credit Reminder
+//  Create a UserDebt Reminder
 exports.create = async (req,res)=> {
     // Add new message
     const identifier = req.user.phone_number;
-    const {distributor_store_name, transaction_id, message, status, pay_date} = req.body
+    const {distributor_store_name, total_amount, message, status, pay_date} = req.body
 
-    if (!distributor_store_name || !message || !status || !pay_date) {
+    if (!distributor_store_name || !total_amount || !message || !status || !pay_date) {
         return res.status(400).json({
             success: false,
-            message: "distributor_store_name, message, status and expected_pay_date are required.",
+            message: "distributor_store_name, total_amount, message, status and expected_pay_date are required.",
             data: {
                 statusCode: 400,
-                message: "distributor_store_name, message, status and expected_pay_date are required.",
+                message: "distributor_store_name, total_amount, message, status and expected_pay_date are required.",
             },
         });
     }
 
-    const newCredit = new Credit({
+    const newUserDebt = new UserDebt({
         user_phone_number: identifier,
         distributor_store_name: distributor_store_name,
+        total_amount: total_amount,
         message: message,
         status: status,
         expected_pay_date: pay_date,
@@ -31,11 +32,30 @@ exports.create = async (req,res)=> {
     UserModel.findOne({identifier})
         .then((user) => {
             if (user) {
+                user.user_debt.push(newUserDebt);
 
+                user.save()
+                    .then((userDebt) => {
+                        res.status(201).json({
+                            success: true,
+                            message: "User's debt added successfully",
+                            data: {
+                                statusCode: 201,
+                                user_debt: userDebt,
+                            },
+                        });
+                    })
+                    .catch((error) => {
+                        res.send(error);
+                    });
             }
         })
-        .catch(() => {
-
+        .catch((error) => {
+            res.status(400).json({
+                success: false,
+                message: error.message,
+                error: {},
+            });
         })
 
     /*UserModel.findOne({identifier})
@@ -51,7 +71,7 @@ exports.create = async (req,res)=> {
                                 if (transactions.length > 0) {
                                     transactions.forEach((transaction) => {
                                         if (transaction._id == transaction_id) {
-                                            transaction.credits.push(newCredit);
+                                            transaction.credits.push(newUserDebt);
                                            /!* res.status(201).json({
                                                 transaction: transaction,
                                             })*!/
@@ -68,9 +88,9 @@ exports.create = async (req,res)=> {
                     if (result) {
                         return res.status(201).json({
                             success: true,
-                            message: "Credit created",
+                            message: "UserDebt created",
                             data: {
-                                details: newCredit,
+                                details: newUserDebt,
                             },
                         });
                     }
@@ -107,7 +127,7 @@ exports.create = async (req,res)=> {
 }
 
 exports.getAll = async (req,res) => {
-    // Find all the Credits
+    // Find all the UserDebts
     const identifier = req.user.phone_number;
 
     UserModel.findOne({identifier})
@@ -124,12 +144,12 @@ exports.getAll = async (req,res) => {
                                     transactions.forEach((transaction) => {
                                         const credits = transaction.credits;
                                         res.json({
-                                            Credits: credits,
+                                            UserDebts: credits,
                                         })
                                         if (credits.length > 0) {
                                             return res.status(200).json({
                                                 success: true,
-                                                message: "Credits retrieved successfully.",
+                                                message: "UserDebts retrieved successfully.",
                                                 data: {
                                                     credits: credits,
                                                 }
@@ -171,24 +191,24 @@ exports.getAll = async (req,res) => {
             });
         });
     /*try{
-        const creditResponse = await Credit.find({ user_phone_number : phone_number});
+        const creditResponse = await UserDebt.find({ user_phone_number : phone_number});
         if(!creditResponse){
-            // TODO Find all the Credits attributed to this User
+            // TODO Find all the UserDebts attributed to this User
             return res.status(404).json({
                 success: false,
-                message: "Credit not found.",
+                message: "UserDebt not found.",
                 data: {
                     statusCode: 404,
-                    message: "Credit not found.",
+                    message: "UserDebt not found.",
                 },
             });
         }
         return res.status(200).json({
             success: true,
-            message: "Credits found.",
+            message: "UserDebts found.",
             data: {
                 statusCode: 200,
-                message: "Credits found.",
+                message: "UserDebts found.",
                 data: creditResponse,
             },
         });
@@ -210,31 +230,31 @@ exports.getById = async (req,res) => {
     if(!creditId) {
         return res.status(400).json({
             success: false,
-            message: "Credit ID required.",
+            message: "UserDebt ID required.",
             data: {
                 statusCode: 400,
-                message: "Credit ID required.",
+                message: "UserDebt ID required.",
             },
         });
      }
-    /*Credit.findById(creditId)
+    /*UserDebt.findById(creditId)
         .then((creditResponse) => {
             if(!creditResponse) {
                 return res.status(404).json({
                     success: false,
-                    message: "Credit not found.",
+                    message: "UserDebt not found.",
                     data: {
                         statusCode: 404,
-                        message: "Credit not found.",
+                        message: "UserDebt not found.",
                     },
                 });
             }
             return res.status(200).json({
                 success: true,
-                message: "Credit found.",
+                message: "UserDebt found.",
                 data: {
                     statusCode: 200,
-                    message: "Credit found.",
+                    message: "UserDebt found.",
                     data: creditResponse,
                 },
             });

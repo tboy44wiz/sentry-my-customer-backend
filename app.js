@@ -26,7 +26,7 @@ const docs = require("./routes/docs");
 const user = require("./routes/user");
 const reset = require("./routes/reset");
 const debt = require('./routes/debt_reminder');
-const credit = require('./routes/cedit_reminder');
+const userDebt = require('./routes/user_debt_reminder');
 // const businessCards = require("./routes/businessCardRoute");
 // const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
@@ -64,7 +64,7 @@ app.get("/", (req, res) => {
 
 app.use(documentation);
 app.use(customer);
-app.use(credit);
+app.use(userDebt);
 //app.use(phone_verification);
 app.use(otp);
 app.use(reset);

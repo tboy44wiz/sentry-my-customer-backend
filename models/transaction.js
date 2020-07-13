@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const CreditReminderSchema = require('./credit_reminders');
+const CreditReminderSchema = require('./user_debt_reminder');
 const Debt = require('./debt_reminders')
 
 const transactionSchema = new mongoose.Schema({
