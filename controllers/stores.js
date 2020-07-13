@@ -139,15 +139,25 @@ exports.updateStore = async (req, res, next) => {
           store.tagline = req.body.tagline;
           store.email = req.body.email;
           store.phone_number = req.body.phone_number;
-          storeOwner.save()
-          res.status(201).json({
-            success: true,
-            message: "Store updated successfully",
-            data: {
-              statusCode: 201,
-              store: store,
-            },
-          });          
+          storeOwner.save().then(success=>{
+            res.status(201).json({
+              success: true,
+              message: "Store updated successfully",
+              data: {
+                statusCode: 201,
+                store: store,
+              },
+            });  
+          }).catch(error=>{
+            res.status(401).json({
+              success: false,
+              message: "Failed to update store",
+              error: {
+                statusCode: 401,
+                message: error.message
+              }
+            })
+          })        
         }
       })
     } else {
