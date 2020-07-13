@@ -12,13 +12,16 @@ exports.createStore = async (req, res, next) => {
     const id = req.user.phone_number;
     const storeOwner = await UserModel.findOne({ identifier: id });
     if (storeOwner) {
-      storeOwner.stores.push({
-        store_name: req.body.store_name,
-        shop_address: req.body.shop_address,
-        tagline: req.body.tagline,
-        phone_number:req.body.phone_number,
-        email:req.body.email,
-      });
+      storeOwner.stores.push(
+      //   {
+      //   store_name: req.body.store_name,
+      //   shop_address: req.body.shop_address,
+      //   tagline: req.body.tagline,
+      //   phone_number:req.body.phone_number,
+      //   email:req.body.email,
+      // }
+      req.body
+      );
       storeOwner
         .save()
         .catch((error) => {
@@ -52,7 +55,11 @@ exports.getAllStores = async (req, res, next) => {
     if (!store_admin) {
       return res.status(404).json({
         success: false,
-        message: "Something went wrong",
+        message: "could not find store_admin",
+        error: {
+          statusCode: 404,
+          message: "Could not find store admin"
+        }
       });
     } else {
       let stores = store_admin.stores;
@@ -118,34 +125,21 @@ exports.getStore = async (req, res, next) => {
 };
 
 exports.updateStore = async (req, res, next) => {
-  if (
-    req.body.current_user === "" ||
-    (req.body.store_name == "" && req.body.shop_address == "")
-  ) {
-    return res.status(500).json({
-      success: false,
-      message: "Current user or Store Name or Shop name required",
-    });
-  }
   try {
-    const id = req.body.current_user;
-    const storeOwner = await UserModel.findById(id);
+    const id = req.user.phone_number;
+    const content = req.body;
+    const store_id = req.params.store_id;
+    const storeOwner = await UserModel.findOne({ identifier: id });
     if (storeOwner) {
-      const stores = storeOwner.stores.map((element) => {
-        if (element._id == req.params.store_id) {
-          (element.store_name = req.body.store_name || element.store_name),
-            (element.shop_address =
-              req.body.shop_address || element.shop_address);
-        }
-        return element;
-      });
-      storeOwner.stores = stores;
-      storeOwner
-        .save()
-        .catch((error) => {
-          res.send(error);
-        })
-        .then((store) => {
+      const stores = storeOwner.stores
+      stores.forEach((store)=>{
+        if(store._id.equals(store_id)){
+          store.shop_address  = req.body.shop_address;
+          store.store_name = req.body.store_name;
+          store.tagline = req.body.tagline;
+          store.email = req.body.email;
+          store.phone_number = req.body.phone_number;
+          storeOwner.save()
           res.status(201).json({
             success: true,
             message: "Store updated successfully",
@@ -153,8 +147,9 @@ exports.updateStore = async (req, res, next) => {
               statusCode: 201,
               store: store,
             },
-          });
-        });
+          });          
+        }
+      })
     } else {
       res.status(404).json({
         success: false,
@@ -175,26 +170,26 @@ exports.updateStore = async (req, res, next) => {
 };
 
 exports.deleteStore = async (req, res, next) => {
-  if (req.body.current_user === "") {
-    return res.status(500).json({
-      success: false,
-      message: "Current user required",
-    });
-  }
   try {
-    const id = req.body.current_user;
-    const storeOwner = await UserModel.findById(id);
+    const id = req.user.phone_number;
+    const storeOwner = await UserModel.findOne({ identifier: id });
     if (storeOwner) {
       const stores = storeOwner.stores.filter(
-        (element) => element._id != req.params.store_id
+        (store) => store._id != req.params.store_id
       );
       storeOwner.stores = stores;
       storeOwner
         .save()
         .catch((error) => {
-          res.send(error);
+          res.status(500).json({
+            success: false,
+            message: "Internal error",
+            error: {
+              statusCode: 500,
+              message: "Could delete store due to an internal error"
+            }
         })
-        .then((store) => {
+      }).then((store) => {
           res.status(200).json({
             success: true,
             message: "Store deleted successfully",
