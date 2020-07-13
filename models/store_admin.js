@@ -5,7 +5,6 @@ const mongoose = require("mongoose"),
   Store = require("./store"),
   StoreAssistant = require("./storeAssistant"),
   Complaints = require("./complaint_form");
-const TrustedComms = require('twilio/lib/rest/preview/TrustedComms');
 
 const storeAdminSchema = new mongoose.Schema(
   {
