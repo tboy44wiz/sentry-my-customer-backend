@@ -5,10 +5,16 @@ const mongoose = require("mongoose"),
   Store = require("./store"),
   StoreAssistant = require("./storeAssistant"),
   Complaints = require("./complaint_form");
+const TrustedComms = require('twilio/lib/rest/preview/TrustedComms');
 
 const storeAdminSchema = new mongoose.Schema(
   {
     identifier: { type: String, required: true, unique: true },
+    user_role: {
+      type: String,
+      required: true,
+      default: "store_admin"
+    },
     local: {
       phone_number: { type: Number, unique: true, sparse: true },
       first_name: { type: String, default: "Not set" },

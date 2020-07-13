@@ -1,5 +1,5 @@
-const User = require("../models/user");
 const UserStore = require("../models/user_store");
+const UserModel = require("../models/store_admin");
 
 module.exports = () => async (req, res) => {
   try {
@@ -14,32 +14,26 @@ module.exports = () => async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ phone_number });
+    const user = await UserModel.findOne({ identifier: phone_number });
 
     if (!user) {
       return res
         .status(401)
-        .json({ message: "Please signin first", statsu: 401 });
+        .json({ message: "Please signin first", status: 401 });
     }
 
     //  Get all stores owned by user
-    const userStore = await UserStore.find({ user_ref_id: user._id })
-      .populate({ path: "store_ref_id" })
-      .exec();
+    const userStores = user.stores;
 
     //  Iterate through stores and create cards
-    const data = userStore.map((store) => {
-      const {
-        store_name,
-        Phone_number,
-        email,
-        shop_address,
-      } = store.shop_ref_id;
+    const data = userStores.map((store) => {
+      const { store_name, phone_number, email, shop_address } = store;
+
       return {
-        ownerName: `${user.first_name} ${user.last_name}`,
+        ownerName: `${user.local.first_name} ${user.local.last_name}`,
         storeName: store_name,
         email: email || user.email,
-        phone: Phone_number || user.phone_number,
+        phone: phone_number || user.phone_number,
         storeAddress: shop_address,
       };
     });
@@ -54,15 +48,13 @@ module.exports = () => async (req, res) => {
 
     //  Send server error response and optional dev if in dev mode
     res.status(500).json({
-      message: "An unexpected error has occurred",
+      success: false,
+      message: 'An internal server error occured',
       status: 500,
-      dev:
-        process.env.NODE_ENV === "development"
-          ? {
-              ...error,
-              errorStack: error.stack,
-            }
-          : null,
+      error: {
+        statusCode: 500,
+        message: error.message
+      }
     });
   }
 };

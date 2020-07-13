@@ -27,9 +27,9 @@ const verifyToken = (req, res, next) => {
           description: "You entered an invalid token"
         }
       });
-	  };
+    };
     req.user = decoded;
-    // console.log(req.user);
+    console.log(req.user);
     next();
   });
 }

@@ -23,6 +23,7 @@ module.exports.registerUser = async (req, res, next) => {
     //  Create a Token that will be passed as the "api_token"
     const token = await jwt.sign({
         phone_number: phone_number,
+        user_role: "store_admin"
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
