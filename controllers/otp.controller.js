@@ -66,7 +66,7 @@ exports.send = async (req, res) => {
     const sms = africastalking.SMS;
     await sms
       .send({
-        to: ["+" + req.body.phone_number],
+        to: [`+${user.local.phone_number}`],
         message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`,
       })
       .then((response) => {

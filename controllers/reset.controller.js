@@ -9,7 +9,7 @@ const makeid = require("../util/code_random");
 const codeLength = 6;
 
 module.exports.recover = async (req, res) => {
-  User.findOne({ identifier: userr.identifier })
+  User.findOne({ identifier: req.body.phone_number })
     .then((user) => {
       if (!user)
         return res.status(401).json({
