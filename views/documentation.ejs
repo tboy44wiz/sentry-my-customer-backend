@@ -127,12 +127,40 @@
                     <ul class="alert alert-primary">
                         <li>old_password</li>
                         <li>new_password</li>
+                        <li>confirm_password</li>
                     </ul>
+                    <strong>Note: confirm_password should be equal to new_password. Make sure this is implemented client-side also</strong>
                 </li>
 
             </ul>
         </div>
                 </ul>
+            </ul>
+        </div>
+        <div class="store-admin" id="store-admin">
+            <h1 class="">Store Admin</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Update Store Admin <strong>- /store-admin/update [PUT]</strong></li>
+                <h6>Body: </h6>
+                <ul class="alert alert-primary">
+                    <li>phone_number</li>
+                    <li>first_name</li>
+                    <li>last_name</li>
+                    <li>email</li>
+                </ul>
+                <strong>Note: If phone_number is updated, a new authentication token would be sent to the user. This should be saved</strong>
+            </ul>
+            <ul>
+                <li>Update Password <strong>- /store-admin/update/password [POST]</strong></li>
+                <h6>Body: </h6>
+                <ul class="alert alert-primary">
+                    <li>old_password</li>
+                    <li>new_password</li>
+                    <li>confirm_password</li>
+                </ul>
+                <strong>Note: confirm_password should be equal to new_password. Make sure this is implemented client-side also</strong>
             </ul>
         </div>
         <div class="user" id="user">
@@ -315,12 +343,13 @@
                     <ul class="alert alert-primary">
                         <li>name</li>
                         <li>phone_number</li>
-                        <li>store_name</li>
+                        <li>store_id</li>
                     </ul>
                 </li>
-                <li>Retrieve customer<strong> - /customer/:customer_id [POST]</strong>
+                <li>Retrieve customer<strong> - /customer/:store_id/:customer_id [POST]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
+                        <li>store_id</li>
                         <li>customer_id</li>
                     </ul>
                 </li>
