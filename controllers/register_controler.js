@@ -9,8 +9,9 @@ exports.validate = (method) => {
   switch (method) {
       case 'body': {
           return [
-              body('phone_number').isInt(),
-              body('password').isLength({min: 6}),
+            body('phone_number').isInt(),
+            body('password').isLength({min: 6}),
+            body('password').isLength({max: 15})
           ]
       }
   }
