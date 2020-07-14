@@ -82,21 +82,6 @@ exports.create = async (req, res, next) => {
       });
     }
 
-<<<<<<< HEAD
-
-  UserModel.findOne({ identifier })
-    .then((user) => {
-
-      let stores = user.stores;
-      stores.forEach((store) => {
-        if (store.store_name == store_name) {
-          store_ref_id = store._id;
-          var customers = store.customers;
-          if (customers.length > 0) {
-            customers.forEach((customer) => {
-              if (customer.phone_number == phone_number) {
-                customer_ref_id = customer._id;
-=======
     customer.transactions.push({
       store_ref_id: req.body.store_id,
       customer_ref_id:req.body.customer_id,
@@ -109,7 +94,6 @@ exports.create = async (req, res, next) => {
       transaction_name: req.body.transaction_name || null,
       transaction_role: req.body.transaction_role || null
     })
->>>>>>> 60d0e514c65baa37aa1b3c51fcadc605e4305fc2
 
     await user.save()
 

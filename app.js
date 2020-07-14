@@ -26,15 +26,12 @@ const docs = require("./routes/docs");
 const user = require("./routes/user");
 const reset = require("./routes/reset");
 const debt = require('./routes/debt_reminder');
-<<<<<<< HEAD
 const storeAssistant = require('./routes/storeAssistant');
 //const userDebt = require('./routes/user_debt_reminder');
 // const businessCards = require("./routes/businessCardRoute");
-=======
 const businessCards = require("./routes/businessCardRoute");
 const updates = require("./routes/update_routes");
 const dashboard = require("./routes/dashboard");
->>>>>>> 60d0e514c65baa37aa1b3c51fcadc605e4305fc2
 // const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
 app.use(expressValidator());
