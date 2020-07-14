@@ -42,15 +42,6 @@ module.exports.registerUser = async (req, res, next) => {
   //  Encrypt the Password
   user.local.password = await bCrypt.hash(user.local.password, 10);
 
-  //  Get instance of the
-  const user = new UserModel({});
-  user.local.phone_number = phone_number;
-  user.local.password = password;
-  user.api_token = token;
-  user.identifier = phone_number;
-  //  Encrypt the Password
-  user.local.password = await bCrypt.hash(user.local.password, 10);
-
   //  Check if User PhoneNumber and Email already exist.
   UserModel.findOne({
     identifier: user.identifier,
