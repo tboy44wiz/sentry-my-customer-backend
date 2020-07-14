@@ -103,39 +103,38 @@ exports.getById = (req, res) => {
   let customers;
   UserModel.findOne({ identifier })
     .then((user) => {
-      let stores = user.stores;
-      stores.forEach((store) => {
-        customers = store.customers;
-        if (customers.length > 0) {
-          customers.forEach((customer) => {
-            if (customer._id == req.params.customerId) {
-              return res.status(200).json({
-                success: true,
-                message: "successful",
-                data: {
-                  customer,
-                },
-              });
-            }
-          });
-        }
-      });
-      return res.status(404).json({
-        status: false,
-        message: "Customer not found",
-        error: {
-          code: 404,
-          message: "customer not found",
+      let store = user.stores.id(req.params.storeId);
+      const storeName = store.store_name;
+      customers = store.customers;
+
+      const customer = customers.id(req.params.customerId);
+
+      if (!customer) {
+        return res.status(404).json({
+          status: false,
+          message: "Customer not found",
+          error: {
+            code: 404,
+            message: "customer not found",
+          },
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "successful",
+        data: {
+          customer,
+          storeName
         },
       });
-    })
-    .catch((err) => {
+    }).catch((error) => {
       return res.status(404).json({
         status: false,
-        message: "Customer not found",
+        message: error.message,
         error: {
           code: 404,
-          message: "customer not found",
+          message: error,
         },
       });
     });
