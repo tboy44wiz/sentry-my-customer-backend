@@ -1,4 +1,5 @@
 const User = require("../models/store_admin");
+const { body } = require("express-validator/check");
 const bCrypt = require("bcryptjs");
 const africastalking = require("africastalking")({
   apiKey: process.env.AFRICASTALKING_API_KEY,
@@ -7,6 +8,21 @@ const africastalking = require("africastalking")({
 
 const makeid = require("../util/code_random");
 const codeLength = 6;
+exports.validate = (method) => {
+  switch (method) {
+    case "recover": {
+      return [body("phone_number").isNumeric()];
+    }
+    case "reset": {
+      return [
+        body("token")
+          .isNumeric()
+          .isLength({ min: codeLength, max: codeLength }),
+        body("password").not().isEmpty(),
+      ];
+    }
+  }
+};
 
 module.exports.recover = async (req, res) => {
   User.findOne({ identifier: req.body.phone_number })
@@ -22,7 +38,6 @@ module.exports.recover = async (req, res) => {
       const dayToday = dateToday.getDate();
       user.resetPasswordToken = makeid(codeLength, false);
       user.resetPasswordExpires = dayToday;
-      console.log(user);
 
       // Save the updated user object
       user
