@@ -132,12 +132,12 @@ exports.newStoreAssistant = (req, res) => {
   const { name, email, password, phone_number, store_id } = req.body;
   const id = req.user.phone_number;
 
-  const newStoreAssistantData = new StoreAssistant({
+  const newStoreAssistantData = {
     name: name,
     phone_number: phone_number,
     email: email,
     password: password,
-  });
+  };
 
   User.findOne({ identifier: id })
       .then((user) => {
@@ -188,14 +188,13 @@ exports.newStoreAssistant = (req, res) => {
             .catch((error) => {
               return res.status(500).json({
                 success: "false",
-                message: "Internal Server Error.",
+                message: "Internal Server Error11.",
                 error: {
                   statusCode: 500,
                   message: "Internal Server Error.",
                 },
               });
             });
-
       })
       .catch((error) => {
         return res.status(500).json({
@@ -477,58 +476,53 @@ exports.updateSingleStoreAssistant = async (req, res) => {
 
 
 //  Delete Single Store Assistant with assistant_id.
-exports.deleteSingleStoreAssistant = async (req, res) => {
+exports.deleteSingleStoreAssistant = (req, res) => {
   const id = req.user.phone_number;
   const storeAssistantId = req.params.assistant_id;
-  await User.findOne({ identifier: id }, (error, store_admin)=>{
-    if(error){
-      return res.status(200).json({
-        success: false,
-        message: "User not found",
-        error: {
-          statusCode: 404,
-          message: "User with identifier " + req.user.phone_number + " not found",
-        },
-      });
-    }else{
-       const assistants = store_admin.assistants;
-      if(assistants.length > 0){
-            assistants.forEach((assistant) => {
-              if (assistant._id.equals(storeAssistantId)) {
-                assistant.remove()
-                store_admin.save();
-                return res.status(200).json({
-                  success: "true",
-                  message: "User deleted successfully",
-                  error: {
-                    statusCode: 200,
-                    message: "Assistant with id " + req.params.assistant_id + " has been deleted ",
-                    data: assistant,
-                  }
-                });
-              } else {
-                return res.status(404).send({
-                  success: "false",
-                  message: "Assistant not found",
-                  error: {
-                    statusCode: 404,
-                    message: "Assistant not found with id " + req.params.user_id,
-                  }
-                });
-              }
-            })
-      }else{
-        return res.status(400).json({
+  User.findOne({ identifier: id })
+      .then((user) => {
+        const storeAssistants = user.assistants;
+        if(storeAssistants.length > 0) {
+          storeAssistants.forEach((assistant, index) => {
+            if (assistant._id == storeAssistantId) {
+              assistant.remove();
+              user.save()
+                  .then((result) => {
+                    return res.status(200).json({
+                      success: "true",
+                      message: "Assistant deleted successfully.",
+                      error: {
+                        statusCode: 200,
+                        message: "Assistant deleted successfully.",
+                        data: assistant,
+                      }
+                    });
+                  })
+                  .catch((err) => {
+                    return res.status(500).json({
+                      success: false,
+                      message: "Error deleting Assistant",
+                      data: {
+                        statusCode: 500,
+                        err,
+                      },
+                    });
+                  });
+            }
+          });
+        }
+
+      })
+      .catch((err) => {
+        return res.status(500).json({
           success: false,
-          message: "You have no assistants yet",
-          error: {
-            statusCode: 400,
-            message: "You have not added any assistants yet"
-          }
-        })
-      }
-    }
-  })
+          message: "Error deleting customer",
+          data: {
+            statusCode: 500,
+            err,
+          },
+        });
+      });
 };
 //#endregion
 
