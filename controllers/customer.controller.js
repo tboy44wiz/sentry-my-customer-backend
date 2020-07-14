@@ -16,7 +16,7 @@ exports.validate = (method) => {
 exports.create = async (req, res) => {
   const identifier = req.user.phone_number;
 
-  const { phone_number, email, name, store_name } = req.body;
+  const { phone_number, email, name, store_id } = req.body;
 
   //get current user's id and add a new customer to it
   try {
@@ -27,10 +27,12 @@ exports.create = async (req, res) => {
             message: "please add a store before adding customers",
           });
         }
-        let store_name = req.body.store_name || req.params.store_name;
-        let wantedStore = user.stores.find(
-          (store) => store.store_name === store_name
-        ); // find the necessary store form user.stores
+        // let store_name = req.body.store_name || req.params.store_name;
+        // let wantedStore = user.stores.find(
+        //   (store) => store.store_name === store_name
+        // ); // find the necessary store form user.stores
+
+        const wantedStore = user.stores.id(store_id);
 
         let customerToReg = { phone_number, email, name }; // customer to register
         let customerExists = wantedStore.customers.find(
