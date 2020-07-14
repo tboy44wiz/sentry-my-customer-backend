@@ -109,10 +109,24 @@ module.exports.resetPassword = async (req, res, next) => {
     resetPasswordToken: req.body.token,
     resetPasswordExpires: today,
   }).then((user) => {
-    if (!user)
+    if (!user) {
       return res
         .status(401)
         .json({ message: "Password reset token is invalid or has expired." });
+    }
+    bCrypt
+      .compare(req.body.password, user.local.password)
+      .then((doPasswordMatch) => {
+        if (doPasswordMatch) {
+          console.log(doPasswordMatch);
+          res.status(409).json({
+            success: false,
+            message:
+              "You can't reset to an old password please choose a new password and try again",
+          });
+        }
+      })
+      .catch((err) => console.log(err));
     return user;
   });
 
