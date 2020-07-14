@@ -84,7 +84,6 @@ app.use("/register", register);
 
 app.use("/login", login);
 app.use(debt);
-app.use(debt);
 // app.use(phone_call_api);
 
 //This should be the last route else any after it won't work
