@@ -252,7 +252,6 @@ exports.getAll = async (req, res) => {
       let customer = [];
 
       store.forEach((store) => {
-        console.log(store);
         let obj = {};
         obj.storeName = store.store_name;
         obj.customers = store.customers;

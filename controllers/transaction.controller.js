@@ -1,36 +1,88 @@
 const Transaction = require("../models/transaction");
 const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
+const { body } = require('express-validator/check');
+
+exports.validate = (method) => {
+  switch (method) {
+    case 'create': {
+      return [
+        body('store_id').isString(),
+        body('customer_id').isString(),
+        body('amount').isNumeric(),
+        body('interest').isNumeric(),
+        body('total_amount').isNumeric(),
+        body('description').optional().isString(),
+        body('type').isString(),
+        body('status').optional().isString().isIn(["paid", "unpaid", "pending"]),
+        body('transaction_name').optional().isString(),
+        body('transaction_role').optional().isString()
+      ]
+    }
+    case 'find': {
+      return [
+        body('store_id').isString(),
+        body('customer_id').isString()
+      ]
+    }
+    case 'update': {
+      return [
+        body('store_id').isString(),
+        body('customer_id').isString(),
+        body('amount').optional().isNumeric(),
+        body('interest').optional().isNumeric(),
+        body('total_amount').optional().isNumeric(),
+        body('description').optional().isString(),
+        body('type').optional().isString(),
+        body('status').optional().isString().isIn(["paid", "unpaid", "pending"]),
+        body('transaction_name').optional().isString(),
+        body('transaction_role').optional().isString()
+      ]
+    }
+  }
+}
 
 // Create and Save a new Transaction
-exports.create = (req, res, next) => {
-  let {
-    amount,
-    interest,
-    total_amount,
-    description,
-    phone_number,
-    store_name,
-    type,
-    transaction_name,
-    transaction_role,
-  } = req.body;
+exports.create = async (req, res, next) => {
+  try{
+    const identifier = req.user.phone_number;
+    const user = await UserModel.findOne({ identifier });
+    if(!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: {
+          statusCode: 404,
+          message: "User not found",
+        },
+      });
+    }
 
-  let req_keys = {
-    amount,
-    interest,
-    total_amount,
-    description,
-    type,
-    store_name,
-    transaction_name,
-    transaction_role,
-  };
+    const store = user.stores.find(store => store._id == req.body.store_id)
+    if(!store) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found",
+        data: {
+          statusCode: 404,
+          message: "Store not found",
+        },
+      });
+    }
 
-  const identifier = req.user.phone_number;
-  let store_ref_id;
-  let customer_ref_id;
+    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
+    if(!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+        data: {
+          statusCode: 404,
+          message: "Customer not found",
+        },
+      });
+    }
 
+<<<<<<< HEAD
 
   UserModel.findOne({ identifier })
     .then((user) => {
@@ -44,313 +96,367 @@ exports.create = (req, res, next) => {
             customers.forEach((customer) => {
               if (customer.phone_number == phone_number) {
                 customer_ref_id = customer._id;
-
-                req_keys.customer_ref_id = customer_ref_id;
-                req_keys.store_ref_id = store_ref_id;
-                req_keys.debts = [];
-                req_keys.store_name = store_name;
-
-                customer.transactions.push(req_keys);
-              }
-            });
-          }
-        }
-      });
-      if (customer_ref_id == undefined || store_ref_id == undefined) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid phone_number and/or store_name",
-          error: {
-            statusCode: 400,
-            message: "Invalid phone_number and/or store_name",
-          },
-        });
-      }
-      user
-        .save()
-        .then((result) => {
-          return res.status(201).json({
-            success: true,
-            message: "Transaction created",
-            data: {
-              details: req_keys,
-            },
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({
-            success: false,
-            message: "Error saving to database",
-            error: {
-              statusCode: 500,
-              message: err,
-            },
-          });
-        });
+=======
+    customer.transactions.push({
+      store_ref_id: req.body.store_id,
+      customer_ref_id:req.body.customer_id,
+      amount: req.body.amount,
+      interest: req.body.interest,
+      total_amount: req.body.total_amount,
+      description: req.body.description || "Not set",
+      type: req.body.type,
+      status: req.body.status || "unpaid",
+      transaction_name: req.body.transaction_name || null,
+      transaction_role: req.body.transaction_role || null
     })
-    .catch((err) => {
-      return res.status(500).json({
-        status: false,
-        message: "Something went wrong",
-        error: {
-          code: 500,
-          message: err,
-        },
-      });
+>>>>>>> 60d0e514c65baa37aa1b3c51fcadc605e4305fc2
+
+    await user.save()
+
+    res.status(201).json({
+      success: true,
+      message: "Transaction saved",
+      data: {
+        user
+      },
     });
+  } catch(error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      data: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
 };
 
 // Retrieve and return all transactions from the database.
-exports.findAll = async (req, res, next) => {
-  const identifier = req.user.phone_number;
-  UserModel.findOne({ identifier })
-    .then((user) => {
-      let stores = user.stores;
-      let details = [];
-
-      stores.forEach((store) => {
-        let customers = store.customers;
-        customers.forEach((customer) => {
-          if (customer.transactions.length != 0) {
-            let obj = {};
-            obj.storeName = store.store_name;
-            obj.customerName = customer.name;
-            obj.transactions = customer.transactions;
-
-            details.push(obj);
-          }
-        });
-      });
-
-      if (details.length == 0) {
-        res.status(200).json({
-          success: true,
-          message: "No transaction associated with this user account",
-          data: {
-            transactions: details,
-          },
-        });
-      } else {
-        return res.status(200).json({
-          success: true,
-          message: "Here is a list of your transactions",
-          data: {
-            transactions: details,
-          },
-        });
-      }
-    })
-    .catch((err) => {
-      return res.status(500).json({
+exports.findAll = async (req, res) => {
+  try {
+    const identifier = req.user.phone_number;
+    const user = await UserModel.findOne({ identifier });
+    if(!user) {
+      return res.status(404).json({
         success: false,
-        message: "Error fetching transactions",
-        error: {
-          code: 500,
-          message: err,
+        message: "User not found",
+        data: {
+          statusCode: 404,
+          message: "User not found",
         },
       });
+    }
+
+    const store = user.stores.find(store => store._id == req.body.store_id)
+    if(!store) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found",
+        data: {
+          statusCode: 404,
+          message: "Store not found",
+        },
+      });
+    }
+
+    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
+    if(!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+        data: {
+          statusCode: 404,
+          message: "Customer not found",
+        },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Transactions",
+      data: {
+        transactions: customer.transactions,
+      },
     });
+  } catch(error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      data: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
+};
+
+exports.findAllStore = async (req, res) => {
+  try {
+    const identifier = req.user.phone_number;
+    const user = await UserModel.findOne({ identifier });
+    if(!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: {
+          statusCode: 404,
+          message: "User not found",
+        },
+      });
+    }
+
+    const store = user.stores.find(store => store._id == req.params.store_id)
+    if(!store) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found",
+        data: {
+          statusCode: 404,
+          message: "Store not found",
+        },
+      });
+    }
+
+    let transactions;
+    store.customers.forEach(customer => {
+      if(transactions) {
+        transactions = customer.transactions.concat(transactions)
+      } else {
+        transactions = customer.transactions
+      }
+    })
+
+    res.status(200).json({
+      success: true,
+      message: "Transactions",
+      data: {
+        transactions: transactions,
+      },
+    });
+  } catch(error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      data: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
 };
 
 // Find a single transaction with a transaction_id
-exports.findOne = (req, res, next) => {
-  const identifier = req.user.phone_number;
-  let details = [];
-  UserModel.findOne({ identifier })
-    .then((user) => {
-      let stores = user.stores;
-      stores.forEach((store) => {
-        let customers = store.customers;
-        customers.forEach((customer) => {
-          let transactions = customer.transactions;
-          transactions.forEach((transaction) => {
-            if (transaction._id == req.params.transaction_id) {
-              details.push(transaction);
-
-              return res.status(200).json({
-                success: true,
-                Message: "Operation successful",
-                data: {
-                  storeName: store.store_name,
-                  transaction,
-                },
-              });
-            }
-          });
-        });
-      });
-      if (details.length == 0) {
-        res.status(404).json({
-          success: false,
-          Message: "Transaction not Found",
-          error: {
-            statusCode: 404,
-            message: "Transaction not Found",
-          },
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({
+exports.findOne = async (req, res) => {
+  try {
+    const identifier = req.user.phone_number;
+    const user = await UserModel.findOne({ identifier });
+    if(!user) {
+      return res.status(404).json({
         success: false,
-        Message: "Error retriving transaction from database",
-        error: {
-          statusCode: 500,
-          message: err,
+        message: "User not found",
+        data: {
+          statusCode: 404,
+          message: "User not found",
         },
       });
+    }
+
+    const store = user.stores.find(store => store._id == req.body.store_id)
+    if(!store) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found",
+        data: {
+          statusCode: 404,
+          message: "Store not found",
+        },
+      });
+    }
+
+    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
+    if(!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+        data: {
+          statusCode: 404,
+          message: "Customer not found",
+        },
+      });
+    }
+
+    const transaction = customer.transactions.find(transactions => transactions._id == req.params.transaction_id)
+    if(!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found",
+        data: {
+          statusCode: 404,
+          message: "Transaction not found",
+        },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Transaction",
+      data: {
+        transaction: transaction,
+      },
     });
+  } catch(error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrongr",
+      data: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
 };
 
 // Update a transaction identified by the transaction_id in the request
-exports.update = async (req, res, next) => {
-  const identifier = req.user.phone_number;
-  const id = req.params.transaction_id;
-  const {
-    store_name,
-    description,
-    amount,
-    interest,
-    total_amount,
-    transaction_name,
-    transaction_role,
-    type,
-  } = req.body;
-
+exports.update = async (req, res) => {
   try {
-    UserModel.findOne({ identifier })
-      .then((user) => {
-        let store = user.stores.find((store) => store.store_name == store_name); //find store
-        let allTransactions = []; // all transactions would be pushed here
-
-        store.customers.forEach((customer) => {
-          // loop over customers
-          customer.transactions.forEach((trans) => {
-            //loop over transactions
-            allTransactions.push(trans); //push all transactions to allTransactions
-          });
-        });
-
-        let transToUpdate = allTransactions.find((trans) => trans._id == id); // find transaction required
-
-        let update = {
-          amount: amount || transToUpdate.amount,
-          description: description || transToUpdate.description,
-          interest: interest || transToUpdate.interest,
-          total_amount: total_amount || transToUpdate.total_amount,
-          transaction_role: transaction_role || transToUpdate.transaction_role,
-          transaction_name: transaction_name || transToUpdate.transaction_name,
-          type: type || transToUpdate.type,
-        }; // update with field from req.body or if null still use the value already in db
-
-        transToUpdate = Object.assign(transToUpdate, update); // merge update
-
-        user
-          .save()
-          .then((result) => {
-            res.status(200).json({
-              success: true,
-              message: "Transaction updated successfully",
-              data: {
-                statusCode: 200,
-                transaction: transToUpdate,
-              },
-            });
-          })
-          .catch((err) => {
-            res.status(500).json({
-              sucess: false,
-              message: "Couldn't update transaction",
-              error: {
-                statusCode: 500,
-                message: "Couldn't update transaction",
-              },
-            });
-          });
-      })
-      .catch((err) => {
-        res.status(404).json({
-          sucess: false,
+    const identifier = req.user.phone_number;
+    const user = await UserModel.findOne({ identifier });
+    if(!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: {
+          statusCode: 404,
           message: "User not found",
-          error: {
-            statusCode: 404,
-            message: "User not found",
-          },
-        });
+        },
       });
-  } catch (error) {
+    }
+
+    const store = user.stores.find(store => store._id == req.body.store_id)
+    if(!store) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found",
+        data: {
+          statusCode: 404,
+          message: "Store not found",
+        },
+      });
+    }
+
+    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
+    if(!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+        data: {
+          statusCode: 404,
+          message: "Customer not found",
+        },
+      });
+    }
+
+    const transaction = customer.transactions.find(transactions => transactions._id == req.params.transaction_id)
+    if(!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found",
+        data: {
+          statusCode: 404,
+          message: "Transaction not found",
+        },
+      });
+    }
+
+    transaction.amount = req.body.amount || transaction.amount
+    transaction.interest = req.body.interest || transaction.interest
+    transaction.total_amount = req.body.total_amount || transaction.total_amount
+    transaction.description = req.body.description || transaction.description
+    transaction.type = req.body.type  || transaction.type 
+    transaction.status = req.body.status || transaction.status
+    transaction.transaction_name = req.body.transaction_name || transaction.transaction_name
+    transaction.transaction_role = req.body.transaction_role || transaction.transaction_role
+
+    await user.save()
+    res.status(200).json({
+      success: true,
+      message: "Transaction updated",
+      data: {
+        transaction: transaction,
+      },
+    });
+  } catch(error) {
     res.status(500).json({
-      sucess: false,
-      message: "Couldn't update transaction",
-      error: {
+      success: false,
+      message: "Something went wrong",
+      data: {
         statusCode: 500,
-        message: "Couldn't update transaction",
+        message: error,
       },
     });
   }
 };
 
 // Delete a transaction with the specified transaction_id in the request
-exports.delete = (req, res) => {
-  const identifier = req.user.phone_number;
-  let found = false;
-  UserModel.findOne({ identifier })
-    .then((user) => {
-      let stores = user.stores;
-      stores.forEach((store) => {
-        let customers = store.customers;
-        if (customers.length > 0) {
-          customers.forEach((customer) => {
-            let transactions = customer.transactions;
-            transactions.forEach((transaction, index) => {
-              if (transaction._id == req.params.transaction_id) {
-                found = true;
-                transactions.splice(index, 1);
-              }
-            });
-          });
-        }
-      });
-      if (found == false) {
-        return res.status(404).json({
-          status: false,
-          message: "transaction not found",
-          error: {
-            code: 404,
-            message: "transaction not found",
-          },
-        });
-      }
-      user
-        .save()
-        .then((result) => {
-          res.status(200).json({
-            success: true,
-            message: "transaction deleted successful",
-            data: {
-              statusCode: 200,
-            },
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({
-            success: false,
-            message: "Error deleting transaction",
-            data: {
-              statusCode: 500,
-              err,
-            },
-          });
-        });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        status: false,
-        message: "Something went wrong",
-        error: {
-          code: 404,
-          message: err,
+exports.delete = async (req, res) => {
+  try {
+    const identifier = req.user.phone_number;
+    const user = await UserModel.findOne({ identifier });
+    if(!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: {
+          statusCode: 404,
+          message: "User not found",
         },
       });
+    }
+
+    const store = user.stores.find(store => store._id == req.body.store_id)
+    if(!store) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found",
+        data: {
+          statusCode: 404,
+          message: "Store not found",
+        },
+      });
+    }
+
+    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
+    if(!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+        data: {
+          statusCode: 404,
+          message: "Customer not found",
+        },
+      });
+    }
+
+    const transactions = customer.transactions.filter(transactions => transactions._id != req.params.transaction_id)
+    customer.transactions = transactions
+
+    await user.save()
+    res.status(200).json({
+      success: true,
+      message: "Transactions",
+      data: {
+        transactions
+      },
     });
+  } catch(error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrongr",
+      data: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
 };

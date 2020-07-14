@@ -26,9 +26,15 @@ const docs = require("./routes/docs");
 const user = require("./routes/user");
 const reset = require("./routes/reset");
 const debt = require('./routes/debt_reminder');
+<<<<<<< HEAD
 const storeAssistant = require('./routes/storeAssistant');
 //const userDebt = require('./routes/user_debt_reminder');
 // const businessCards = require("./routes/businessCardRoute");
+=======
+const businessCards = require("./routes/businessCardRoute");
+const updates = require("./routes/update_routes");
+const dashboard = require("./routes/dashboard");
+>>>>>>> 60d0e514c65baa37aa1b3c51fcadc605e4305fc2
 // const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
 app.use(expressValidator());
@@ -72,7 +78,8 @@ app.use(reset);
 //app.use(messagingAPI);
 app.use(emailAPI);
 app.use(transactions);
-// app.use(businessCards);
+app.use(businessCards);
+app.use("/update", updates);
 app.use(store);
 app.use(storeAssistant);
 app.use(google);
@@ -80,6 +87,7 @@ app.use(facebook);
 app.use(complaintRouter);
 app.use(user);
 app.use(docs);
+app.use(dashboard);
 app.use("/register", register);
 
 app.use("/login", login);

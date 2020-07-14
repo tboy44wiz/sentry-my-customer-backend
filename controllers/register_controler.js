@@ -18,11 +18,12 @@ exports.validate = (method) => {
 
 //  Register User
 module.exports.registerUser = async (req, res, next) => {
-    const { password, phone_number } = req.body;
+    const { password, phone_number, user_role } = req.body;
 
     //  Create a Token that will be passed as the "api_token"
     const token = await jwt.sign({
         phone_number: phone_number,
+        user_role: "store_admin"
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
@@ -32,6 +33,7 @@ module.exports.registerUser = async (req, res, next) => {
     const user = await new UserModel({});
     user.local.phone_number = phone_number;
     user.local.password = password;
+    user.local.user_role = user_role;
     user.api_token = token;
     user.identifier = phone_number
     //  Encrypt the Password

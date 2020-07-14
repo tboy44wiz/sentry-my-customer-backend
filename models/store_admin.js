@@ -9,6 +9,10 @@ const mongoose = require("mongoose"),
 const storeAdminSchema = new mongoose.Schema(
   {
     identifier: { type: String, required: true, unique: true },
+    user_role: {
+      type: String,
+      default: "store_admin"
+    },
     local: {
       phone_number: { type: Number, unique: true, sparse: true },
       first_name: { type: String, default: "Not set" },
@@ -16,7 +20,7 @@ const storeAdminSchema = new mongoose.Schema(
       email: { type: String, default: "Not set" },
       is_active: { type: Boolean, default: 0 },
       password: { type: String },
-      user_role: { type: String, default: "store_admin" },
+      user_role: { type: String, enum: ["super_admin", "store_admin"], default: "store_admin" },
     },
     google: {
       first_name: { type: String },
@@ -41,7 +45,7 @@ const storeAdminSchema = new mongoose.Schema(
 
     assistants: [StoreAssistant.schema],
     stores: [Store.schema],
-    complaints: [Complaints.schema], // To take in Complaints and save to DB
+    // complaints: [Complaints.schema], // To take in Complaints and save to DB
     api_token: {
       type: String,
     },  

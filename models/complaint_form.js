@@ -2,6 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ComplaintSchema = new mongoose.Schema({
+  storeOwner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'store_admin',
+  },
+  storeOwnerPhone: {
+    type: String,
+  },
   name: {
     type: String,
     required: true,
@@ -19,7 +26,8 @@ const ComplaintSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'Open'
+    enum: ["New", "Resolved", "Investigating"],
+    default: "New"
   },
   date: {
     type: Date,
