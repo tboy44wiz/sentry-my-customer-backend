@@ -256,6 +256,7 @@ exports.getAll = async (req, res) => {
         let obj = {};
         obj.storeName = store.store_name;
         obj.customers = store.customers;
+        obj.storeId = store._id;
 
         customer.push(obj);
       });
