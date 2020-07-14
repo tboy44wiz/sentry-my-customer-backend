@@ -26,6 +26,7 @@
                 <li class="item"><a href="#customer">Customer</a></li>
                 <li class="item"><a href="#complaint">Complaint</a></li>
                 <li class="item"><a href="#store">Store</a></li>
+                <li class="item"><a href="#dashboard">Dashboard</a></li>
                 <!-- <li class="item"><a href="#call">Call</a></li> -->
                 <li class="toggle"><a href="#"><i class="fas fa-bars"></i></a></li>
             </ul>
@@ -394,7 +395,7 @@
         <div class="notification" id="notification">
             <h1 class="">Notification</h1>
             <hr>
-            <p>Notify a customer of outstanding payments or even send them a season's greeting. <br>This can e done via <strong>Email</strong> or <strong>SMS</strong></p>
+            <p>Notify a customer of outstanding payments or even send them a season's greeting. <br>This can be done via <strong>Email</strong> or <strong>SMS</strong></p>
             <h4>Endpoints</h4>
             <ul>
                 <li>Send SMS reminder<strong> - /reminder/sms/:customer_id [POST]</strong>
@@ -418,6 +419,17 @@
                         <li>text</li>
                         <li>store_id</li>
                     </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="dashboard" id="dashboard">
+            <h1 class="">Dashboard</h1>
+            <hr>
+            <p>Get the overview of a users data e.g number of stores</p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Store Admin dashboard<strong> - /dashboard [GET]</strong>
+                    
                 </li>
             </ul>
         </div>
