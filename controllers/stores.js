@@ -64,10 +64,10 @@ exports.getAll = async (req, res, next) => {
       if (User.local.user_role !== "super_admin") {
         return res.status(401).json({
           success: false,
-          message: "Unauthorised request",
+          message: "Unauthorised, resource can only accessed by Super Admin",
           error: {
             statusCode: 401,
-            message: "Unauthorised request"
+            message: "Unauthorised, resource can only accessed by Super Admin"
           }
         });
       } else {
