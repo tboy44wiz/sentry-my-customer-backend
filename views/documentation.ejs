@@ -122,12 +122,11 @@
 
                  <h4>Update Password</h4>
             <ul>
-                <li>Update password<strong> - /update-password [POST]</strong>
+                <li>Update password<strong> - /store-admin/update/password [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>oldPassword</li>
-                          <li>newPassword</li>
-                            <li>confirmPassword</li>
+                        <li>old_password</li>
+                        <li>new_password</li>
                     </ul>
                 </li>
 
@@ -431,6 +430,16 @@
                 <li>Store Admin dashboard<strong> - /dashboard [GET]</strong>
                     
                 </li>
+            </ul>
+        </div>
+
+        <div class="business-cards" id="business-cards">
+            <h1>Business Cards</h1>
+            <hr>
+            <p>Get a business card for each of your stores with your contact embeded in them</p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Get business cards <strong>/business-cards [GET]</strong></li>
             </ul>
         </div>
 
