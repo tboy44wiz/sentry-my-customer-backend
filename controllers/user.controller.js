@@ -480,7 +480,7 @@ exports.updateSingleStoreAssistant = async (req, res) => {
 exports.deleteSingleStoreAssistant = async (req, res) => {
   const id = req.user.phone_number;
   const storeAssistantId = req.params.assistant_id;
-  await User.findOne({ identifier: id }, (error, store_admin)=>{
+  await User.findOne({ identifier: id }, async (error, store_admin)=>{
     if(error){
       return res.status(200).json({
         success: false,
@@ -493,10 +493,10 @@ exports.deleteSingleStoreAssistant = async (req, res) => {
     }else{
        const assistants = store_admin.assistants;
       if(assistants.length > 0){
-            assistants.forEach((assistant) => {
+            assistants.forEach(async (assistant) => {
               if (assistant._id.equals(storeAssistantId)) {
                 assistant.remove()
-                store_admin.save();
+                await store_admin.save();
                 return res.status(200).json({
                   success: "true",
                   message: "User deleted successfully",
