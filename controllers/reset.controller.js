@@ -114,56 +114,55 @@ module.exports.resetPassword = async (req, res, next) => {
         .status(401)
         .json({ message: "Password reset token is invalid or has expired." });
     }
-    bCrypt
-      .compare(req.body.password, user.local.password)
-      .then((doPasswordMatch) => {
-        if (doPasswordMatch) {
-          console.log(doPasswordMatch);
-          res.status(409).json({
-            success: false,
-            message:
-              "You can't reset to an old password please choose a new password and try again",
-          });
-        }
-      })
-      .catch((err) => console.log(err));
     return user;
   });
 
-  //Set the new password
-  user.local.password = req.body.password;
-  user.local.password = await bCrypt.hash(user.local.password, 10);
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
+  bCrypt
+    .compare(req.body.password, user.local.password)
+    .then((doPasswordMatch) => {
+      if (doPasswordMatch) {
+        res.status(409).json({
+          success: false,
+          message:
+            "You can't reset to an old password please choose a new password and try again",
+        });
+      } else {
+        //Set the new password
+        user.local.password = req.body.password;
+        user.local.password = bCrypt.hash(user.local.password, 10);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
 
-  // Save
-  user.save((err) => {
-    if (err)
-      return res.status(500).json({
-        success: false,
-        message: "Something went wrong.",
-        data: {
-          statusCode: 500,
-          error: "Something went wrong.",
-        },
-      });
-  });
+        // Save
+        user.save((err) => {
+          if (err)
+            return res.status(500).json({
+              success: false,
+              message: "Something went wrong.",
+              data: {
+                statusCode: 500,
+                error: "Something went wrong.",
+              },
+            });
+        });
 
-  const sms = africastalking.SMS;
-  sms
-    .send({
-      to: [`+${user.local.phone_number}`],
-      message: `Your password has been successfully changed.`,
-    })
-    .then((response) => {
-      console.log(response);
-      res.status(200).json({
-        success: true,
-        message: "successful",
-        data: {
-          message: "successful",
-        },
-      });
+        const sms = africastalking.SMS;
+        sms
+          .send({
+            to: [`+${user.local.phone_number}`],
+            message: `Your password has been successfully changed.`,
+          })
+          .then((response) => {
+            console.log(response);
+            res.status(200).json({
+              success: true,
+              message: "successful",
+              data: {
+                message: "successful",
+              },
+            });
+          });
+      }
     })
     .catch((error) => {
       console.log(error);
