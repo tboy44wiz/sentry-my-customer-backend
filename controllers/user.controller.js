@@ -19,6 +19,13 @@ exports.validate = method => {
         body("name").matches(/^[0-9a-zA-Z ]{2,}$/, "i"),
       ];
     }
+
+    case "password":
+      return [
+        body('old_password').isString(),
+        body('new_password').isString().isLength({min: 6}).withMessage("Password must be 6 characters long")
+      ];
+
     case "store_admin": {
       return [
         body("phone_number").isInt(),
@@ -529,10 +536,11 @@ exports.updateStoreAdmin = (req, res) => {
   const identifier = req.user.phone_number;
   User.findOne({ identifier })
     .then((user) => {
-      user.local.phone_number = req.body.phone_number;
-      user.local.first_name = req.body.first_name;
-      user.local.last_name = req.body.last_name;
-      user.local.email = req.body.email;
+      user.local.phone_number = req.body.phone_number || user.local.phone_number;
+      user.local.first_name = req.body.first_name || user.local.first_name;
+      user.local.last_name = req.body.last_name || user.local.last_name;
+      user.local.email = req.body.email || user.local.email;
+
       user
         .save()
         .then((result) => {
@@ -567,93 +575,58 @@ exports.updateStoreAdmin = (req, res) => {
     });
 }
 
-exports.reset = async (req, res) => {
-  const phone_number = req.body.phone_number.toString();
-  let duser = await User.findOne({identifier: phone_number});
-  const password = await bcrypt.hash(req.body.password, 10);
-  if (!duser) {
-    duser = await User.findOne({identifier: ('0' + phone_number)})
-    if (!duser) {
-    return  res.status(404).json({
+exports.updatePassword = (req, res) => {
+
+  const errorResponse = (err) => {
+    return res.status(500).json({
       success: false,
-      message: err.message,
-      data: {
-          statusCode: 404
+      message: 'Error updating password',
+      status: 500,
+      error: {
+        statusCode: 500,
+        message: err.message
       }
-      })
-    }
-    duser.local.password = password;
-
-    duser.save()
-    .then((user) => {
-
-      return res.status(200).json({
-        success: true,
-        message: "Password Changed Succesfully",
-        data: {
-            statusCode: 200,
-            user: user
-        }
-      })
-
-    }, (err) => {
-      if (err) {
-        return res.status(400).json({
-          success: false,
-          message: err.message,
-          data: {
-              statusCode: 400
-          }
-        })
-      }
-
-    })
-    .catch((err) => {
-      return res.status(400).json({
-        success: false,
-        message: err.message,
-        data: {
-            statusCode: 400
-        }
-      })
-    })
+    });
   }
-  duser.local.password = password;
 
-  duser.save()
-  .then((user) => {
+  try {
 
-    return res.status(200).json({
-      success: true,
-      message: "Password Changed Succesfully",
-      data: {
-          statusCode: 200,
-          user: user
-      }
-    })
+    const { old_password, new_password } = req.body;
+    const identifier = req.user.phone_number;
 
-  }, (err) => {
-    if (err) {
-      return res.status(400).json({
-        success: false,
-        message: err.message,
-        data: {
-            statusCode: 400
-        }
+    User.findOne({ identifier })
+      .then(user => {
+
+        bcrypt.compare(old_password, user.local.password, function(err, result) {
+          if(err) {
+            return errorResponse(err);
+          }
+          if(!result) return errorResponse({message: "Passwords don't match"})
+          bcrypt.hash(new_password, 10, (err, hash) => {
+            user.local.password = hash;
+
+            user.save()
+              .then(result => {
+                res.status(200).json({
+                  success: true,
+                  message: "Password reset successful",
+                  data: {
+                      statusCode: 200,
+                      message: "Password reset successful"
+                  }
+                })
+              })
+              .catch(err => errorResponse(err))
+          });
+        })
+
       })
-    }
-
-  })
-  .catch((err) => {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
-      data: {
-          statusCode: 400
-      }
-    })
-  })
-};
+      .catch(err => errorResponse(err))
+  } catch (error) {
+    errorResponse(error);
+  }
+  
+}
 
 exports.forgot = async (req, res)  => {
   await crypto.randomBytes(20, function(err, buf) {

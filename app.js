@@ -25,11 +25,8 @@ const complaintRouter = require("./routes/complaint");
 const docs = require("./routes/docs");
 const user = require("./routes/user");
 const reset = require("./routes/reset");
-const debt = require('./routes/debt_reminder');
-//const userDebt = require('./routes/user_debt_reminder');
-// const businessCards = require("./routes/businessCardRoute");
+const debt = require("./routes/debt_reminder");
 const businessCards = require("./routes/businessCardRoute");
-const updates = require("./routes/update_routes");
 const dashboard = require("./routes/dashboard");
 // const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
@@ -75,7 +72,6 @@ app.use(reset);
 app.use(emailAPI);
 app.use(transactions);
 app.use(businessCards);
-app.use("/update", updates);
 app.use(store);
 app.use(google);
 app.use(facebook);
@@ -86,7 +82,7 @@ app.use(dashboard);
 app.use("/register", register);
 
 app.use("/login", login);
-app.use(debt)
+app.use(debt);
 // app.use(phone_call_api);
 
 //This should be the last route else any after it won't work

@@ -30,9 +30,9 @@
     router.delete('/assistant/delete/:assistant_id', auth, users.deleteSingleStoreAssistant);
 
     // Update User Info with user_id
-    router.put('/store-admin/update', auth, users.validate('store_admin'), bodyValidator, users.updateStoreAdmin);
+    router.put('/store-admin/update', auth, users.updateStoreAdmin);
 
-    router.post('/store_admin/reset-password/', users.reset);
+    router.post('/store-admin/update/password', auth, users.validate('password'), bodyValidator, users.updatePassword);
 
     router.post('/store_admin/forgot-password', users.forgot);
 
