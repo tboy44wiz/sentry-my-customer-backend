@@ -230,6 +230,51 @@ exports.findAllStore = async (req, res) => {
   }
 };
 
+exports.findAllUser = async (req, res) => {
+  try {
+    const identifier = req.user.phone_number;
+    const user = await UserModel.findOne({ identifier });
+    if(!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: {
+          statusCode: 404,
+          message: "User not found",
+        },
+      });
+    }
+
+    let transactions;
+    user.stores.forEach(store => {
+      store.customers.forEach(customer => {
+        if(transactions) {
+          transactions = customer.transactions.concat(transactions)
+        } else {
+          transactions = customer.transactions
+        }
+      })
+    })
+
+    res.status(200).json({
+      success: true,
+      message: "Transactions",
+      data: {
+        transactions: transactions,
+      },
+    });
+  } catch(error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      data: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
+};
+
 // Find a single transaction with a transaction_id
 exports.findOne = async (req, res) => {
   try {

@@ -306,15 +306,6 @@ exports.updateSingleStoreAssistant = async (req, res) => {
                       },
                     });
                   });
-              /*return res.status(201).json({
-                success: true,
-                message: "Store Assistant updated successful.",
-                data: {
-                  status: 201,
-                  message: "Store Assistant updated successful.",
-                  user: user,
-                },
-              });*/
             })
             .catch((error) => {
               return res.status(500).json({
@@ -337,141 +328,6 @@ exports.updateSingleStoreAssistant = async (req, res) => {
           },
         });
       });
-
-  /*try {
-    let user = await User.findOne({
-      identifier: "0" + req.user.phone_number.toString(),
-    });
-    if (user == null) {
-      let user = await User.findOne({
-        identifier: req.user.phone_number.toString(),
-      });
-      if (!user)
-        return res.status(404).json({
-          success: "false",
-          message: "User not found",
-          error: {
-            statusCode: 404,
-            message: "User with the provided details does not exist",
-          },
-        });
-
-      // Update Assistant
-      //user = await User.findById(req.params.assistant_id);
-      // ,
-      //     { $set: {assistants: userFields} },
-      //     { new: true }
-      // Send updated user details
-      if (user.assistants.length !== 0) {
-        user.assistants.map((assist) => {
-          if (assist._id.equals(req.params.assistant_id)) {
-            (assist.name = req.body.name),
-              (assist.email = req.body.email),
-              (assist.phone_number = req.body.phone_number);
-          }
-        });
-        user
-          .save()
-          .then((userSaved) => {
-            res.status(201).json({
-              success: "true",
-              message: "Assistants details updated successfully",
-              data: {
-                statusCode: 201,
-                data: userSaved.assistants,
-              },
-            });
-          })
-          .catch((err) => {
-            res.status(500).json({
-              success: "false",
-              message: "Internal server error",
-              error: {
-                statusCode: 500,
-                message: "Assistant details could not be updated",
-              },
-            });
-          });
-      } else {
-        res.status(500).json({
-          success: "false",
-          message: "You have no assistants yet",
-          error: {
-            statusCode: 500,
-            message: "You have no assistants yet",
-          },
-        });
-      }
-    } else {
-      if (!user)
-        return res.status(404).json({
-          success: "false",
-          message: "User not found",
-          error: {
-            statusCode: 404,
-            message: "User with the provided details does not exist",
-          },
-        });
-
-      // Update Assistant
-      //user = await User.findById(req.params.assistant_id);
-      // ,
-      //     { $set: {assistants: userFields} },
-      //     { new: true }
-      // Send updated user details
-      if (user.assistants.length !== 0) {
-        user.assistants.map((assist) => {
-          if (assist._id.equals(req.params.assistant_id)) {
-            (assist.name = req.body.name),
-              (assist.email = req.body.email),
-              (assist.phone_number = req.body.phone_number);
-          }
-        });
-        user
-          .save()
-          .then((userSaved) => {
-            res.status(201).json({
-              success: "true",
-              message: "Assistants details updated successfully",
-              data: {
-                statusCode: 201,
-                data: userSaved,
-              },
-            });
-          })
-          .catch((err) => {
-            res.status(500).json({
-              success: "false",
-              message: "Internal server error",
-              error: {
-                statusCode: 500,
-                message: "Assistant details could not be updated",
-              },
-            });
-          });
-      } else {
-        res.status(500).json({
-          success: "false",
-          message:
-            "You can't update assistants yet because you have no one presently",
-          error: {
-            statusCode: 500,
-            message: "You have no assistants yet",
-          },
-        });
-      }
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: "false",
-      message: "Internal server error",
-      error: {
-        statusCode: 500,
-        message: "Assistant details could not be updated",
-      },
-    });
-  }*/
 };
 
 
@@ -528,12 +384,45 @@ exports.deleteSingleStoreAssistant = (req, res) => {
 
 exports.updateStoreAdmin = (req, res) => {
   const identifier = req.user.phone_number;
+  let {phone_number, first_name, last_name, email} = req.body;
   User.findOne({ identifier })
-    .then((user) => {
-      user.local.phone_number = req.body.phone_number || user.local.phone_number;
-      user.local.first_name = req.body.first_name || user.local.first_name;
-      user.local.last_name = req.body.last_name || user.local.last_name;
-      user.local.email = req.body.email || user.local.email;
+    .then(async (user) => {
+      user.local.phone_number = phone_number || user.local.phone_number;
+      user.local.first_name = first_name || user.local.first_name;
+      user.local.last_name = last_name || user.local.last_name;
+      user.local.email = email || user.local.email;
+
+      if(phone_number) {
+        let findUser = await User.findOne({ identifier: phone_number })
+
+        if(findUser) {
+          return res.status(400).json({
+            sucess: false,
+            message: "The phone number is already in use",
+            error: {
+              statusCode: 400,
+              message: "The phone number is already in use"
+            }
+          })
+        }
+
+        user.identifier = phone_number;
+
+        const token = jwt.sign(
+          {
+            phone_number: user.identifier,
+            password: user.local.password,
+            user_role: user.user_role
+          },
+          process.env.JWT_KEY,
+          {
+            expiresIn: "1d"
+          }
+        );
+
+        user.api_token = token;
+      }
+
 
       user
         .save()
@@ -585,11 +474,19 @@ exports.updatePassword = (req, res) => {
 
   try {
 
-    const { old_password, new_password } = req.body;
+    const { old_password, new_password, confirm_password } = req.body;
     const identifier = req.user.phone_number;
 
     User.findOne({ identifier })
       .then(user => {
+        if(confirm_password !== new_password)
+            return res.json({
+              sucess: false,
+              message: "confirm_password should match new_password",
+              error: {
+                statusCode: 400
+              }
+            });
 
         bcrypt.compare(old_password, user.local.password, function(err, result) {
           if(err) {

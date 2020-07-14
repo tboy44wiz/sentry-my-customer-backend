@@ -16,7 +16,7 @@ exports.validate = (method) => {
 exports.create = async (req, res) => {
   const identifier = req.user.phone_number;
 
-  const { phone_number, email, name, store_name } = req.body;
+  const { phone_number, email, name, store_id } = req.body;
 
   //get current user's id and add a new customer to it
   try {
@@ -27,10 +27,12 @@ exports.create = async (req, res) => {
             message: "please add a store before adding customers",
           });
         }
-        let store_name = req.body.store_name || req.params.store_name;
-        let wantedStore = user.stores.find(
-          (store) => store.store_name === store_name
-        ); // find the necessary store form user.stores
+        // let store_name = req.body.store_name || req.params.store_name;
+        // let wantedStore = user.stores.find(
+        //   (store) => store.store_name === store_name
+        // ); // find the necessary store form user.stores
+
+        const wantedStore = user.stores.id(store_id);
 
         let customerToReg = { phone_number, email, name }; // customer to register
         let customerExists = wantedStore.customers.find(
@@ -101,39 +103,38 @@ exports.getById = (req, res) => {
   let customers;
   UserModel.findOne({ identifier })
     .then((user) => {
-      let stores = user.stores;
-      stores.forEach((store) => {
-        customers = store.customers;
-        if (customers.length > 0) {
-          customers.forEach((customer) => {
-            if (customer._id == req.params.customerId) {
-              return res.status(200).json({
-                success: true,
-                message: "successful",
-                data: {
-                  customer,
-                },
-              });
-            }
-          });
-        }
-      });
-      return res.status(404).json({
-        status: false,
-        message: "Customer not found",
-        error: {
-          code: 404,
-          message: "customer not found",
+      let store = user.stores.id(req.params.storeId);
+      const storeName = store.store_name;
+      customers = store.customers;
+
+      const customer = customers.id(req.params.customerId);
+
+      if (!customer) {
+        return res.status(404).json({
+          status: false,
+          message: "Customer not found",
+          error: {
+            code: 404,
+            message: "customer not found",
+          },
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "successful",
+        data: {
+          customer,
+          storeName
         },
       });
-    })
-    .catch((err) => {
+    }).catch((error) => {
       return res.status(404).json({
         status: false,
-        message: "Customer not found",
+        message: error.message,
         error: {
           code: 404,
-          message: "customer not found",
+          message: error,
         },
       });
     });
@@ -255,6 +256,7 @@ exports.getAll = async (req, res) => {
         let obj = {};
         obj.storeName = store.store_name;
         obj.customers = store.customers;
+        obj.storeId = store._id;
 
         customer.push(obj);
       });
