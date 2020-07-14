@@ -103,76 +103,96 @@ module.exports.reset = async (req, res) => {
 };
 
 module.exports.resetPassword = async (req, res, next) => {
-  const todayDate = new Date();
-  const today = todayDate.getDate();
-  const user = await User.findOne({
-    resetPasswordToken: req.body.token,
-    resetPasswordExpires: today,
-  }).then((user) => {
-    if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Password reset token is invalid or has expired." });
-    }
-    return user;
-  });
-
-  bCrypt
-    .compare(req.body.password, user.local.password)
-    .then((doPasswordMatch) => {
-      if (doPasswordMatch) {
-        res.status(409).json({
-          success: false,
-          message:
-            "You can't reset to an old password please choose a new password and try again",
-        });
-      } else {
-        //Set the new password
-        user.local.password = req.body.password;
-        user.local.password = bCrypt.hash(user.local.password, 10);
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
-
-        // Save
-        user.save((err) => {
-          if (err)
-            return res.status(500).json({
-              success: false,
-              message: "Something went wrong.",
-              data: {
-                statusCode: 500,
-                error: "Something went wrong.",
-              },
-            });
-        });
-
-        const sms = africastalking.SMS;
-        sms
-          .send({
-            to: [`+${user.local.phone_number}`],
-            message: `Your password has been successfully changed.`,
-          })
-          .then((response) => {
-            console.log(response);
-            res.status(200).json({
-              success: true,
-              message: "successful",
-              data: {
-                message: "successful",
-              },
-            });
-          });
-      }
-    })
-    .catch((error) => {
-      console.log(error);
+  try {
+    const todayDate = new Date();
+    const today = todayDate.getDate();
+    let resetuser;
+    try {
+      resetuser = await User.findOne({
+        resetPasswordToken: req.body.token,
+        resetPasswordExpires: today,
+      });
+    } catch (err) {
       res.status(500).json({
         success: false,
         message: "Something went wrong.",
         data: {
           statusCode: 500,
-          error: "Something went wrong.",
+          error: err.message,
         },
       });
+    }
+    console.log(resetuser);
+    if (!resetuser) {
+      return res
+        .status(401)
+        .json({ message: "Password reset token is invalid or has expired." });
+    }
+    let match;
+    try {
+      match = await bCrypt.compare(req.body.password, resetuser.local.password);
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong.",
+        data: {
+          statusCode: 500,
+          error: err.message,
+        },
+      });
+    }
+    console.log(match);
+    if (match) {
+      res.status(409).json({
+        success: false,
+        message:
+          "You can't reset to an old password please choose a new password and try again",
+      });
+    } else {
+      //Set the new password
+      resetuser.local.password = await bCrypt.hash(req.body.password, 10);
+      resetuser.resetPasswordToken = undefined;
+      resetuser.resetPasswordExpires = undefined;
+      try {
+        const newuser = await resetuser.save();
+        console.log(newuser);
+      } catch (err) {
+        res.status(500).json({
+          success: false,
+          message: "Something went wrong.",
+          data: {
+            statusCode: 500,
+            error: err.message,
+          },
+        });
+      }
+
+      const sms = africastalking.SMS;
+      sms
+        .send({
+          to: [`+${resetuser.local.phone_number}`],
+          message: `Your password has been successfully changed.`,
+        })
+        .then((response) => {
+          console.log(response);
+          res.status(200).json({
+            success: true,
+            message: "successful",
+            data: {
+              message: "successful",
+            },
+          });
+        });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong.",
+      data: {
+        statusCode: 500,
+        error: "Something went wrong.",
+      },
     });
+  }
 };
