@@ -87,7 +87,7 @@ exports.create = async (req, res, next) => {
       customer_ref_id:req.body.customer_id,
       amount: req.body.amount,
       interest: req.body.interest,
-      total_amount: req.body.customer_id,
+      total_amount: req.body.total_amount,
       description: req.body.description || "Not set",
       type: req.body.type,
       status: req.body.status || "unpaid",
@@ -176,7 +176,7 @@ exports.findAll = async (req, res) => {
 };
 
 exports.findAllStore = async (req, res) => {
-  //try {
+  try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
     if(!user) {
@@ -218,7 +218,7 @@ exports.findAllStore = async (req, res) => {
         transactions: transactions,
       },
     });
-  /*} catch(error) {
+  } catch(error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -227,7 +227,7 @@ exports.findAllStore = async (req, res) => {
         message: error,
       },
     });
-  }*/
+  }
 };
 
 // Find a single transaction with a transaction_id
