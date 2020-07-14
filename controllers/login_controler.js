@@ -76,15 +76,6 @@ module.exports.loginUser = async (req, res, next) => {
               },
             });
           });
-      } else {
-        res.status(401).json({
-          success: false,
-          message: "Invalid phone number.",
-          error: {
-            code: 401,
-            description: "Invalid phone number.",
-          },
-        });
       }
     })
     .catch((error) => {

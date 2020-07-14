@@ -39,8 +39,11 @@ module.exports = () => async (req, res) => {
     });
 
     return res.status(200).json({
+      sucess: true,
       message: "Your business cards:",
-      data,
+      data: {
+        business_cards: data
+      }
     });
   } catch (error) {
     //  Log error to console for maintenace by developers

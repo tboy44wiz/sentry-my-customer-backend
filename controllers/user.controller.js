@@ -1,4 +1,5 @@
 const User = require("../models/store_admin");
+const StoreAssistant = require("../models/storeAssistant");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator/check");
@@ -18,6 +19,13 @@ exports.validate = method => {
         body("name").matches(/^[0-9a-zA-Z ]{2,}$/, "i"),
       ];
     }
+
+    case "password":
+      return [
+        body('old_password').isString(),
+        body('new_password').isString().isLength({min: 6}).withMessage("Password must be 6 characters long")
+      ];
+
     case "store_admin": {
       return [
         body("phone_number").isInt(),
@@ -29,170 +37,309 @@ exports.validate = method => {
   }
 };
 
-///#region Get all Users.
-exports.all = (req, res) => {
+// Get all Users.
+exports.allStoreAssistant = (req, res) => {
   const id = req.user.phone_number;
+
   User.findOne({ identifier: id })
     .then((user) => {
       const storeAssistants = user.assistants;
       res.status(200).json({
         success: "true",
-        message: "Successfully retrieved all store assistants",
+        message: "Store assistants retrieved successfully.",
         data: {
-          statusCode: 200,
+          status: 200,
+          message: "Store assistants retrieved successfully.",
           assistants: storeAssistants,
         },
       });
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).json({
         success: "false",
-        message: "Internal Error",
+        message: "Internal Server Error.",
         error: {
           statusCode: 500,
-          message: "Could not retrive users due to an internal error",
+          message: "Internal Server Error.",
         },
       });
     });
 };
-//#endregion
 
-//Add new user
+// Add new StoreAdmin
+exports.newStoreAdmin = (req, res) => {
+  const { name, email, password, phone_number, } = req.body;
+  const id = req.user.phone_number;
 
-exports.new = async (req, res) => {
-  const { name, email, password, phone_number } = req.body;
-
-  // Check if Phone exists
-  let userExists = await User.findOne({ identifier: req.user.phone_number });
-  if (userExists === null) {
-    let userExists = await User.findOne({
-      identifier: req.user.phone_number.toString(),
-    });
-    if (userExists) {
-      // userExists.local.api_token = token;
-      userExists.assistants.push({
-        name: name,
-        email: email,
-        password: password,
-        phone_number: phone_number,
-      });
-      await userExists
-        .save()
-        .then((user) => {
-          return res.status(200).json({
-            success: "true",
-            message: "Assistant Added Successfully",
-            data: {
-              statusCode: 200,
-              assistant: userExists.assistants,
-              user: user,
-            },
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({
-            success: "false",
-            message: "Error",
-            data: {
-              statusCode: 500,
-              error: err.message,
-            },
-          });
-        });
-    } else {
-      return res.status(404).json({
-        success: "false",
-        message: "User Not Found",
-        data: {
-          statusCode: 404,
-          error: "User Dosen't Exist",
-        },
-      });
-    }
-  } else {
-    if (userExists) {
-      // userExists.local.api_token = token;
-      userExists.assistants.push({
-        name: name,
-        email: email,
-        password: password,
-        phone_number: phone_number,
-      });
-      await userExists
-        .save()
-        .then((user) => {
-          return res.status(200).json({
-            success: "true",
-            message: "Assistant Added Successfully",
-            data: {
-              statusCode: 200,
-              assistant: userExists.assistants,
-              user: user,
-            },
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({
-            success: "false",
-            message: "Error",
-            data: {
-              statusCode: 500,
-              error: err.message,
-            },
-          });
-        });
-    } else {
-      return res.status(404).json({
-        success: "false",
-        message: "User Not Found",
-        data: {
-          statusCode: 404,
-          error: "User Dosen't Exist",
-        },
-      });
-    }
-  }
-};
-
-//#region Fnd a single user with a user_id
-exports.getById = (req, res) => {
-  const identifier = req.user.phone_number;
-  const assistantId = req.params.assistant_id;
-  let found = false;
-  User.findOne({ identifier }).then((user) => {
-    let assistants = user.assistants;
-    let dataArr = [];
-    assistants.forEach((assistant) => {
-      if (assistant._id == assistantId) {
-        found = true;
-        dataArr.push(assistant);
-      }
-    });
-    if (found == true) {
-      return res.status(200).json({
-        success: true,
-        message: "Assistant found",
-        data: {
-          statusCode: 200,
-          assistantData: dataArr[0],
-        },
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: "Assistant not found",
-        error: {
-          statusCode: 404,
-          message: "Assistant not found with id " + assistantId,
-        },
-      });
-    }
+  const newStoreAdmin = new User({
+    name: name,
+    phone_number: phone_number,
+    email: email,
+    password: password,
   });
+
+  User.findOne({ identifier: id })
+      .then((user) => {
+        if (user) {
+          return res.status(200).json({
+            success: false,
+            message: "User already exist.",
+            data: {
+              status: 200,
+              message: "User already exist.",
+            },
+          });
+        }
+
+        newStoreAdmin.save()
+            .then((newUser) => {
+              return res.status(201).json({
+                success: true,
+                message: "User created successfully.",
+                data: {
+                  status: 201,
+                  message: "User created successfully.",
+                  user: newUser,
+                },
+              });
+            })
+            .catch((error) => {
+              return res.status(500).json({
+                success: "false",
+                message: "Internal Server Error.",
+                error: {
+                  statusCode: 500,
+                  message: "Internal Server Error.",
+                },
+              });
+            });
+
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          success: "false",
+          message: "Internal Server Error.",
+          error: {
+            statusCode: 500,
+            message: "Internal Server Error.",
+          },
+        });
+      });
+}
+
+// Add new StoreAssistant
+exports.newStoreAssistant = (req, res) => {
+  const { name, email, password, phone_number, store_id } = req.body;
+  const id = req.user.phone_number;
+
+  const newStoreAssistantData = new StoreAssistant({
+    name: name,
+    phone_number: phone_number,
+    email: email,
+    password: password,
+  });
+
+  User.findOne({ identifier: id })
+      .then((user) => {
+        if (!user) {
+          return res.status(200).json({
+            success: false,
+            message: "User does not exist.",
+            data: {
+              status: 200,
+              message: "User does not exist.",
+            },
+          });
+        }
+
+        const stores = user.stores;
+        if (stores.length <= 0) {
+          return res.status(200).json({
+            success: false,
+            message: "Store does not exist.",
+            data: {
+              status: 200,
+              message: "Store does not exist.",
+            },
+          });
+        }
+
+        //  Loop through all the available store and get the store with the given store_id.
+        stores.forEach((store) => {
+          if (store._id == store_id) {
+            newStoreAssistantData.store_id = store._id;
+          }
+        });
+
+        user.assistants.push(newStoreAssistantData);
+
+        user.save()
+            .then((use) => {
+              return res.status(201).json({
+                success: true,
+                message: "StoreAssistant created successfully.",
+                data: {
+                  status: 201,
+                  message: "StoreAssistant created successfully.",
+                  store_assistant: newStoreAssistantData,
+                },
+              });
+            })
+            .catch((error) => {
+              return res.status(500).json({
+                success: "false",
+                message: "Internal Server Error.",
+                error: {
+                  statusCode: 500,
+                  message: "Internal Server Error.",
+                },
+              });
+            });
+
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          success: "false",
+          message: "Internal Server Error.",
+          error: {
+            statusCode: 500,
+            message: "Internal Server Error.",
+          },
+        });
+      });
+}
+
+
+// Get Single Store Assistant with assistant_id.
+exports.getSingleStoreAssistant = (req, res) => {
+  const id = req.user.phone_number;
+  const storeAssistantId = req.params.assistant_id;
+
+  User.findOne({ identifier: id })
+      .then((user) => {
+        const storeAssistants = user.assistants;
+
+        storeAssistants.forEach((storeAssistant) => {
+          if (storeAssistant._id == storeAssistantId) {
+            return res.status(200).json({
+              success: true,
+              message: "Store Assistant retrieved successfully.",
+              data: {
+                status: 200,
+                message: "Store Assistant retrieved successfully.",
+                store_assistant: storeAssistant,
+              },
+            });
+          }
+        });
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          success: "false",
+          message: "Internal Server Error.",
+          error: {
+            statusCode: 500,
+            message: "Internal Server Error.",
+          },
+        });
+      });
 };
 
-exports.update = async (req, res) => {
-  const userFields = req.body;
-  try {
+//  Update Single Store Assistant with assistant_id.
+exports.updateSingleStoreAssistant = async (req, res) => {
+  const id = req.user.phone_number;
+  const storeAssistantId = req.params.assistant_id;
+  const { name, phone_number, email, password, store_id } = req.body;
+
+  User.findOne({ identifier: id })
+      .then((user) => {
+        const storeAssistants = user.assistants;
+
+        if (storeAssistants.length <= 0) {
+          return res.status(200).json({
+            success: false,
+            message: "Could not find any Store Assistant.",
+            data: {
+              status: 200,
+              message: "Could not find any Store Assistant.",
+            },
+          });
+        }
+
+        //  Loop through all the available storeAssistants and get the storeAssistant with the given assistant_id.
+        const updatedStoreAssistant = storeAssistants.forEach((storeAssistant) => {
+          if (storeAssistant._id == storeAssistantId) {
+            storeAssistant.name = name;
+            storeAssistant.phone_number = phone_number;
+            storeAssistant.email = email;
+            storeAssistant.password = password;
+            storeAssistant.store_id = store_id;
+          }
+        });
+
+        user.save()
+            .then((user) => {
+              User.findOne({ identifier: id })
+                  .then((user) => {
+                    const storeAssistants = user.assistants;
+
+                    storeAssistants.forEach((storeAssistant) => {
+                      if (storeAssistant._id == storeAssistantId) {
+                        return res.status(201).json({
+                          success: true,
+                          message: "Store Assistant updated successfully.",
+                          data: {
+                            status: 201,
+                            message: "Store Assistant updated successfully.",
+                            store_assistant: storeAssistant,
+                          },
+                        });
+                      }
+                    });
+                  })
+                  .catch((error) => {
+                    return res.status(500).json({
+                      success: "false",
+                      message: "Internal Server Error.",
+                      error: {
+                        statusCode: 500,
+                        message: "Internal Server Error.",
+                      },
+                    });
+                  });
+              /*return res.status(201).json({
+                success: true,
+                message: "Store Assistant updated successful.",
+                data: {
+                  status: 201,
+                  message: "Store Assistant updated successful.",
+                  user: user,
+                },
+              });*/
+            })
+            .catch((error) => {
+              return res.status(500).json({
+                success: "false",
+                message: error.message,
+                error: {
+                  statusCode: 500,
+                  message: error.message,
+                },
+              });
+            });
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          success: "false",
+          message: "Internal Server Error 22.",
+          error: {
+            statusCode: 500,
+            message: "Internal Server Error 22.",
+          },
+        });
+      });
+
+  /*try {
     let user = await User.findOne({
       identifier: "0" + req.user.phone_number.toString(),
     });
@@ -325,13 +472,15 @@ exports.update = async (req, res) => {
         message: "Assistant details could not be updated",
       },
     });
-  }
+  }*/
 };
-//#endregion
 
-//#region Delete a user the user_id
-exports.delete = async (req, res) => {
-  await User.findOne({ identifier: req.user.phone_number }, (error, store_admin)=>{
+
+//  Delete Single Store Assistant with assistant_id.
+exports.deleteSingleStoreAssistant = async (req, res) => {
+  const id = req.user.phone_number;
+  const storeAssistantId = req.params.assistant_id;
+  await User.findOne({ identifier: id }, (error, store_admin)=>{
     if(error){
       return res.status(200).json({
         success: false,
@@ -343,10 +492,9 @@ exports.delete = async (req, res) => {
       });
     }else{
        const assistants = store_admin.assistants;
-       console.log(assistants)
       if(assistants.length > 0){
             assistants.forEach((assistant) => {
-              if (assistant._id.equals(req.params.assistant_id)) {
+              if (assistant._id.equals(storeAssistantId)) {
                 assistant.remove()
                 store_admin.save();
                 return res.status(200).json({
@@ -388,10 +536,11 @@ exports.updateStoreAdmin = (req, res) => {
   const identifier = req.user.phone_number;
   User.findOne({ identifier })
     .then((user) => {
-      user.local.phone_number = req.body.phone_number;
-      user.local.first_name = req.body.first_name;
-      user.local.last_name = req.body.last_name;
-      user.local.email = req.body.email;
+      user.local.phone_number = req.body.phone_number || user.local.phone_number;
+      user.local.first_name = req.body.first_name || user.local.first_name;
+      user.local.last_name = req.body.last_name || user.local.last_name;
+      user.local.email = req.body.email || user.local.email;
+
       user
         .save()
         .then((result) => {
@@ -426,93 +575,58 @@ exports.updateStoreAdmin = (req, res) => {
     });
 }
 
-exports.reset = async (req, res) => {
-  const phone_number = req.body.phone_number.toString();
-  let duser = await User.findOne({identifier: phone_number});
-  const password = await bcrypt.hash(req.body.password, 10);
-  if (!duser) {
-    duser = await User.findOne({identifier: ('0' + phone_number)})
-    if (!duser) {
-    return  res.status(404).json({
+exports.updatePassword = (req, res) => {
+
+  const errorResponse = (err) => {
+    return res.status(500).json({
       success: false,
-      message: err.message,
-      data: {
-          statusCode: 404
+      message: 'Error updating password',
+      status: 500,
+      error: {
+        statusCode: 500,
+        message: err.message
       }
-      })
-    }
-    duser.local.password = password;
-
-    duser.save()
-    .then((user) => {
-
-      return res.status(200).json({
-        success: true,
-        message: "Password Changed Succesfully",
-        data: {
-            statusCode: 200,
-            user: user
-        }
-      })
-
-    }, (err) => {
-      if (err) {
-        return res.status(400).json({
-          success: false,
-          message: err.message,
-          data: {
-              statusCode: 400
-          }
-        })
-      }
-
-    })
-    .catch((err) => {
-      return res.status(400).json({
-        success: false,
-        message: err.message,
-        data: {
-            statusCode: 400
-        }
-      })
-    })
+    });
   }
-  duser.local.password = password;
 
-  duser.save()
-  .then((user) => {
+  try {
 
-    return res.status(200).json({
-      success: true,
-      message: "Password Changed Succesfully",
-      data: {
-          statusCode: 200,
-          user: user
-      }
-    })
+    const { old_password, new_password } = req.body;
+    const identifier = req.user.phone_number;
 
-  }, (err) => {
-    if (err) {
-      return res.status(400).json({
-        success: false,
-        message: err.message,
-        data: {
-            statusCode: 400
-        }
+    User.findOne({ identifier })
+      .then(user => {
+
+        bcrypt.compare(old_password, user.local.password, function(err, result) {
+          if(err) {
+            return errorResponse(err);
+          }
+          if(!result) return errorResponse({message: "Passwords don't match"})
+          bcrypt.hash(new_password, 10, (err, hash) => {
+            user.local.password = hash;
+
+            user.save()
+              .then(result => {
+                res.status(200).json({
+                  success: true,
+                  message: "Password reset successful",
+                  data: {
+                      statusCode: 200,
+                      message: "Password reset successful"
+                  }
+                })
+              })
+              .catch(err => errorResponse(err))
+          });
+        })
+
       })
-    }
-
-  })
-  .catch((err) => {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
-      data: {
-          statusCode: 400
-      }
-    })
-  })
-};
+      .catch(err => errorResponse(err))
+  } catch (error) {
+    errorResponse(error);
+  }
+  
+}
 
 exports.forgot = async (req, res)  => {
   await crypto.randomBytes(20, function(err, buf) {
