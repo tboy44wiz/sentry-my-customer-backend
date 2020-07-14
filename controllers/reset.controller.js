@@ -122,7 +122,6 @@ module.exports.resetPassword = async (req, res, next) => {
         },
       });
     }
-    console.log(resetuser);
     if (!resetuser) {
       return res
         .status(401)
@@ -141,7 +140,6 @@ module.exports.resetPassword = async (req, res, next) => {
         },
       });
     }
-    console.log(match);
     if (match) {
       res.status(409).json({
         success: false,
@@ -154,8 +152,7 @@ module.exports.resetPassword = async (req, res, next) => {
       resetuser.resetPasswordToken = undefined;
       resetuser.resetPasswordExpires = undefined;
       try {
-        const newuser = await resetuser.save();
-        console.log(newuser);
+        await resetuser.save();
       } catch (err) {
         res.status(500).json({
           success: false,
