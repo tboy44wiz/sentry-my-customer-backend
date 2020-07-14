@@ -52,8 +52,6 @@ exports.send = async (req, res) => {
 
     const otpSaveResult = await otp.save();
 
-    console.log("otpSaveResult", otpSaveResult);
-
     if (!otpSaveResult) {
       return res.status(500).json({
         success: false,
@@ -64,25 +62,33 @@ exports.send = async (req, res) => {
         }
       });
     }
-
-    const sms = africastalking.SMS;
-    await sms.send({
-      to: [`+${req.body.phone_number}`],
-      message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`
-    });
-
+    
     res.status(200).json({
       success: true,
       message: "successful",
       data: {
-        message: "successful"
+        message: "successful",
+        otp: otpSaveResult.otp_code,
       }
     });
+    
+    // const sms = africastalking.SMS;
+    // await sms.send({
+    //   to: [`+${req.body.phone_number}`],
+    //   message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`
+    // });
+
+    // res.status(200).json({
+    //   success: true,
+    //   message: "successful",
+    //   data: {
+    //     message: "successful"
+    //   }
+    // });
   } catch (err) {
     res.status(500).json({
       success: false,
       message: "Something went wrong.",
-      otp: otpSaveResult.otp_code,
       data: {
         statusCode: 500,
         error: err
@@ -93,7 +99,7 @@ exports.send = async (req, res) => {
 
 exports.verify = async (req, res) => {
   try {
-    let user = await UserModel.findOne({ identifier: req.user.phone_number });
+    let user = await UserModel.findOne({ identifier: req.body.phone_number });
 
     if (!user) {
       return res.status(404).json({

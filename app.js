@@ -26,7 +26,8 @@ const docs = require("./routes/docs");
 const user = require("./routes/user");
 const reset = require("./routes/reset");
 const debt = require('./routes/debt_reminder');
-const userDebt = require('./routes/user_debt_reminder');
+const storeAssistant = require('./routes/storeAssistant');
+//const userDebt = require('./routes/user_debt_reminder');
 // const businessCards = require("./routes/businessCardRoute");
 // const phone_call_api = require("./controllers/phone_call_api");
 app.use(cors());
@@ -64,7 +65,7 @@ app.get("/", (req, res) => {
 
 app.use(documentation);
 app.use(customer);
-app.use(userDebt);
+//app.use(userDebt);
 //app.use(phone_verification);
 app.use(otp);
 app.use(reset);
@@ -73,6 +74,7 @@ app.use(emailAPI);
 app.use(transactions);
 // app.use(businessCards);
 app.use(store);
+app.use(storeAssistant);
 app.use(google);
 app.use(facebook);
 app.use(complaintRouter);

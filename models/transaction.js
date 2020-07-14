@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const CreditReminderSchema = require('./user_debt_reminder');
 const Debt = require('./debt_reminders')
 
 const transactionSchema = new mongoose.Schema({
@@ -12,7 +11,6 @@ const transactionSchema = new mongoose.Schema({
   transaction_role: { type: String },
   store_ref_id: { type: String },
   customer_ref_id: { type: String },
-  credits: [CreditReminderSchema.schema],
   debts: [Debt.schema]
 });
 
