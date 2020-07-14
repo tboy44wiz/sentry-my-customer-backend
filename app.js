@@ -64,6 +64,7 @@ app.get("/", (req, res) => {
 
 app.use(documentation);
 app.use(customer);
+//app.use(userDebt);
 //app.use(phone_verification);
 app.use(otp);
 app.use(reset);

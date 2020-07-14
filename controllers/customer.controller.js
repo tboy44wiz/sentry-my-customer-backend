@@ -149,8 +149,8 @@ exports.updateById = (req, res) => {
     const stores = user.stores;
     stores.forEach((eachStore) => {
       const customers= eachStore.customers;
-      const newCustomers = customers.map((eachCustomer) => {
-        if(eachCustomer._id == customerID) {
+      customers.forEach((eachCustomer) => {
+        if(eachCustomer._id == req.params.customerId) {
           eachCustomer.phone_number = reqBody.phone_number;
           eachCustomer.email = reqBody.email;
           eachCustomer.name = reqBody.name;
@@ -159,22 +159,24 @@ exports.updateById = (req, res) => {
         return false;
       });
 
-      console.log(newCustomers);
       user.save()
       .then((result) => {
-        res.json({
+        res.status(200).json({
           success: true,
           message: "Customer updated successfully.",
-          Customers: newCustomers,
+          data: {
+            code: 200,
+            message: "Customer updated successfully."
+          },
         });
       })
       .catch((error) => {
-        res.status(500).json({
+        return res.status(400).json({
           status: false,
-          message: error.message,
+          message: "Can't save updated customer",
           error: {
-            code: 500,
-            message: error.message
+            code: 400,
+            message: error
           }
         });
       })
@@ -186,7 +188,7 @@ exports.updateById = (req, res) => {
       message: error.message,
       error: {
         code: 500,
-        message: error.message
+        message: error
       }
     });
   })
