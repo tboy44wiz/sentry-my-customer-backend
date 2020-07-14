@@ -386,6 +386,22 @@
                     </ul>
                 </li>
                 <li>View all debts<strong> - /debt/ [GET]</strong>
+                <li>Send Reminder (single)<strong> - /debt/send [POST]</strong>
+                    <h6><strong>Note: A valid customer phone number must be used when creating a customer and should follow international standards ie(+23490XXXXXXX)</strong></h6>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>debt_id</li>
+                        <li>message (optional)</li>
+                    </ul>
+                </li>
+                <li>Schedule Reminder (All debts)<strong> - /debt/schedule [POST]</strong>
+                    <h6><strong>Note: A valid customer phone number must be used when creating a customer and should follow international standards ie(+23490XXXXXXX)</strong></h6>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>time  (Format: (mm/hh))</li>
+                        <li>scheduleDate  (Format: (dd/mm/yyy))</li>
+                    </ul>
+                </li>
                     
                 </li>
                 
