@@ -388,45 +388,12 @@ exports.deleteSingleStoreAssistant = (req, res) => {
 
 exports.updateStoreAdmin = (req, res) => {
   const identifier = req.user.phone_number;
-  let {phone_number, first_name, last_name, email} = req.body;
+  let {first_name, last_name, email} = req.body;
   User.findOne({ identifier })
     .then(async (user) => {
-      user.local.phone_number = phone_number || user.local.phone_number;
       user.local.first_name = first_name || user.local.first_name;
       user.local.last_name = last_name || user.local.last_name;
       user.local.email = email || user.local.email;
-
-      if(phone_number) {
-        let findUser = await User.findOne({ identifier: phone_number })
-
-        if(findUser) {
-          return res.status(400).json({
-            sucess: false,
-            message: "The phone number is already in use",
-            error: {
-              statusCode: 400,
-              message: "The phone number is already in use"
-            }
-          })
-        }
-
-        user.identifier = phone_number;
-
-        const token = jwt.sign(
-          {
-            phone_number: user.identifier,
-            password: user.local.password,
-            user_role: user.user_role
-          },
-          process.env.JWT_KEY,
-          {
-            expiresIn: "1d"
-          }
-        );
-
-        user.api_token = token;
-      }
-
 
       user
         .save()
@@ -778,3 +745,126 @@ exports.updatePicture = (req,res) => {
     return responseManager.failure(res,{message: "Picture not set. Unexpected error occured"});
   })
 }
+
+
+exports.deactivateUser = async (req, res) => {
+  const id = req.user.phone_number;
+  const storeAdminPhoneNumber = req.params.phone_number;
+
+  const user = await User.findOne({ identifier: id });
+
+  //   check if user exists
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+      error: {
+        statusCode: 404,
+        message: "User not found",
+      },
+    });
+  }
+
+  //   check if user is a super admin
+  if (user.local.user_role !== "super_admin") {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorised, resource can only accessed by Super Admin",
+      error: {
+        statusCode: 401,
+        message: "Unauthorised, resource can only accessed by Super Admin",
+      },
+    });
+  }
+
+  try {
+    let fuser = await User.findOne({ identifier: storeAdminPhoneNumber });
+    if (!fuser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          statusCode: 404,
+          message: "User not found",
+        },
+      });
+    }
+    fuser.local.is_active = false;
+    await fuser.save();
+    res.status(200).json({
+      success: true,
+      message: "User Deactivated",
+      fuser,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
+};
+
+exports.activateUser = async (req, res) => {
+  const id = req.user.phone_number;
+  const storeAdminPhoneNumber = req.params.phone_number;
+
+  const user = await User.findOne({ identifier: id });
+
+  //   check if user exists
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+      error: {
+        statusCode: 404,
+        message: "User not found",
+      },
+    });
+  }
+
+  //   check if user is a super admin
+  if (user.local.user_role !== "super_admin") {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorised, resource can only accessed by Super Admin",
+      error: {
+        statusCode: 401,
+        message: "Unauthorised, resource can only accessed by Super Admin",
+      },
+    });
+  }
+
+  try {
+    let fuser = await User.findOne({ identifier: storeAdminPhoneNumber });
+    if (!fuser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          statusCode: 404,
+          message: "User not found",
+        },
+      });
+    }
+    fuser.local.is_active = true;
+    await fuser.save();
+    res.status(200).json({
+      success: true,
+      message: "User Activated",
+      fuser,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
+};

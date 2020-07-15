@@ -1,6 +1,6 @@
 const bCrypt = require("bcryptjs");
 
-StoreAssistantModel = require('../models/storeAssistant');
+const StoreAssistantModel = require('../models/storeAssistant');
 const UserModel = require("../models/store_admin");
 
 

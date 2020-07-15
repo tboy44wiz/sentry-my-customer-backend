@@ -104,7 +104,6 @@ exports.getById = (req, res) => {
   UserModel.findOne({ identifier })
     .then((user) => {
       let store = user.stores.id(req.params.storeId);
-      const storeName = store.store_name;
       customers = store.customers;
 
       const customer = customers.id(req.params.customerId);
@@ -114,7 +113,7 @@ exports.getById = (req, res) => {
           status: false,
           message: "Customer not found",
           error: {
-            code: 404,
+            statusCode: 404,
             message: "customer not found",
           },
         });
@@ -124,8 +123,10 @@ exports.getById = (req, res) => {
         success: true,
         message: "successful",
         data: {
+          statusCode: 200,
           customer,
-          storeName
+          storeName: store.store_name, 
+          storeId: store._id
         },
       });
     }).catch((error) => {
@@ -133,7 +134,7 @@ exports.getById = (req, res) => {
         status: false,
         message: error.message,
         error: {
-          code: 404,
+          statusCode: 404,
           message: error,
         },
       });
@@ -142,53 +143,62 @@ exports.getById = (req, res) => {
 
 exports.updateById = (req, res) => {
   const identifier = req.user.phone_number;
-  const customerID = req.params.customerId;
-  const reqBody = req.body;
+  const customerId = req.params.customerId;
+  const { name, phone_number, email, store_id } = req.body;
   
   UserModel.findOne({identifier})
   .then((user) => {
     const stores = user.stores;
-    stores.forEach((eachStore) => {
-      const customers= eachStore.customers;
-      customers.forEach((eachCustomer) => {
-        if(eachCustomer._id == req.params.customerId) {
-          eachCustomer.phone_number = reqBody.phone_number;
-          eachCustomer.email = reqBody.email;
-          eachCustomer.name = reqBody.name;
-          return customers;
-        }
-        return false;
-      });
 
-      user.save()
-      .then((result) => {
-        res.status(200).json({
+    const store = stores.id(store_id);
+
+    const customers = store.customers;
+
+    const customer = customers.id(customerId);
+
+    if (!customer) {
+      return res.status(400).json({
+        status: false,
+        message: "Cannot find customer",
+        error: {
+          statusCode: 400,
+          message: error
+        }
+      });
+    }
+
+    customer.name = name ? name : customer.name;
+    customer.phone_number = phone_number ? phone_number : customer.phone_number;
+    customer.email = email ? email : customer.email;
+
+    user.save()
+      .then(() => {
+        return res.status(200).json({
           success: true,
           message: "Customer updated successfully.",
           data: {
-            code: 200,
-            message: "Customer updated successfully."
+            statusCode: 200,
+            customer: user.stores.id(store_id).customers.id(customerId)
           },
-        });
+        });    
       })
       .catch((error) => {
-        return res.status(400).json({
+        res.status(500).json({
           status: false,
-          message: "Can't save updated customer",
+          message: "Error updating customer",
           error: {
-            code: 400,
-            message: error
+            statusCode: 500,
+            message: error.message
           }
         });
-      })
-    })
+      });
   })
   .catch((error) => {
     res.status(500).json({
       status: false,
       message: error.message,
       error: {
-        code: 500,
+        statusCode: 500,
         message: error
       }
     });
@@ -238,7 +248,7 @@ exports.deleteById = (req, res) => {
         status: false,
         message: "Customer not found",
         error: {
-          code: 404,
+          statusCode: 404,
           message: "customer not found",
         },
       });
@@ -263,7 +273,10 @@ exports.getAll = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Operation successful",
-        data: customer,
+        data: {
+          statusCode: 200,
+          customer
+        }
       });
     })
     .catch((err) => {
