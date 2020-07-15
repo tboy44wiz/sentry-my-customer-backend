@@ -227,11 +227,13 @@ exports.findAllStore = async (req, res) => {
     }
 
     let transactions;
-    store.customers.forEach((customer) => {
-      if (transactions) {
-        transactions = customer.transactions.concat(transactions);
-      } else {
-        transactions = customer.transactions;
+    store.customers.forEach(customer => {
+      if(customer.transactions.length  > 0) {
+        if(transactions) {
+          transactions = customer.transactions.concat(transactions)
+        } else {
+          transactions = customer.transactions
+        }
       }
     });
 
