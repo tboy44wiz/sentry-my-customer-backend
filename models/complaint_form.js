@@ -11,13 +11,18 @@ const ComplaintSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: true,
+    // required: true,
     // Name of Complainer
   },
   email: {
     type: String,
-    required: true,
+    // required: true,
     // Email of complainer
+  },
+  subject: {
+    type: String,
+    required: true,
+    // Subject of Complaint
   },
   message: {
     type: String,

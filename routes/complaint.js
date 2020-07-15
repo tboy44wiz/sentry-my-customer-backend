@@ -29,8 +29,9 @@ router.post(
     [
         auth,
         [
-            check('name', 'Please add a name').not().isEmpty(),
-            check('email', 'Please add a valid email').isEmail(),
+            // check('name', 'Please add a name').not().isEmpty(),
+            // check('email', 'Please add a valid email').isEmail(),
+            check('subject', 'Please put in a subject').not().isEmpty(),
             check('message', 'Please add a message of more that 10 characters').isLength({ min: 10 })
         ]
     ],
