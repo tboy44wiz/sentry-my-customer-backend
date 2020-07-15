@@ -61,7 +61,17 @@ app.set("view engine", "ejs");
 app.get("/", (req, res) => {
   res.redirect("/docs");
 });
-
+//middleware to enable us to send otp and a success message at the same time without errors
+app.use(function (req, res, next) {
+  let _send = res.send;
+  let sent = false;
+  res.send = function (data) {
+    if (sent) return;
+    _send.bind(res)(data);
+    sent = true;
+  };
+  next();
+});
 app.use(documentation);
 app.use(customer);
 //app.use(userDebt);
