@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 const storeAssistantSchema = new mongoose.Schema({
 	name: { type: String, required: true},
 	phone_number: { type: String, required: true },
-	email: { type: String,},
+	email: { type: String, default: "not set"},
 	password: { type: String, default: "password" },
 	admin_identity: { type: String, required: true },
 	store_id: {type: String, required: true},
