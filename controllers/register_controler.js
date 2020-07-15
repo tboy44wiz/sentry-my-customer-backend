@@ -7,12 +7,13 @@ const CustomerModel = require("../models/customer");
 
 exports.validate = (method) => {
   switch (method) {
-    case "body": {
-      return [
-        body("phone_number").isInt(),
-        body("password").isLength({ min: 6 }),
-      ];
-    }
+      case 'body': {
+          return [
+            body('phone_number').isInt(),
+            body('phone_number').isMobilePhone(),
+            body('password').isLength({min: 6}),
+          ]
+      }
   }
 };
 
