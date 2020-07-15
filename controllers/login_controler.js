@@ -54,7 +54,8 @@ module.exports.loginUser = async (req, res, next) => {
                   user: userExist,
                 },
               });
-            } else {
+            }
+            else {
               res.status(401).json({
                 success: false,
                 message: "Invalid Password.",
@@ -82,6 +83,26 @@ module.exports.loginUser = async (req, res, next) => {
           error: {
             code: 404,
             description: "User does not exist",
+          },
+        });
+      }
+      /*else if (userExist.local.phone_number == phone_number) {
+        res.status(200).json({
+          success: true,
+          message: "Phone number didn't match.",
+          data: {
+            code: 200,
+            description: "Phone number didn't match.",
+          },
+        });
+      }*/
+      else {
+        res.status(401).json({
+          success: false,
+          message: "Invalid phone number.",
+          error: {
+            code: 401,
+            description: "Invalid phone number.",
           },
         });
       }

@@ -132,12 +132,12 @@ exports.newStoreAssistant = (req, res) => {
   const { name, email, password, phone_number, store_id } = req.body;
   const id = req.user.phone_number;
 
-  const newStoreAssistantData = new StoreAssistant({
+  const newStoreAssistantData = {
     name: name,
     phone_number: phone_number,
     email: email,
     password: password,
-  });
+  };
 
   User.findOne({ identifier: id })
       .then((user) => {
@@ -188,14 +188,13 @@ exports.newStoreAssistant = (req, res) => {
             .catch((error) => {
               return res.status(500).json({
                 success: "false",
-                message: "Internal Server Error.",
+                message: "Internal Server Error11.",
                 error: {
                   statusCode: 500,
                   message: "Internal Server Error.",
                 },
               });
             });
-
       })
       .catch((error) => {
         return res.status(500).json({
@@ -307,15 +306,6 @@ exports.updateSingleStoreAssistant = async (req, res) => {
                       },
                     });
                   });
-              /*return res.status(201).json({
-                success: true,
-                message: "Store Assistant updated successful.",
-                data: {
-                  status: 201,
-                  message: "Store Assistant updated successful.",
-                  user: user,
-                },
-              });*/
             })
             .catch((error) => {
               return res.status(500).json({
@@ -338,197 +328,57 @@ exports.updateSingleStoreAssistant = async (req, res) => {
           },
         });
       });
-
-  /*try {
-    let user = await User.findOne({
-      identifier: "0" + req.user.phone_number.toString(),
-    });
-    if (user == null) {
-      let user = await User.findOne({
-        identifier: req.user.phone_number.toString(),
-      });
-      if (!user)
-        return res.status(404).json({
-          success: "false",
-          message: "User not found",
-          error: {
-            statusCode: 404,
-            message: "User with the provided details does not exist",
-          },
-        });
-
-      // Update Assistant
-      //user = await User.findById(req.params.assistant_id);
-      // ,
-      //     { $set: {assistants: userFields} },
-      //     { new: true }
-      // Send updated user details
-      if (user.assistants.length !== 0) {
-        user.assistants.map((assist) => {
-          if (assist._id.equals(req.params.assistant_id)) {
-            (assist.name = req.body.name),
-              (assist.email = req.body.email),
-              (assist.phone_number = req.body.phone_number);
-          }
-        });
-        user
-          .save()
-          .then((userSaved) => {
-            res.status(201).json({
-              success: "true",
-              message: "Assistants details updated successfully",
-              data: {
-                statusCode: 201,
-                data: userSaved.assistants,
-              },
-            });
-          })
-          .catch((err) => {
-            res.status(500).json({
-              success: "false",
-              message: "Internal server error",
-              error: {
-                statusCode: 500,
-                message: "Assistant details could not be updated",
-              },
-            });
-          });
-      } else {
-        res.status(500).json({
-          success: "false",
-          message: "You have no assistants yet",
-          error: {
-            statusCode: 500,
-            message: "You have no assistants yet",
-          },
-        });
-      }
-    } else {
-      if (!user)
-        return res.status(404).json({
-          success: "false",
-          message: "User not found",
-          error: {
-            statusCode: 404,
-            message: "User with the provided details does not exist",
-          },
-        });
-
-      // Update Assistant
-      //user = await User.findById(req.params.assistant_id);
-      // ,
-      //     { $set: {assistants: userFields} },
-      //     { new: true }
-      // Send updated user details
-      if (user.assistants.length !== 0) {
-        user.assistants.map((assist) => {
-          if (assist._id.equals(req.params.assistant_id)) {
-            (assist.name = req.body.name),
-              (assist.email = req.body.email),
-              (assist.phone_number = req.body.phone_number);
-          }
-        });
-        user
-          .save()
-          .then((userSaved) => {
-            res.status(201).json({
-              success: "true",
-              message: "Assistants details updated successfully",
-              data: {
-                statusCode: 201,
-                data: userSaved,
-              },
-            });
-          })
-          .catch((err) => {
-            res.status(500).json({
-              success: "false",
-              message: "Internal server error",
-              error: {
-                statusCode: 500,
-                message: "Assistant details could not be updated",
-              },
-            });
-          });
-      } else {
-        res.status(500).json({
-          success: "false",
-          message:
-            "You can't update assistants yet because you have no one presently",
-          error: {
-            statusCode: 500,
-            message: "You have no assistants yet",
-          },
-        });
-      }
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: "false",
-      message: "Internal server error",
-      error: {
-        statusCode: 500,
-        message: "Assistant details could not be updated",
-      },
-    });
-  }*/
 };
 
 
 //  Delete Single Store Assistant with assistant_id.
-exports.deleteSingleStoreAssistant = async (req, res) => {
+exports.deleteSingleStoreAssistant = (req, res) => {
   const id = req.user.phone_number;
   const storeAssistantId = req.params.assistant_id;
-  await User.findOne({ identifier: id }, async (error, store_admin)=>{
-    if(error){
-      return res.status(200).json({
-        success: false,
-        message: "User not found",
-        error: {
-          statusCode: 404,
-          message: "User with identifier " + req.user.phone_number + " not found",
-        },
-      });
-    }else{
-       const assistants = store_admin.assistants;
-      if(assistants.length > 0){
-            assistants.forEach(async (assistant) => {
-              if (assistant._id.equals(storeAssistantId)) {
-                assistant.remove()
-                await store_admin.save();
-                return res.status(200).json({
-                  success: "true",
-                  message: "User deleted successfully",
-                  error: {
-                    statusCode: 200,
-                    message: "Assistant with id " + req.params.assistant_id + " has been deleted ",
-                    data: assistant,
-                  }
-                });
-              } else {
-                return res.status(404).send({
-                  success: "false",
-                  message: "Assistant not found",
-                  error: {
-                    statusCode: 404,
-                    message: "Assistant not found with id " + req.params.user_id,
-                  }
-                });
-              }
-            })
-      }else{
-        return res.status(400).json({
+  User.findOne({ identifier: id })
+      .then((user) => {
+        const storeAssistants = user.assistants;
+        if(storeAssistants.length > 0) {
+          storeAssistants.forEach((assistant, index) => {
+            if (assistant._id == storeAssistantId) {
+              assistant.remove();
+              user.save()
+                  .then((result) => {
+                    return res.status(200).json({
+                      success: "true",
+                      message: "Assistant deleted successfully.",
+                      error: {
+                        statusCode: 200,
+                        message: "Assistant deleted successfully.",
+                        data: assistant,
+                      }
+                    });
+                  })
+                  .catch((err) => {
+                    return res.status(500).json({
+                      success: false,
+                      message: "Error deleting Assistant",
+                      data: {
+                        statusCode: 500,
+                        err,
+                      },
+                    });
+                  });
+            }
+          });
+        }
+
+      })
+      .catch((err) => {
+        return res.status(500).json({
           success: false,
-          message: "You have no assistants yet",
-          error: {
-            statusCode: 400,
-            message: "You have not added any assistants yet"
-          }
-        })
-      }
-    }
-  })
+          message: "Error deleting customer",
+          data: {
+            statusCode: 500,
+            err,
+          },
+        });
+      });
 };
 //#endregion
 
