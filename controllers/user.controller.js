@@ -971,7 +971,9 @@ exports.getAllStoreAdmin = async (req, res, next) => {
 
   try {
     let storeAdmins = await User.find({});
-    res.status(200).json({ data: storeAdmins });
+    res
+      .status(200)
+      .json({ success: true, message: "All Store Admins", data: storeAdmins });
   } catch (error) {
     return res.status(500).json({
       success: false,
