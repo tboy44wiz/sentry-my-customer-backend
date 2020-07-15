@@ -970,8 +970,16 @@ exports.getAllStoreAdmin = async (req, res, next) => {
   }
 
   try {
-    let data = {};
     let storeAdmins = await User.find({});
     res.status(200).json({ data: storeAdmins });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: {
+        statusCode: 500,
+        message: error
+      }
+    });
+  }
 };
