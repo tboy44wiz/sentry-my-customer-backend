@@ -1,53 +1,56 @@
 const Transaction = require("../models/transaction");
 const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
-const { body } = require('express-validator/check');
+const { body } = require("express-validator/check");
 
 exports.validate = (method) => {
   switch (method) {
-    case 'create': {
+    case "create": {
       return [
-        body('store_id').isString(),
-        body('customer_id').isString(),
-        body('amount').isNumeric(),
-        body('interest').isNumeric(),
-        body('total_amount').isNumeric(),
-        body('description').optional().isString(),
-        body('type').isString(),
-        body('status').optional().isString().isIn(["paid", "unpaid", "pending"]),
-        body('transaction_name').optional().isString(),
-        body('transaction_role').optional().isString()
-      ]
+        body("store_id").isString(),
+        body("customer_id").isString(),
+        body("amount").isNumeric(),
+        body("interest").isNumeric(),
+        body("total_amount").isNumeric(),
+        body("description").optional().isString(),
+        body("type").isString(),
+        body("status")
+          .optional()
+          .isString()
+          .isIn(["paid", "unpaid", "pending"]),
+        body("transaction_name").optional().isString(),
+        body("transaction_role").optional().isString(),
+      ];
     }
-    case 'find': {
-      return [
-        body('store_id').isString(),
-        body('customer_id').isString()
-      ]
+    case "find": {
+      return [body("store_id").isString(), body("customer_id").isString()];
     }
-    case 'update': {
+    case "update": {
       return [
-        body('store_id').isString(),
-        body('customer_id').isString(),
-        body('amount').optional().isNumeric(),
-        body('interest').optional().isNumeric(),
-        body('total_amount').optional().isNumeric(),
-        body('description').optional().isString(),
-        body('type').optional().isString(),
-        body('status').optional().isString().isIn(["paid", "unpaid", "pending"]),
-        body('transaction_name').optional().isString(),
-        body('transaction_role').optional().isString()
-      ]
+        body("store_id").isString(),
+        body("customer_id").isString(),
+        body("amount").optional().isNumeric(),
+        body("interest").optional().isNumeric(),
+        body("total_amount").optional().isNumeric(),
+        body("description").optional().isString(),
+        body("type").optional().isString(),
+        body("status")
+          .optional()
+          .isString()
+          .isIn(["paid", "unpaid", "pending"]),
+        body("transaction_name").optional().isString(),
+        body("transaction_role").optional().isString(),
+      ];
     }
   }
-}
+};
 
 // Create and Save a new Transaction
 exports.create = async (req, res, next) => {
-  try{
+  try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -58,8 +61,8 @@ exports.create = async (req, res, next) => {
       });
     }
 
-    const store = user.stores.find(store => store._id == req.body.store_id)
-    if(!store) {
+    const store = user.stores.find((store) => store._id == req.body.store_id);
+    if (!store) {
       return res.status(404).json({
         success: false,
         message: "Store not found",
@@ -70,8 +73,26 @@ exports.create = async (req, res, next) => {
       });
     }
 
-    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
-    if(!customer) {
+    if (req.body.assistant_inCharge) {
+      const assistant = user.assistants.find(
+        (assistant) => assistant._id == req.body.assistant_inCharge
+      );
+      if (!assistant) {
+        return res.status(404).json({
+          success: false,
+          message: "assistant not found",
+          data: {
+            statusCode: 404,
+            message: "assistant not found",
+          },
+        });
+      }
+    }
+
+    const customer = store.customers.find(
+      (customer) => customer._id == req.body.customer_id
+    );
+    if (!customer) {
       return res.status(404).json({
         success: false,
         message: "Customer not found",
@@ -84,27 +105,28 @@ exports.create = async (req, res, next) => {
 
     customer.transactions.push({
       store_ref_id: req.body.store_id,
-      customer_ref_id:req.body.customer_id,
+      customer_ref_id: req.body.customer_id,
       amount: req.body.amount,
       interest: req.body.interest,
+      assistant_inCharge: req.body.assistant_inCharge || null,
       total_amount: req.body.total_amount,
       description: req.body.description || "Not set",
       type: req.body.type,
       status: req.body.status || "unpaid",
       transaction_name: req.body.transaction_name || null,
-      transaction_role: req.body.transaction_role || null
-    })
+      transaction_role: req.body.transaction_role || null,
+    });
 
-    await user.save()
+    await user.save();
 
     res.status(201).json({
       success: true,
       message: "Transaction saved",
       data: {
-        user
+        user,
       },
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -121,7 +143,7 @@ exports.findAll = async (req, res) => {
   try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -132,8 +154,8 @@ exports.findAll = async (req, res) => {
       });
     }
 
-    const store = user.stores.find(store => store._id == req.body.store_id)
-    if(!store) {
+    const store = user.stores.find((store) => store._id == req.body.store_id);
+    if (!store) {
       return res.status(404).json({
         success: false,
         message: "Store not found",
@@ -144,8 +166,10 @@ exports.findAll = async (req, res) => {
       });
     }
 
-    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
-    if(!customer) {
+    const customer = store.customers.find(
+      (customer) => customer._id == req.body.customer_id
+    );
+    if (!customer) {
       return res.status(404).json({
         success: false,
         message: "Customer not found",
@@ -163,7 +187,7 @@ exports.findAll = async (req, res) => {
         transactions: customer.transactions,
       },
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -179,7 +203,7 @@ exports.findAllStore = async (req, res) => {
   try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -190,8 +214,8 @@ exports.findAllStore = async (req, res) => {
       });
     }
 
-    const store = user.stores.find(store => store._id == req.params.store_id)
-    if(!store) {
+    const store = user.stores.find((store) => store._id == req.params.store_id);
+    if (!store) {
       return res.status(404).json({
         success: false,
         message: "Store not found",
@@ -203,6 +227,7 @@ exports.findAllStore = async (req, res) => {
     }
 
     let transactions;
+<<<<<<< HEAD
     store.customers.forEach(customer => {
       if(customer.transactions.length  > 0) {
         if(transactions) {
@@ -210,8 +235,15 @@ exports.findAllStore = async (req, res) => {
         } else {
           transactions = customer.transactions
         }
+=======
+    store.customers.forEach((customer) => {
+      if (transactions) {
+        transactions = customer.transactions.concat(transactions);
+      } else {
+        transactions = customer.transactions;
+>>>>>>> 2aeb6c50dba6ae9cbcc4682e95d0f1139aa99dd7
       }
-    })
+    });
 
     res.status(200).json({
       success: true,
@@ -220,7 +252,7 @@ exports.findAllStore = async (req, res) => {
         transactions: transactions,
       },
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -236,7 +268,7 @@ exports.findAllUser = async (req, res) => {
   try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -248,15 +280,15 @@ exports.findAllUser = async (req, res) => {
     }
 
     let transactions;
-    user.stores.forEach(store => {
-      store.customers.forEach(customer => {
-        if(transactions) {
-          transactions = customer.transactions.concat(transactions)
+    user.stores.forEach((store) => {
+      store.customers.forEach((customer) => {
+        if (transactions) {
+          transactions = customer.transactions.concat(transactions);
         } else {
-          transactions = customer.transactions
+          transactions = customer.transactions;
         }
-      })
-    })
+      });
+    });
 
     res.status(200).json({
       success: true,
@@ -265,7 +297,7 @@ exports.findAllUser = async (req, res) => {
         transactions: transactions,
       },
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -341,7 +373,7 @@ exports.findOne = async (req, res) => {
   try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -352,8 +384,8 @@ exports.findOne = async (req, res) => {
       });
     }
 
-    const store = user.stores.find(store => store._id == req.body.store_id)
-    if(!store) {
+    const store = user.stores.find((store) => store._id == req.body.store_id);
+    if (!store) {
       return res.status(404).json({
         success: false,
         message: "Store not found",
@@ -364,8 +396,10 @@ exports.findOne = async (req, res) => {
       });
     }
 
-    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
-    if(!customer) {
+    const customer = store.customers.find(
+      (customer) => customer._id == req.body.customer_id
+    );
+    if (!customer) {
       return res.status(404).json({
         success: false,
         message: "Customer not found",
@@ -376,8 +410,10 @@ exports.findOne = async (req, res) => {
       });
     }
 
-    const transaction = customer.transactions.find(transactions => transactions._id == req.params.transaction_id)
-    if(!transaction) {
+    const transaction = customer.transactions.find(
+      (transactions) => transactions._id == req.params.transaction_id
+    );
+    if (!transaction) {
       return res.status(404).json({
         success: false,
         message: "Transaction not found",
@@ -395,7 +431,7 @@ exports.findOne = async (req, res) => {
         transaction: transaction,
       },
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrongr",
@@ -412,7 +448,7 @@ exports.update = async (req, res) => {
   try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -423,8 +459,8 @@ exports.update = async (req, res) => {
       });
     }
 
-    const store = user.stores.find(store => store._id == req.body.store_id)
-    if(!store) {
+    const store = user.stores.find((store) => store._id == req.body.store_id);
+    if (!store) {
       return res.status(404).json({
         success: false,
         message: "Store not found",
@@ -435,8 +471,10 @@ exports.update = async (req, res) => {
       });
     }
 
-    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
-    if(!customer) {
+    const customer = store.customers.find(
+      (customer) => customer._id == req.body.customer_id
+    );
+    if (!customer) {
       return res.status(404).json({
         success: false,
         message: "Customer not found",
@@ -447,8 +485,10 @@ exports.update = async (req, res) => {
       });
     }
 
-    const transaction = customer.transactions.find(transactions => transactions._id == req.params.transaction_id)
-    if(!transaction) {
+    const transaction = customer.transactions.find(
+      (transactions) => transactions._id == req.params.transaction_id
+    );
+    if (!transaction) {
       return res.status(404).json({
         success: false,
         message: "Transaction not found",
@@ -459,16 +499,19 @@ exports.update = async (req, res) => {
       });
     }
 
-    transaction.amount = req.body.amount || transaction.amount
-    transaction.interest = req.body.interest || transaction.interest
-    transaction.total_amount = req.body.total_amount || transaction.total_amount
-    transaction.description = req.body.description || transaction.description
-    transaction.type = req.body.type  || transaction.type 
-    transaction.status = req.body.status || transaction.status
-    transaction.transaction_name = req.body.transaction_name || transaction.transaction_name
-    transaction.transaction_role = req.body.transaction_role || transaction.transaction_role
+    transaction.amount = req.body.amount || transaction.amount;
+    transaction.interest = req.body.interest || transaction.interest;
+    transaction.total_amount =
+      req.body.total_amount || transaction.total_amount;
+    transaction.description = req.body.description || transaction.description;
+    transaction.type = req.body.type || transaction.type;
+    transaction.status = req.body.status || transaction.status;
+    transaction.transaction_name =
+      req.body.transaction_name || transaction.transaction_name;
+    transaction.transaction_role =
+      req.body.transaction_role || transaction.transaction_role;
 
-    await user.save()
+    await user.save();
     res.status(200).json({
       success: true,
       message: "Transaction updated",
@@ -476,7 +519,7 @@ exports.update = async (req, res) => {
         transaction: transaction,
       },
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -493,7 +536,7 @@ exports.delete = async (req, res) => {
   try {
     const identifier = req.user.phone_number;
     const user = await UserModel.findOne({ identifier });
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -504,8 +547,8 @@ exports.delete = async (req, res) => {
       });
     }
 
-    const store = user.stores.find(store => store._id == req.body.store_id)
-    if(!store) {
+    const store = user.stores.find((store) => store._id == req.body.store_id);
+    if (!store) {
       return res.status(404).json({
         success: false,
         message: "Store not found",
@@ -516,8 +559,10 @@ exports.delete = async (req, res) => {
       });
     }
 
-    const customer = store.customers.find(customer => customer._id == req.body.customer_id)
-    if(!customer) {
+    const customer = store.customers.find(
+      (customer) => customer._id == req.body.customer_id
+    );
+    if (!customer) {
       return res.status(404).json({
         success: false,
         message: "Customer not found",
@@ -528,18 +573,20 @@ exports.delete = async (req, res) => {
       });
     }
 
-    const transactions = customer.transactions.filter(transactions => transactions._id != req.params.transaction_id)
-    customer.transactions = transactions
+    const transactions = customer.transactions.filter(
+      (transactions) => transactions._id != req.params.transaction_id
+    );
+    customer.transactions = transactions;
 
-    await user.save()
+    await user.save();
     res.status(200).json({
       success: true,
       message: "Transactions",
       data: {
-        transactions
+        transactions,
       },
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrongr",

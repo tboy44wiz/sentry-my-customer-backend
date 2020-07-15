@@ -384,7 +384,7 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create Debt<strong> - /debt/new [POST]</strong>
+                <!-- <li>Create Debt<strong> - /debt/new [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>transaction_id</li>
@@ -395,44 +395,45 @@
                         <li>message</li>
                         <li>pay_date</li>
                     </ul>
-                </li>
+                </li> -->
                 <li>Retrieve debts<strong> - /debt/:debt_id [POST]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
-                        <li>customer_id</li>
+                        <li>transaction_id</li>
                     </ul>
                 </li>
-                <li>Update debt details<strong> - /debt/update/:debt_id [PUT] </strong>
+                <li>Mark As paid<strong> - /debt/update/:debt_id [PUT] </strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
-                        <li>debt_id</li>
+                        <li>transaction_id/li>
                     </ul>
-                    <h6>Body: </h6>
+                    <!-- <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>Entries to update</li>
-                    </ul>
+                    </ul> -->
                 </li>
-                <li>Delete debt (logical delete)<strong> - /debt/delete/:debt_id [DELETE]</strong>
+                <!-- <li>Delete debt (logical delete)<strong> - /debt/delete/:debt_id [DELETE]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>debt_id</li>
                     </ul>
-                </li>
+                </li> -->
                 <li>View all debts<strong> - /debt/ [GET]</strong>
                 <li>Send Reminder (single)<strong> - /debt/send [POST]</strong>
                     <h6><strong>Note: A valid customer phone number must be used when creating a customer and should follow international standards ie(+23490XXXXXXX)</strong></h6>
-                    <h6>Params: </h6>
+                    <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>debt_id</li>
+                        <li>transaction_id</li>
                         <li>message (optional)</li>
                     </ul>
                 </li>
                 <li>Schedule Reminder (All debts)<strong> - /debt/schedule [POST]</strong>
                     <h6><strong>Note: A valid customer phone number must be used when creating a customer and should follow international standards ie(+23490XXXXXXX)</strong></h6>
-                    <h6>Params: </h6>
+                    <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>time  (Format: (mm/hh))</li>
-                        <li>scheduleDate  (Format: (dd/mm/yyy))</li>
+                        <li>transaction_id</li>
+                        <li>time  (Format: (hr/mm) 24hr format)</li>
+                        <li>scheduleDate  (Format: (dd/mm/yyyy))</li>
                     </ul>
                 </li>
                     
