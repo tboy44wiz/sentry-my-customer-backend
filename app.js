@@ -25,7 +25,7 @@ const complaintRouter = require("./routes/complaint");
 const docs = require("./routes/docs");
 const user = require("./routes/user");
 const reset = require("./routes/reset");
-const debt = require('./routes/debt_reminder');
+const debt = require("./routes/debt_reminder");
 const businessCards = require("./routes/businessCardRoute");
 const dashboard = require("./routes/dashboard");
 // const phone_call_api = require("./controllers/phone_call_api");
@@ -64,6 +64,7 @@ app.get("/", (req, res) => {
 
 app.use(documentation);
 app.use(customer);
+//app.use(userDebt);
 //app.use(phone_verification);
 app.use(otp);
 app.use(reset);
@@ -81,7 +82,7 @@ app.use(dashboard);
 app.use("/register", register);
 
 app.use("/login", login);
-app.use(debt)
+app.use(debt);
 // app.use(phone_call_api);
 
 //This should be the last route else any after it won't work

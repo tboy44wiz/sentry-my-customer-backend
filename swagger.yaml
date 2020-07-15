@@ -835,7 +835,7 @@ paths:
     delete:
       tags:
       - "Complaint"
-      summary: "User (store owner) creates complaints for super admin to view"
+      summary: "User (store owner) deletes complaints for super admin to view"
       description: ""
       operationId: "deleteComplaint"
       produces:

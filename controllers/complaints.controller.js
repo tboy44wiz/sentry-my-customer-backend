@@ -219,18 +219,22 @@ exports.newComplaint = async (req, res) => {
   }
 
   // Deconstruct req body
-  const { name, email, message } = req.body
+  const { name, email, subject, message } = req.body
 
   try {
     // Get Store Owner Id from the URL Parameter
     let storeOwner = await StoreOwner.findOne({ identifier: req.user.phone_number });
 
+    // console.log(storeOwner.local);
+
+    // return;
     // console.log(storeOwner);
 
     // If Id exists, create complaint
     let newComplaint = await Complaint({
-      name, 
-      email,
+      name: storeOwner.local.first_name.toString() + " " + storeOwner.local.last_name.toString(), 
+      email: storeOwner.local.email,
+      subject,
       message,
       storeOwner: storeOwner._id,
       storeOwnerPhone: req.user.phone_number
