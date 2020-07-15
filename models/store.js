@@ -1,5 +1,6 @@
 const mongoose = require("mongoose"),
-	  Customer = require("./customer");
+	  Customer = require("./customer"),
+	  Transaction = require("./transaction")
 
 
 const storeSchema = new mongoose.Schema({
@@ -12,6 +13,9 @@ const storeSchema = new mongoose.Schema({
 	email: { type: String, default: "Not set" },
 	customers: [
 		Customer.schema
+	],
+	transactions: [
+		Transaction.schema
 	]
 }, { timestamp: true });
 
