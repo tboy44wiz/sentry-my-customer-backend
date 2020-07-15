@@ -250,6 +250,10 @@ exports.updateSingleStoreAssistant = async (req, res) => {
   const storeAssistantId = req.params.assistant_id;
   const { name, phone_number, email, password, store_id } = req.body;
 
+  const reqBody = {
+      name, phone_number, email, password, store_id
+  }
+
   User.findOne({ identifier: id })
       .then((user) => {
         const storeAssistants = user.assistants;
@@ -266,7 +270,7 @@ exports.updateSingleStoreAssistant = async (req, res) => {
         }
 
         //  Loop through all the available storeAssistants and get the storeAssistant with the given assistant_id.
-        const updatedStoreAssistant = storeAssistants.forEach((storeAssistant) => {
+        storeAssistants.forEach((storeAssistant) => {
           if (storeAssistant._id == storeAssistantId) {
             storeAssistant.name = name;
             storeAssistant.phone_number = phone_number;

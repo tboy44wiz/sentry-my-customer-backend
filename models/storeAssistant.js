@@ -6,9 +6,11 @@ const storeAssistantSchema = new mongoose.Schema({
 	phone_number: { type: String, required: true },
 	email: { type: String,},
 	password: { type: String, default: "password" },
-	store_id: {type: String},
+	admin_identity: { type: String, required: true },
+	store_id: {type: String, required: true},
 	is_active: { type: Boolean, default: 1 },
-	user_role: { type: String, default: "store_assistant" }
+	user_role: { type: String, default: "store_assistant" },
+	api_token: { type: String },
 }, { timestamp: true });
 
 module.exports = mongoose.model("storeAssistant", storeAssistantSchema);

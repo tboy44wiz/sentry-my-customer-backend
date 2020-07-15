@@ -4,6 +4,7 @@ const { body } = require('express-validator/check');
 
 const UserModel = require("../models/store_admin");
 const CustomerModel = require("../models/customer");
+const StoreAssistantModel = require('../models/storeAssistant');
 
 exports.validate = (method) => {
   switch (method) {
@@ -22,6 +23,12 @@ module.exports.loginUser = async (req, res, next) => {
   user.local.phone_number = phone_number;
   user.local.password = password;
   user.identifier = phone_number;
+
+  //  Get instance of the StoreAssistantModel
+  const newStoreAssistantData = new StoreAssistantModel({
+    phone_number: phone_number,
+    password: password,
+  })
 
   //  Check if the users phone persists in the DB
   await UserModel.findOne({ identifier: user.identifier })
@@ -77,26 +84,78 @@ module.exports.loginUser = async (req, res, next) => {
             });
           });
       }
-      /*else if (userExist.local.phone_number == phone_number) {
-        res.status(200).json({
-          success: true,
-          message: "Phone number didn't match.",
-          data: {
-            code: 200,
-            description: "Phone number didn't match.",
-          },
-        });
-      }*/
       else {
-        res.status(401).json({
-          success: false,
-          message: "Invalid phone number.",
-          error: {
-            code: 401,
-            description: "Invalid phone number.",
-          },
-        });
-      }
+
+        StoreAssistantModel.findOne({phone_number})
+          .then((storeAssistant) => {
+            if (storeAssistant) {
+
+              //  Go ahead to compare the password match.
+              bCrypt.compare(newStoreAssistantData.password, storeAssistant.password)
+                .then((doPasswordMatch) => {
+                  if (doPasswordMatch) {
+                    //  Generate a login api_token for subsequent authentication.
+                    const apiToken = jwt.sign({
+                        phone_number: storeAssistant.phone_number,
+                        password: storeAssistant.password,
+                        adminIdentity: storeAssistant.admin_identity,
+                        storeID: storeAssistant.store_id,
+                        user_role: storeAssistant.user_role,
+                      },
+                      process.env.JWT_KEY,
+                      {
+                        expiresIn: "1h",
+                      }
+                    );
+                    storeAssistant.api_token = apiToken;
+                    storeAssistant.save();
+                    res.status(200).json({
+                      success: true,
+                      message: "Logged in successfully.",
+                      data: {
+                        statusCode: 200,
+                        user: storeAssistant,
+                      },
+                    });
+                  }
+                  else {
+                    res.status(401).json({
+                      success: false,
+                      message: "Invalid Password.",
+                      error: {
+                        code: 401,
+                        description: "Invalid Password",
+                      },
+                    });
+                  }
+                })
+                .catch((error) => {
+                  res.status(500).json({
+                    success: false,
+                    message: error,
+                    error: {
+                      code: 500,
+                      description: error,
+                    },
+                  });
+                });
+            }
+          })
+          .catch((error) => {
+            res.status(500).json({
+                Error: error,
+            });
+          });
+
+          // res.status(401).json({
+          //   success: false,
+          //   message: "Invalid phone number.",
+          //   error: {
+          //     code: 401,
+          //     description: "Invalid phone number.",
+          //   },
+          // });
+      }  
     })
     .catch((error) => {
       res.status(500).json({
