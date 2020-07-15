@@ -924,3 +924,126 @@ exports.updatePicture = (req,res) => {
     return responseManager.failure(res,{message: "Picture not set. Unexpected error occured"});
   })
 }
+
+
+exports.deactivateUser = async (req, res) => {
+  const id = req.user.phone_number;
+  const storeAdminPhoneNumber = req.params.phone_number;
+
+  const user = await User.findOne({ identifier: id });
+
+  //   check if user exists
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+      error: {
+        statusCode: 404,
+        message: "User not found",
+      },
+    });
+  }
+
+  //   check if user is a super admin
+  if (user.local.user_role !== "super_admin") {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorised, resource can only accessed by Super Admin",
+      error: {
+        statusCode: 401,
+        message: "Unauthorised, resource can only accessed by Super Admin",
+      },
+    });
+  }
+
+  try {
+    let fuser = await User.findOne({ identifier: storeAdminPhoneNumber });
+    if (!fuser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          statusCode: 404,
+          message: "User not found",
+        },
+      });
+    }
+    fuser.local.is_active = false;
+    await fuser.save();
+    res.status(200).json({
+      success: true,
+      message: "User Deactivated",
+      fuser,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
+};
+
+exports.activateUser = async (req, res) => {
+  const id = req.user.phone_number;
+  const storeAdminPhoneNumber = req.params.phone_number;
+
+  const user = await User.findOne({ identifier: id });
+
+  //   check if user exists
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+      error: {
+        statusCode: 404,
+        message: "User not found",
+      },
+    });
+  }
+
+  //   check if user is a super admin
+  if (user.local.user_role !== "super_admin") {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorised, resource can only accessed by Super Admin",
+      error: {
+        statusCode: 401,
+        message: "Unauthorised, resource can only accessed by Super Admin",
+      },
+    });
+  }
+
+  try {
+    let fuser = await User.findOne({ identifier: storeAdminPhoneNumber });
+    if (!fuser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          statusCode: 404,
+          message: "User not found",
+        },
+      });
+    }
+    fuser.local.is_active = true;
+    await fuser.save();
+    res.status(200).json({
+      success: true,
+      message: "User Activated",
+      fuser,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: {
+        statusCode: 500,
+        message: error,
+      },
+    });
+  }
+};

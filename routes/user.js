@@ -39,4 +39,8 @@
     router.post('/store_admin/forgot-password/:token', users.tokenreset)
     router.patch('/store-admin/picture/update', uploads, auth, cloudConfig, users.updatePicture);
 
+    router.patch("/store-admin/deactivate/:phone_number", auth, users.deactivateUser);
+    router.patch("/store-admin/activate/:phone_number", auth, users.activateUser);
+
+
     module.exports = router;
