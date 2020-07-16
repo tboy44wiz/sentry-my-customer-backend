@@ -18,6 +18,8 @@ router.get("/debt", auth, debt.getAll);
 
 router.put("/debt/update/:transactionId", auth, debt.markAsPaid);
 
+router.get("/debt/assistant", auth, debt.assistantView);
+
 //single debt
 router.get("/debt/:transactionId", auth, debt.getById);
 
@@ -26,7 +28,5 @@ router.post("/debt/send", auth, debt.send);
 
 //schedule reminder body:{ transaction_id, message(optional), scheduleDate, time }
 router.post("/debt/schedule", auth, debt.schedule);
-
-router.post("/debt/assistant", auth, debt.assistantView);
 
 module.exports = router;
