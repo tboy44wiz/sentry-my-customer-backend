@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const Transaction = require("../models/transaction");
 const { all } = require("../routes/customer");
 const cron = require("node-cron");
+const transaction = require("../models/transaction");
 const africastalking = require("africastalking")({
   apiKey: process.env.AFRICASTALKING_API_KEY,
   username: process.env.AFRICASTALKING_USERNAME,
@@ -473,5 +474,40 @@ exports.schedule = (req, res) => {
           message: err.message,
         },
       });
+    });
+};
+
+exports.assistantView = (req, res) => {
+  const identifier = req.user.phone_number;
+  let data = {};
+
+  UserModel.findOne({ identifier })
+    .then((user) => {
+      let assistants = user.assistants;
+      assistants.forEach((assistant) => {
+        let assistantDebt = [];
+        let stores = user.stores;
+        stores.forEach((store) => {
+          if (assistant.store_id == store._id) {
+            let customers = store.customers;
+            customers.forEach((customer) => {
+              let transactions = customer.transactions;
+              transactions.forEach((transaction) => {
+                if (transaction.assistant_inCharge == assistant._id) {
+                  assistantDebt.push(transaction);
+                }
+              });
+            });
+          }
+        });
+
+        data[assistant._id] = assistantDebt;
+      });
+      res.status(200).json({
+        result: data,
+      });
+    })
+    .catch((err) => {
+      res.send(err);
     });
 };
