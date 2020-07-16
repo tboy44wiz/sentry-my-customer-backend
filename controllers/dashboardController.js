@@ -31,6 +31,8 @@ exports.storeAdminDashboard = async (req, res) => {
     data.customerCount = 0;
     data.newCustomers = [];
     data.transactions = [];
+    data.recentTransactions = [];
+    data.recentDebts = []
 
     stores.forEach(store => {
       //increment customer count by number of customers in each store
@@ -43,7 +45,7 @@ exports.storeAdminDashboard = async (req, res) => {
         return element.createdAt.toDateString() == date.toDateString();
       });
       if (newCustomers.length > 0) {
-        //push in customer details into new customers array
+        //push in new customer details into new customers array
         newCustomers.forEach(element =>
           data.newCustomers.push({
             name: element.name,
@@ -53,33 +55,47 @@ exports.storeAdminDashboard = async (req, res) => {
         );
       }
 
+
       customers.forEach(customer => {
         //push in transaction details for each customer
         if (customer.transactions.length != 0) {
           let obj = {};
           obj.storeName = store.store_name;
           obj.customerName = customer.name;
-          obj.transactions = customer.transactions;
-
+          //sort transactions by date
+          obj.transactions = customer.transactions.sort(compareTransactions);
           data.transactions.push(obj);
+
+          const transactions = customer.transactions
+          transactions.forEach(transaction => {
+            let obj ={};
+            obj.storeName = store.store_name;
+            obj.customerName = customer.name;
+            obj.transaction = transaction;
+            data.recentTransactions.push(obj);
+
+            if (transaction.debts.length != 0) {
+              const debts = transaction.debts;
+              debts.forEach(debt => {
+                let obj = {}
+                obj.storeName = store.store_name;
+                obj.customerName = customer.name;
+                obj.debt = debt;
+                data.recentDebts.push(obj);
+              })
+              
+            }
+
+          })
+
         }
       });
     });
 
-    function compare(a, b) {
-      if (
-        a.transactions.createdAt.getTime() > b.transactions.createdAt.getTime()
-      )
-        return -1;
-      if (
-        b.transactions.createdAt.getTime() < a.transactions.createdAt.getTime()
-      )
-        return 1;
-
-      return 0;
-    }
-    // sort transactions by date in descending order
-    data.transactions.sort(compare);
+    // sort transactions and debts by date in descending order
+    data.transactions.sort(compareCustomers);
+    data.recentTransactions.sort(compareRecentTransactions);
+    data.recentDebts.sort(compareRecentDebts);
 
     return res.status(200).json({
       success: true,
@@ -87,6 +103,7 @@ exports.storeAdminDashboard = async (req, res) => {
       data: data
     });
   } catch (error) {
+  
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -166,4 +183,60 @@ exports.superAdminDashboard = async (req, res) => {
     });
   }
 };
+
 //utility functions
+function compareTransactions(a, b) {
+  //compares two time stamps and places the earlier timestamp before the other
+  if (
+    a.createdAt.getTime() > b.createdAt.getTime()
+  )
+    return -1;
+  if (
+    b.createdAt.getTime() < a.createdAt.getTime()
+  )
+    return 1;
+
+  return 0;
+}
+
+function compareCustomers(a, b) {
+  //compares two time stamps and places the earlier timestamp before the other
+  if (
+    a.transactions[0].createdAt.getTime() > b.transactions[0].createdAt.getTime()
+  )
+    return -1;
+  if (
+    b.transactions[0].createdAt.getTime() < a.transactions[0].createdAt.getTime()
+  )
+    return 1;
+
+  return 0;
+}
+
+function compareRecentTransactions(a, b) {
+  //compares two time stamps and places the earlier timestamp before the other
+  if (
+    a.transaction.createdAt.getTime() > b.transaction.createdAt.getTime()
+  )
+    return -1;
+  if (
+    b.transaction.createdAt.getTime() < a.transaction.createdAt.getTime()
+  )
+    return 1;
+
+  return 0;
+}
+
+function compareRecentDebts(a, b) {
+  //compares two time stamps and places the earlier timestamp before the other
+  if (
+    a.debt.createdAt.getTime() > b.debt.createdAt.getTime()
+  )
+    return -1;
+  if (
+    b.debt.createdAt.getTime() < a.debt.createdAt.getTime()
+  )
+    return 1;
+
+  return 0;
+}

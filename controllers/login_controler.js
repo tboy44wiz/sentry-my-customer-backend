@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bCrypt = require("bcryptjs");
-const { body } = require('express-validator/check');
+const { body } = require("express-validator/check");
 
 const UserModel = require("../models/store_admin");
 const CustomerModel = require("../models/customer");
@@ -24,7 +24,7 @@ module.exports.loginUser = async (req, res, next) => {
   user.identifier = phone_number;
 
   //  Check if the users phone persists in the DB
-  await UserModel.findOne({ identifier: user.identifier })
+  await UserModel.findOne({ identifier: phone_number })
     .then((userExist) => {
       if (userExist) {
         //  Go ahead to compare the password match.
@@ -37,7 +37,7 @@ module.exports.loginUser = async (req, res, next) => {
                 {
                   phone_number: userExist.identifier,
                   password: user.local.password,
-                  user_role: userExist.user_role
+                  user_role: userExist.user_role,
                 },
                 process.env.JWT_KEY,
                 {
@@ -54,8 +54,7 @@ module.exports.loginUser = async (req, res, next) => {
                   user: userExist,
                 },
               });
-            }
-            else {
+            } else {
               res.status(401).json({
                 success: false,
                 message: "Invalid Password.",
@@ -76,24 +75,13 @@ module.exports.loginUser = async (req, res, next) => {
               },
             });
           });
-      }
-      /*else if (userExist.local.phone_number == phone_number) {
-        res.status(200).json({
-          success: true,
-          message: "Phone number didn't match.",
-          data: {
-            code: 200,
-            description: "Phone number didn't match.",
-          },
-        });
-      }*/
-      else {
-        res.status(401).json({
+      } else {
+        res.status(404).json({
           success: false,
-          message: "Invalid phone number.",
+          message: "User does not exist",
           error: {
-            code: 401,
-            description: "Invalid phone number.",
+            code: 404,
+            description: "User does not exist",
           },
         });
       }
