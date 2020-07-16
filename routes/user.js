@@ -13,7 +13,7 @@
 
     //Add new StoreAdmin
     router.post("/store_admin/new", auth, users.validate('body'), bodyValidator, users.newStoreAdmin);
-
+/*
     //Add new StoreAssistant
     router.post("/assistant/new", auth, users.validate('body'), bodyValidator, users.newStoreAssistant);
 
@@ -27,7 +27,7 @@
    router.put('/assistant/update/:assistant_id', auth, users.updateSingleStoreAssistant);
 
     // Delete a User with user_id
-    router.delete('/assistant/delete/:assistant_id', auth, users.deleteSingleStoreAssistant);
+    router.delete('/assistant/delete/:assistant_id', auth, users.deleteSingleStoreAssistant);*/
 
     // Update User Info with user_id
     router.put('/store-admin/update', auth, users.updateStoreAdmin);

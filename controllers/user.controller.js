@@ -37,95 +37,8 @@ exports.validate = method => {
   }
 };
 
-// Get all Users.
-exports.allStoreAssistant = (req, res) => {
-  const id = req.user.phone_number;
 
-  User.findOne({ identifier: id })
-    .then((user) => {
-      const storeAssistants = user.assistants;
-      res.status(200).json({
-        success: "true",
-        message: "Store assistants retrieved successfully.",
-        data: {
-          status: 200,
-          message: "Store assistants retrieved successfully.",
-          assistants: storeAssistants,
-        },
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        success: "false",
-        message: "Internal Server Error.",
-        error: {
-          statusCode: 500,
-          message: "Internal Server Error.",
-        },
-      });
-    });
-};
-
-// Add new StoreAdmin
-exports.newStoreAdmin = (req, res) => {
-  const { name, email, password, phone_number, } = req.body;
-  const id = req.user.phone_number;
-
-  const newStoreAdmin = new User({
-    name: name,
-    phone_number: phone_number,
-    email: email,
-    password: password,
-  });
-
-  User.findOne({ identifier: id })
-      .then((user) => {
-        if (user) {
-          return res.status(200).json({
-            success: false,
-            message: "User already exist.",
-            data: {
-              status: 200,
-              message: "User already exist.",
-            },
-          });
-        }
-
-        newStoreAdmin.save()
-            .then((newUser) => {
-              return res.status(201).json({
-                success: true,
-                message: "User created successfully.",
-                data: {
-                  status: 201,
-                  message: "User created successfully.",
-                  user: newUser,
-                },
-              });
-            })
-            .catch((error) => {
-              return res.status(500).json({
-                success: "false",
-                message: "Internal Server Error.",
-                error: {
-                  statusCode: 500,
-                  message: "Internal Server Error.",
-                },
-              });
-            });
-
-      })
-      .catch((error) => {
-        return res.status(500).json({
-          success: "false",
-          message: "Internal Server Error.",
-          error: {
-            statusCode: 500,
-            message: "Internal Server Error.",
-          },
-        });
-      });
-}
+/*
 
 // Add new StoreAssistant
 exports.newStoreAssistant = (req, res) => {
@@ -207,6 +120,36 @@ exports.newStoreAssistant = (req, res) => {
         });
       });
 }
+
+
+// Get all Users.
+exports.allStoreAssistant = (req, res) => {
+  const id = req.user.phone_number;
+
+  User.findOne({ identifier: id })
+    .then((user) => {
+      const storeAssistants = user.assistants;
+      res.status(200).json({
+        success: "true",
+        message: "Store assistants retrieved successfully.",
+        data: {
+          status: 200,
+          message: "Store assistants retrieved successfully.",
+          assistants: storeAssistants,
+        },
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        success: "false",
+        message: "Internal Server Error.",
+        error: {
+          statusCode: 500,
+          message: "Internal Server Error.",
+        },
+      });
+    });
+};
 
 
 // Get Single Store Assistant with assistant_id.
@@ -383,7 +326,68 @@ exports.deleteSingleStoreAssistant = (req, res) => {
           },
         });
       });
-};
+};*/
+
+// Add new StoreAdmin
+exports.newStoreAdmin = (req, res) => {
+  const { name, email, password, phone_number, } = req.body;
+  const id = req.user.phone_number;
+
+  const newStoreAdmin = new User({
+    name: name,
+    phone_number: phone_number,
+    email: email,
+    password: password,
+  });
+
+  User.findOne({ identifier: id })
+      .then((user) => {
+        if (user) {
+          return res.status(200).json({
+            success: false,
+            message: "User already exist.",
+            data: {
+              status: 200,
+              message: "User already exist.",
+            },
+          });
+        }
+
+        newStoreAdmin.save()
+            .then((newUser) => {
+              return res.status(201).json({
+                success: true,
+                message: "User created successfully.",
+                data: {
+                  status: 201,
+                  message: "User created successfully.",
+                  user: newUser,
+                },
+              });
+            })
+            .catch((error) => {
+              return res.status(500).json({
+                success: "false",
+                message: "Internal Server Error.",
+                error: {
+                  statusCode: 500,
+                  message: "Internal Server Error.",
+                },
+              });
+            });
+
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          success: "false",
+          message: "Internal Server Error.",
+          error: {
+            statusCode: 500,
+            message: "Internal Server Error.",
+          },
+        });
+      });
+}
 //#endregion
 
 exports.updateStoreAdmin = (req, res) => {

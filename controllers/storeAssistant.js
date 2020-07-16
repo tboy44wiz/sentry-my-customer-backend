@@ -28,7 +28,7 @@ exports.createStoreAssistant = (req, res, next) => {
         });
     }
 
-    //  Querry the StoreAdmin table to get the recored that matches the given Store Admin identifier.
+    //  Query the StoreAdmin table to get the record that matches the given Store Admin identifier.
     UserModel.findOne({identifier: id})
         .then((user) => {
 
@@ -37,7 +37,7 @@ exports.createStoreAssistant = (req, res, next) => {
                 const adminIdentity = user.local.phone_number;
                 newStoreAssistantData.admin_identity = adminIdentity;
 
-                //  Querry the StoreAssistant table to get the recored that matches the given Store Assistant phone_number.
+                //  Query the StoreAssistant table to get the record that matches the given Store Assistant phone_number.
                 StoreAssistantModel.findOne({phone_number})
                     .then((storeAssistant) => {
                         //  If the Store Assistant already exist, return this "if" block.
@@ -137,6 +137,7 @@ exports.getAllStoreAssistants = (req, res, next) => {
                             data: {
                                 status: 200,
                                 message: "Store assistants record is empty.",
+                                assistants: storeAssistants,
                             },
                         });  
                     })

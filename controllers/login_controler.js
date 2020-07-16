@@ -84,8 +84,15 @@ module.exports.loginUser = async (req, res, next) => {
           });
       }
       else {
-
-        StoreAssistantModel.findOne({phone_number})
+          res.status(404).json({
+            success: false,
+            message: "User does not exist",
+            error: {
+              code: 404,
+              description: "User does not exist",
+            },
+          });
+        /*StoreAssistantModel.findOne({phone_number})
           .then((storeAssistant) => {
             if (storeAssistant) {
 
@@ -154,7 +161,7 @@ module.exports.loginUser = async (req, res, next) => {
             res.status(500).json({
                 Error: error,
             });
-          });
+          });*/
       }  
     })
     .catch((error) => {
